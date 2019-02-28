@@ -11,7 +11,9 @@ import java.util.List;
 public interface DataService {
 
     Command insertCommand(String command);
+    Command getCommand(int commandId);
     Tournament insertTournament (String tournament);
+    Tournament getTournament(int tournId);
 
     Result saveResult (Result result);
 

@@ -18,6 +18,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import java.sql.Date;
+import java.time.temporal.ChronoUnit;
+import java.util.Calendar;
 import java.util.List;
 
 @Controller
@@ -53,6 +56,7 @@ public class EuroleagueController {
         Result updatedResult = dataService.saveResult(result);
 
         model.addAttribute("currentResult", updatedResult);
+        model.addAttribute("setResult", true);
 
         model.addAttribute("msg", "Successfully updated result");
 
@@ -73,14 +77,14 @@ public class EuroleagueController {
         Action actionEnum = Action.byName(action);
         Integer resultId = convertString(result);
 
-        if (resultId == null || needLastResultsAfterHandleAction(model, actionEnum, resultId)) {
+        if ( (resultId == null && actionEnum != Action.create) || needLastResultsAfterHandleAction(model, commandId, tournId, actionEnum, resultId)) {
             fillLastResults(model, commandId, tournId);
         }
 
         return "index";
     }
 
-    private boolean needLastResultsAfterHandleAction(Model model, Action actionEnum, Integer resultId) {
+    private boolean needLastResultsAfterHandleAction(Model model, Integer commandId, Integer tournId, Action actionEnum, Integer resultId) {
         boolean needLastResults = true;
         switch (actionEnum) {
             case delete:
@@ -89,6 +93,25 @@ public class EuroleagueController {
             case edit:
                 Result foundResult = dataService.getResult(resultId);
                 model.addAttribute("currentResult", foundResult);
+                model.addAttribute("setResult", true);
+                needLastResults = false;
+                break;
+            case create:
+                model.addAttribute("setResult", true);
+                Date now = new Date(System.currentTimeMillis());
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(now);
+                int month = calendar.get(Calendar.MONTH);
+                int year = calendar.get(Calendar.YEAR);
+                year = month > 1 && month <= 6 ? year - 1 : year;
+                calendar.set(Calendar.YEAR, year + 1);
+                model.addAttribute("currentResult", Result.builder()
+                    .date(now)
+                    .season(year + String.valueOf(calendar.get(Calendar.YEAR)))
+                    .command(dataService.getCommand(commandId))
+                    .tournament(tournId != null ? dataService.getTournament(tournId) : null)
+                    .build()
+                );
                 needLastResults = false;
                 break;
         }
@@ -152,7 +175,7 @@ public class EuroleagueController {
     }
 
     private enum Action {
-        delete, edit,
+        delete, edit, create,
         na;
 
         public static Action byName(String name) {

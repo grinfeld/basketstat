@@ -23,6 +23,7 @@
                     <input type="hidden" name="result" id="result" value="" />
                     <input type="submit" value="Next" />
                 </form>
+                <a href="#" th:onclick="|createScore()|">Create</a>
             </div>
             <table cellpadding="5" cellspacing="5" border="1" th:if="${currentResult == null && results1st != null && results1st.size() > 0}">
                 <tr>
@@ -59,7 +60,7 @@
                     <td><a th:onclick="|deleteScore(${result1st.getId()})|" href="#">Delete</a></td>
                 </tr>
             </table>
-            <table cellpadding="5" cellspacing="5" border="1" th:if="${currentResult != null}">
+            <table cellpadding="5" cellspacing="5" border="1" th:if="${currentResult != null || (setResult != null && setResult == true)}">
                 <tr>
                     <th>Tournament</th>
                     <th>Team</th>
@@ -130,6 +131,11 @@
             function editScore(resId) {
                 $("#action").val("edit");
                 $("#result").val("" + resId);
+                $("#commandsSelectForm").submit();
+            }
+
+            function createScore() {
+                $("#action").val("create");
                 $("#commandsSelectForm").submit();
             }
         </script>

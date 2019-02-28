@@ -29,6 +29,11 @@ public class DataServiceJdbc implements DataService {
     }
 
     @Override
+    public Command getCommand(int commandId) {
+        return Converter.convert(commandRepository.getOne(commandId));
+    }
+
+    @Override
     public Command insertCommand(String command) {
         return Converter.convert(
             commandRepository.save(com.mikerusoft.euroleague.entities.Command.builder().commandName(command).build())
@@ -40,6 +45,11 @@ public class DataServiceJdbc implements DataService {
         return Converter.convert(
             tournamentRepository.save(com.mikerusoft.euroleague.entities.Tournament.builder().tournName(tournament).build())
         );
+    }
+
+    @Override
+    public Tournament getTournament(int tournId) {
+        return Converter.convert(tournamentRepository.getOne(tournId));
     }
 
     @Override
