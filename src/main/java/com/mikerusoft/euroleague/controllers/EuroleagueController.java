@@ -48,13 +48,7 @@ public class EuroleagueController {
         Integer commandId = result.getCommand() != null ? result.getCommand().getId() : null;
         Integer tournId = result.getTournament() != null ? result.getTournament().getId() : null;
 
-        if (commandId == null) {
-            model.addAttribute("error", "You should choose at least command");
-            return "index";
-        }
-
-        model.addAttribute("commandId", commandId);
-        model.addAttribute("tournamentId", tournId);
+        if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
 
         Result updatedResult = dataService.saveResult(result);
 
@@ -74,36 +68,43 @@ public class EuroleagueController {
         Integer commandId = convertString(command);
         Integer tournId = convertString(tournament);
 
-        if (commandId == null) {
-            model.addAttribute("error", "You should choose at least command");
-            return "index";
-        }
-
-        model.addAttribute("commandId", commandId);
-        model.addAttribute("tournamentId", tournId);
+        if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
 
         Action actionEnum = Action.byName(action);
         Integer resultId = convertString(result);
 
-        if (resultId != null) {
-            switch (actionEnum) {
-                case delete:
-                    dataService.deleteResult(resultId);
-                    fillLastResults(model, commandId, tournId);
-                    break;
-                case edit:
-                    Result foundResult = dataService.getResult(resultId);
-                    model.addAttribute("currentResult", foundResult);
-                    break;
-                case na:
-                    fillLastResults(model, commandId, tournId);
-                    break;
-            }
-        } else {
+        if (resultId == null || needLastResultsAfterHandleAction(model, actionEnum, resultId)) {
             fillLastResults(model, commandId, tournId);
         }
 
         return "index";
+    }
+
+    private boolean needLastResultsAfterHandleAction(Model model, Action actionEnum, Integer resultId) {
+        boolean needLastResults = true;
+        switch (actionEnum) {
+            case delete:
+                dataService.deleteResult(resultId);
+                break;
+            case edit:
+                Result foundResult = dataService.getResult(resultId);
+                model.addAttribute("currentResult", foundResult);
+                needLastResults = false;
+                break;
+        }
+
+        return needLastResults;
+    }
+
+    private boolean fillModelWithCommandAndTournament(Model model, Integer commandId, Integer tournId) {
+        if (commandId == null) {
+            model.addAttribute("error", "You should choose at least command");
+            return false;
+        }
+
+        model.addAttribute("commandId", commandId);
+        model.addAttribute("tournamentId", tournId);
+        return true;
     }
 
     private void fillLastResults(Model model, Integer commandId, Integer tournId) {
