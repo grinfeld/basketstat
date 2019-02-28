@@ -1,0 +1,139 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Results</title>
+        <link rel="stylesheet" th:href="@{webjars/bootstrap/4.2.1/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{/css/main.css}"/>
+        <script type="text/javascript" th:src="@{/js/query-3.3.1.js}"></script>
+    </head>
+
+    <body>
+        <span th:replace="fragments/nav.html :: nav"></span>
+
+        <main role="main" class="container">
+            <div class="errorMsg" th:if="error != null" th:text="${error}"></div>
+            <div class="successMsg" th:if="msg != null" th:text="${msg}"></div>
+            <div class="starter-template">
+                <form id="commandsSelectForm" action="#" th:action="@{/view}" method="post">
+                    <span th:replace="fragments/tournselect.html :: tournamentsList"></span>
+                    <span th:replace="fragments/commandselect.html :: commandsList"></span>
+                    <input type="hidden" name="action" id="action" value="" />
+                    <input type="hidden" name="result" id="result" value="" />
+                    <input type="submit" value="Next" />
+                </form>
+            </div>
+            <table cellpadding="5" cellspacing="5" border="1" th:if="${currentResult == null && results1st != null && results1st.size() > 0}">
+                <tr>
+                    <th>Tournament</th>
+                    <th>Team</th>
+                    <th>Season</th>
+                    <th>Match Date</th>
+                    <th>Home</th>
+                    <th>Score</th>
+                    <th>3FG</th>
+                    <th>2FG</th>
+                    <th>FT</th>
+                    <th colspan="2"></th>
+                </tr>
+                <tr th:if="${avg1st != null}">
+                    <td colspan="5"></td>
+                    <td th:text="${avg1st.getScoreIn() + ' : ' + avg1st.getScoreOut()}"></td>
+                    <td th:text="${avg1st.getPoints3() + ' %'}"></td>
+                    <td th:text="${avg1st.getPoints2() + ' %'}"></td>
+                    <td th:text="${avg1st.getPoints1() + ' %'}"></td>
+                    <td colspan="2"></td>
+                </tr>
+                <tr th:each="result1st : ${results1st}" th:id="${result1st.getId() + '_row'}">
+                    <td th:text="${result1st.getTournament().getTournName()}"></td>
+                    <td th:text="${result1st.getCommand().getCommandName()}"></td>
+                    <td th:text="${result1st.getSeason()}"></td>
+                    <td th:id="${result1st.getId() + '_date'}" th:text="${#dates.format(result1st.getDate(), 'dd-MMM-yyyy')}"></td>
+                    <td th:text="${result1st.isHomeMatch() ? 'Home' : 'Away'}"></td>
+                    <td th:text="${result1st.getScoreIn() + ' : ' + result1st.getScoreOut()}"></td>
+                    <td th:text="${result1st.getScored3Points() + '/' + result1st.getAttempts3Points()}"></td>
+                    <td th:text="${result1st.getScored2Points() + '/' + result1st.getAttempts2Points()}"></td>
+                    <td th:text="${result1st.getScored1Points() + '/' + result1st.getAttempts1Points()}"></td>
+                    <td><a th:onclick="|editScore(${result1st.getId()})|" href="#">Edit</a></td>
+                    <td><a th:onclick="|deleteScore(${result1st.getId()})|" href="#">Delete</a></td>
+                </tr>
+            </table>
+            <table cellpadding="5" cellspacing="5" border="1" th:if="${currentResult != null}">
+                <tr>
+                    <th>Tournament</th>
+                    <th>Team</th>
+                    <th>Season</th>
+                    <th>Match Date</th>
+                    <th>Home</th>
+                    <th>Score</th>
+                    <th>3FG</th>
+                    <th>2FG</th>
+                    <th>FT</th>
+                    <th></th>
+                </tr>
+                <form action="#" th:action="@{/edit}" th:object="${currentResult}" method="post">
+                    <td>
+                        <select th:field="${currentResult.tournament.id}">
+                            <option th:each="tournament : ${tournaments}" th:value="${tournament.id}"
+                                    th:text="${tournament.getTournName()}"></option>
+                        </select>
+                    </td>
+                    <td>
+                        <select th:field="${currentResult.command.id}">
+                            <option th:each="command : ${commands}" th:value="${command.id}"
+                                    th:text="${command.getCommandName()}"></option>
+                        </select>
+                    </td>
+                    <td>
+                        <input maxlength="8" size="8" type="text" th:field="*{season}" />
+                    </td>
+                    <td>
+                        <input type="date" th:field="*{date}" />
+                    </td>
+                    <td>
+                        <input type="checkbox" th:field="*{homeMatch}" />
+                    </td>
+                    <td>
+                        <input size="3" min="0" max="199" type="number" th:field="*{scoreIn}" /> :
+                        <input size="3" min="0" max="199" type="number" th:field="*{scoreOut}" />
+                    </td>
+                    <td>
+                        <input size="3" min="0" max="199" type="number" th:field="*{scored3Points}" /> /
+                        <input size="3" min="0" max="199" type="number" th:field="*{attempts3Points}" />
+                    </td>
+                    <td>
+                        <input size="3" min="0" max="199" type="number" th:field="*{scored2Points}" /> /
+                        <input size="3" min="0" max="199" type="number" th:field="*{attempts2Points}" />
+                    </td>
+                    <td>
+                        <input size="3" min="0" max="199" type="number" th:field="*{scored1Points}" /> /
+                        <input size="3" min="0" max="199" type="number" th:field="*{attempts1Points}" />
+                    </td>
+                    <td>
+                        <input type="hidden" th:field="*{id}" />
+                        <input type="submit" value="Update" />
+                    </td>
+                </form>
+            </table>
+        </main>
+        <script type="application/javascript">
+            function deleteScore(resId) {
+                var response = window.confirm("Are you sure you want to delete match day at " + $("#" + resId + "_date").text() + "?");
+                if (response === true) {
+                    $("#action").val("delete");
+                    $("#result").val("" + resId);
+                    $("#commandsSelectForm").submit();
+                }
+            }
+
+            function editScore(resId) {
+                $("#action").val("edit");
+                $("#result").val("" + resId);
+                $("#commandsSelectForm").submit();
+            }
+        </script>
+        <script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
+
+    </body>
+</html>

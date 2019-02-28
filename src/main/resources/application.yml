@@ -1,0 +1,34 @@
+server:
+  port: ${PORT:6181}
+
+spring:
+  application:
+    name: "euroleague"
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: true
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.MySQL5Dialect
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/euroleague
+    username: ${USER:root}
+    password: ${PASSWORD:1946}
+
+  thymeleaf:
+    cache: false
+
+menu:
+  menus:
+    - name: "Home"
+      view: "index.html"
+    - name: "Commands"
+      view: "command.html"
+    - name: "Tournaments"
+      view: "tournament.html"
+
+matches-max-number: ${max-matches:4}

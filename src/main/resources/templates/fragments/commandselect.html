@@ -1,0 +1,11 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head></head>
+    <body>
+        <select name="command" th:if="${commands.size() > 0}" th:fragment="commandsList">
+            <option class="def_option" value="">Choose Command</option>
+            <option th:each="command : ${commands}" th:value="${command.getId()}"
+                    th:text="'&nbsp;&nbsp;&nbsp;&nbsp;' + ${command.getCommandName()}" th:selected="${command.getId() == commandId}"></option>
+        </select>
+    </body>
+</html>

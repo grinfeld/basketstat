@@ -1,0 +1,12 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head></head>
+    <body>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top" th:fragment="nav">
+            <a class="navbar-brand" href="/index.html">Results</a>
+            <ul>
+                <li th:each="menu : ${menus}"><a th:href="${menu.getView()}" th:text="${menu.getName()}"></a></li>
+            </ul>
+        </nav>
+    </body>
+</html>

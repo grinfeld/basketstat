@@ -1,0 +1,65 @@
+body {
+    padding-top: 5rem;
+}
+
+.starter-template {
+    padding: 3rem 1.5rem;
+    text-align: center;
+}
+
+h1{
+    color:#0000FF;
+}
+
+h2 {
+    color:#FF0000;
+}
+
+nav ul {
+    list-style-type: none;
+    margin: 0;
+    overflow: hidden;
+}
+
+nav ul li {
+    float: left;
+}
+
+nav ul li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 16px;
+    text-decoration: none;
+}
+
+nav ul li a:hover {
+    color: #e6fdff;
+}
+
+div.errorMsg {
+    width: 100%;
+    text-align: center;
+    color: #FF0000;
+}
+
+div.successMsg {
+    width: 100%;
+    text-align: center;
+    color: blue;
+}
+
+button, input {
+    height: 22px;
+    line-height: 20px;
+}
+
+select {
+    padding-top: 2px;
+    height: 22px;
+    line-height: 20px;
+}
+
+th {
+    text-align: center;
+}

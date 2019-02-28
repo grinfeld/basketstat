@@ -1,0 +1,11 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head></head>
+    <body>
+        <select name="tournament" th:if="${tournaments.size() > 0}" th:fragment="tournamentsList">
+            <option class="def_option" value="">Choose Tournament</option>
+            <option th:each="tournament : ${tournaments}" th:value="${tournament.getId()}"
+                    th:text="'&nbsp;&nbsp;&nbsp;&nbsp;' + ${tournament.getTournName()}" th:selected="${tournament.getId() == tournamentId}"></option>
+        </select>
+    </body>
+</html>
