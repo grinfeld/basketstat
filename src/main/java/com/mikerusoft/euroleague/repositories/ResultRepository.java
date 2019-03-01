@@ -3,6 +3,7 @@ package com.mikerusoft.euroleague.repositories;
 import com.mikerusoft.euroleague.entities.Result;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -24,8 +25,10 @@ public interface ResultRepository extends JpaRepository<Result, Integer> {
     List<Result> findResultsByCommandIdAndTournIdAndSeason(int torunId, int commandId, String season);
 
     @Query(value = "delete from Result r where r.command.id = ?1")
+    @Modifying
     void deleteByCommandId(int cmdId);
 
     @Query(value = "delete from Result r where r.tournament.id = ?1")
+    @Modifying
     void deleteByTournamentId(int torunId);
 }

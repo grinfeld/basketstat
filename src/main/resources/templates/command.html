@@ -12,12 +12,13 @@
 <body>
 <span th:replace="fragments/nav.html :: nav"></span>
 <main role="main" class="container">
-    <div class="errorMsg" th:if="error != null" th:text="${error}"></div>
-    <div class="successMsg" th:if="msg != null" th:text="${msg}"></div>
+    <div id="errorMsg" class="errorMsg" th:if="error != null" th:text="${error}"></div>
+    <div id="successMsg" class="successMsg" th:if="msg != null" th:text="${msg}"></div>
 </main>
 <div class="starter-template">
     <div>
         <span th:replace="fragments/commandselect.html :: commandsList"></span>
+        <button id="deleteCmd" onclick="deleteCommand()">Delete</button>
         <a href="#" onclick="createCommand()">Create New</a>
     </div>
     <div>
@@ -36,10 +37,35 @@
             var selected = $("select[name=command] option:selected");
             $('#commandName').val(selected.val() !== "" ? selected.text().trim() : "");
             $("input[name=id]").val(selected.val() !== "" ? selected.val().trim() : "");
+            if (selected.val() === "") {
+                $("#deleteCmd").prop('disabled', true);
+            } else {
+                $("#deleteCmd").prop('disabled', false);
+            }
         });
         var id = $("input[name=id]").val();
         select.val(id);
     });
+    function deleteCommand() {
+        var id = $("select[name=command]").val();
+        $.ajax("/api/command/delete/" + id, {"success" : function (data) {
+            $("#errorMsg").hide();
+            var deletedCmd = $("select[name=command] option[value=" + id + "]");
+            if (data && data.data && data.data === true) {
+                $("#successMsg").html("Successfully Deleted Command \"" + deletedCmd.text() + "\"").show();
+            } else if (data && data.data && typeof data.data === "string") {
+                $("#successMsg").html(data.data).show();
+            }
+            deletedCmd.remove();
+        }, "dataType": "json", "error": function (jqXHR, textStatus, errorThrown ) {
+            $("#successMsg").hide();
+            var deletedCmd = $("select[name=command] option[value=" + id + "]").text();
+            if (jqXHR.responseJSON && jqXHR.responseJSON.data && typeof jqXHR.responseJSON.data === "string") {
+                errorThrown = jqXHR.responseJSON.data;
+            }
+            $("#errorMsg").html("Failed to delete Command \"" + deletedCmd + "\" with error " + errorThrown).show();
+        }});
+    }
     function createCommand() {
         $("select[name=command]").val("");
         $("input[name=id]").val("");

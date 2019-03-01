@@ -1,5 +1,8 @@
 server:
   port: ${PORT:6181}
+  error:
+    whitelabel:
+      enabled: false
 
 spring:
   application:

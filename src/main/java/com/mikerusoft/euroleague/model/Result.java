@@ -14,14 +14,22 @@ import java.sql.Date;
 public class Result {
     private int id;
     private Date date;
-    private Integer attempts3Points;
-    private Integer scored3Points;
-    private Integer attempts2Points;
-    private Integer scored2Points;
-    private Integer attempts1Points;
-    private Integer scored1Points;
-    private Integer scoreIn;
-    private Integer scoreOut;
+    @lombok.Builder.Default
+    private Integer attempts3Points = 0;
+    @lombok.Builder.Default
+    private Integer scored3Points = 0;
+    @lombok.Builder.Default
+    private Integer attempts2Points = 0;
+    @lombok.Builder.Default
+    private Integer scored2Points = 0;
+    @lombok.Builder.Default
+    private Integer attempts1Points = 0;
+    @lombok.Builder.Default
+    private Integer scored1Points = 0;
+    @lombok.Builder.Default
+    private Integer scoreIn = 0;
+    @lombok.Builder.Default
+    private Integer scoreOut = 0;
     private String season;
     private boolean homeMatch;
     private Command command;

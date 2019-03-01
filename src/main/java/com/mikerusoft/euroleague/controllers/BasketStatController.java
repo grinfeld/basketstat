@@ -11,16 +11,20 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
+import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.List;
+import java.util.function.Consumer;
 
 @Controller
 public class BasketStatController {
@@ -43,6 +47,48 @@ public class BasketStatController {
         return "index";
     }
 
+    private static void assertResult(Result result) {
+        int sunOfSplitScoreIn = result.getScored1Points() + result.getScored2Points() + result.getScored3Points();
+        if (sunOfSplitScoreIn != result.getScoreIn()) {
+            throw new IllegalArgumentException("Sum of scored points should be the same as score in");
+        }
+
+        if (result.getScored1Points() > result.getAttempts1Points()) {
+            throw new IllegalArgumentException("Scored 1 point should be less or equal to attempts");
+        }
+
+        if (result.getScored2Points() > result.getAttempts2Points()) {
+            throw new IllegalArgumentException("Scored 2 point should be less or equal to attempts");
+        }
+
+        if (result.getScored3Points() > result.getAttempts3Points()) {
+            throw new IllegalArgumentException("Scored 3 point should be less or equal to attempts");
+        }
+    }
+
+    @Data
+    private static class AssertResultException extends RuntimeException {
+        private String fromPage;
+
+        public AssertResultException(String message, String fromPage) {
+            super(message);
+            this.fromPage = fromPage;
+        }
+    }
+
+    @ExceptionHandler({AssertResultException.class})
+    public String handleDemoException(AssertResultException exception,
+                                      HttpServletRequest req) {
+        req.setAttribute("javax.servlet.error.status_code",
+                HttpStatus.BAD_REQUEST.value());
+        req.setAttribute("error", exception.getMessage());
+        req.setAttribute("menus", this.menus);
+
+        fillCommand(commands -> req.setAttribute("commands", commands));
+        fillTournament(tournaments -> req.setAttribute("tournaments", tournaments));
+        return "".equals(exception.fromPage) ? "error" : exception.fromPage;
+    }
+
     @PostMapping({"/edit"})
     public String edit(@ModelAttribute("result") Result result, Model model) {
         fillModelWithInitialData(model);
@@ -51,7 +97,11 @@ public class BasketStatController {
         Integer tournId = result.getTournament() != null ? result.getTournament().getId() : null;
 
         if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
-
+        try {
+            assertResult(result);
+        } catch (Exception e) {
+            throw new AssertResultException(e.getMessage(), "index");
+        }
         Result updatedResult = dataService.saveResult(result);
 
         model.addAttribute("currentResult", updatedResult);
@@ -167,25 +217,27 @@ public class BasketStatController {
 
     private void fillModelWithInitialData(Model model) {
         model.addAttribute("menus", this.menus);
-        fillCommand(model);
-        fillTournament(model);
+        fillCommand(commands -> model.addAttribute("commands", commands));
+        fillTournament(tournaments -> model.addAttribute("tournaments", tournaments));
     }
 
-    private void fillTournament(Model model) {
+    private void fillTournament(Consumer<List<Tournament>> consumer) {
         List<Tournament> tournaments = dataService.getTournaments();
-        model.addAttribute("tournaments", tournaments);
+        consumer.accept(tournaments);
+        //model.addAttribute("tournaments", tournaments);
     }
 
-    private void fillCommand(Model model) {
+    private void fillCommand(Consumer<List<Command>> consumer) {
         List<Command> commands = dataService.getCommands();
-        model.addAttribute("commands", commands);
+        consumer.accept(commands);
+        //model.addAttribute("commands", commands);
     }
 
     @GetMapping({"/command.html"})
     public String command(Model model) {
         model.addAttribute("menus", this.menus);
         model.addAttribute("command", Command.builder().build());
-        fillCommand(model);
+        fillCommand(commands -> model.addAttribute("commands", commands));
         return "command";
     }
 
@@ -196,7 +248,7 @@ public class BasketStatController {
         command = command.getId() == null ? dataService.insertCommand(command.getCommandName()) :
                 dataService.updateCommand(command);
         model.addAttribute("command", command);
-        fillCommand(model);
+        fillCommand(commands -> model.addAttribute("commands", commands));
         return "command";
     }
 
@@ -208,7 +260,7 @@ public class BasketStatController {
         tournament = tournament.getId() == null ? dataService.insertTournament(tournament.getTournName()) :
                 dataService.updateTournament(tournament);
         model.addAttribute("tourn", tournament);
-        fillTournament(model);
+        fillTournament(tournaments -> model.addAttribute("tournaments", tournaments));
         return "tournament";
     }
 
@@ -216,7 +268,7 @@ public class BasketStatController {
     public String tournament(Model model) {
         model.addAttribute("menus", this.menus);
         model.addAttribute("tourn", Tournament.builder().build());
-        fillTournament(model);
+        fillTournament(tournaments -> model.addAttribute("tournaments", tournaments));
         return "tournament";
     }
 

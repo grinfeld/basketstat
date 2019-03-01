@@ -126,6 +126,7 @@ public class DataServiceJdbc implements DataService {
     }
 
     @Override
+    @Transactional
     public void deleteResult(int resultId) {
         resultRepository.deleteById(resultId);
     }
