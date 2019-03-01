@@ -5,7 +5,8 @@ import com.mikerusoft.euroleague.model.Command;
 import com.mikerusoft.euroleague.model.Result;
 import com.mikerusoft.euroleague.model.Tournament;
 
-import java.util.Date;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.util.List;
 
 public interface DataService {
@@ -28,10 +29,13 @@ public interface DataService {
 
     List<Result> getLastResults(int tournId, int commandId, int limit);
 
+    void writeAllResults(OutputStream outputStream) throws IOException;
+
     List<Result> getResults(int commandId, String season);
-    Result getResult(int resultId);
 
     List<Result> getResults(int tournId, int commandId, String season);
+
+    Result getResult(int resultId);
 
     void deleteCommand(int cmdId);
     void deleteTournament(int tournId);

@@ -12,6 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.io.OutputStream;
+
 @RestController
 @RequestMapping("/api")
 public class BasketStatRestController {
@@ -33,6 +37,12 @@ public class BasketStatRestController {
     public @ResponseBody Response deleteTournament(@PathVariable("id") int id) {
         dataService.deleteTournament(id);
         return Response.<Boolean>builder().data(true).build();
+    }
+
+    @GetMapping(value = "/export", headers = "Accept=*/*", produces = "application/vnd.ms-excel")
+    public void export(HttpServletResponse response, OutputStream outputStream) throws IOException {
+        response.setHeader("Content-Disposition", "form-data; name=\"Content-Disposition\"; filename=\"" + System.currentTimeMillis() + "_export.csv" + "\"");
+        dataService.writeAllResults(outputStream);
     }
 
     @ExceptionHandler(Exception.class)

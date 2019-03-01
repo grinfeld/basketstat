@@ -33,5 +33,7 @@ menu:
       view: "command.html"
     - name: "Tournaments"
       view: "tournament.html"
+    - name: "Export"
+      view: "/api/export"
 
 matches-max-number: ${max-matches:4}
