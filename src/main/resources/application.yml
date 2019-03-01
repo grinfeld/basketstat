@@ -6,7 +6,7 @@ server:
 
 spring:
   application:
-    name: "euroleague"
+    name: "basketstat"
 
   jpa:
     hibernate:
@@ -27,7 +27,7 @@ spring:
 
 menu:
   menus:
-    - name: "Home"
+    - name: "Results"
       view: "index.html"
     - name: "Commands"
       view: "command.html"
