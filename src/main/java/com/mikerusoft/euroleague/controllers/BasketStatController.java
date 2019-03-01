@@ -19,20 +19,19 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
 import java.sql.Date;
-import java.time.temporal.ChronoUnit;
 import java.util.Calendar;
 import java.util.List;
 
 @Controller
-public class EuroleagueController {
+public class BasketStatController {
 
     private int matchesMaxNumber;
     private List<MenuProperties.Menu> menus;
     private DataService dataService;
 
     @Autowired
-    public EuroleagueController(@Value("${matches-max-number}") int matchesMaxNumber,
-            MenuProperties menu, DataService dataService) {
+    public BasketStatController(@Value("${matches-max-number}") int matchesMaxNumber,
+                                MenuProperties menu, DataService dataService) {
         this.menus = menu.getMenus();
         this.dataService = dataService;
         this.matchesMaxNumber = matchesMaxNumber;
@@ -167,11 +166,58 @@ public class EuroleagueController {
     }
 
     private void fillModelWithInitialData(Model model) {
-        List<Command> commands = dataService.getCommands();
-        List<Tournament> tournaments = dataService.getTournaments();
         model.addAttribute("menus", this.menus);
-        model.addAttribute("commands", commands);
+        fillCommand(model);
+        fillTournament(model);
+    }
+
+    private void fillTournament(Model model) {
+        List<Tournament> tournaments = dataService.getTournaments();
         model.addAttribute("tournaments", tournaments);
+    }
+
+    private void fillCommand(Model model) {
+        List<Command> commands = dataService.getCommands();
+        model.addAttribute("commands", commands);
+    }
+
+    @GetMapping({"/command.html"})
+    public String command(Model model) {
+        model.addAttribute("menus", this.menus);
+        model.addAttribute("command", Command.builder().build());
+        fillCommand(model);
+        return "command";
+    }
+
+    @PostMapping({"/commandsave", "/commandsave/"})
+    public String editCommand(@ModelAttribute("command") Command command, Model model) {
+        model.addAttribute("menus", this.menus);
+
+        command = command.getId() == null ? dataService.insertCommand(command.getCommandName()) :
+                dataService.updateCommand(command);
+        model.addAttribute("command", command);
+        fillCommand(model);
+        return "command";
+    }
+
+    @PostMapping({"/tournamentsave", "/tournamentsave/"})
+    public String editTournament(@ModelAttribute("tourn") Tournament tournament, Model model) {
+        model.addAttribute("menus", this.menus);
+
+
+        tournament = tournament.getId() == null ? dataService.insertTournament(tournament.getTournName()) :
+                dataService.updateTournament(tournament);
+        model.addAttribute("tourn", tournament);
+        fillTournament(model);
+        return "tournament";
+    }
+
+    @GetMapping({"/tournament.html"})
+    public String tournament(Model model) {
+        model.addAttribute("menus", this.menus);
+        model.addAttribute("tourn", Tournament.builder().build());
+        fillTournament(model);
+        return "tournament";
     }
 
     private enum Action {

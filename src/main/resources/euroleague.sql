@@ -11,13 +11,13 @@ SET @OLD_SQL_MODE = @@SQL_MODE, SQL_MODE = 'TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema euroleague
 -- -----------------------------------------------------
-CREATE SCHEMA IF NOT EXISTS `euroleague` DEFAULT CHARACTER SET utf8;
-USE `euroleague`;
+CREATE SCHEMA IF NOT EXISTS `basketstat` DEFAULT CHARACTER SET utf8;
+USE `basketstat`;
 
 -- -----------------------------------------------------
--- Table `euroleague`.`commands`
+-- Table `basketstat`.`commands`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `euroleague`.`commands`
+CREATE TABLE IF NOT EXISTS `basketstat`.`commands`
 (
   `id`           INT          NOT NULL AUTO_INCREMENT,
   `command_name` VARCHAR(255) NOT NULL,
@@ -28,9 +28,9 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`commands`
 
 
 -- -----------------------------------------------------
--- Table `euroleague`.`tournaments`
+-- Table `basketstat`.`tournaments`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `euroleague`.`tournaments`
+CREATE TABLE IF NOT EXISTS `basketstat`.`tournaments`
 (
   `id`         INT          NOT NULL AUTO_INCREMENT,
   `tourn_name` VARCHAR(255) NOT NULL,
@@ -41,22 +41,22 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`tournaments`
 
 
 -- -----------------------------------------------------
--- Table `euroleague`.`results`
+-- Table `basketstat`.`results`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `euroleague`.`results`
+CREATE TABLE IF NOT EXISTS `basketstat`.`results`
 (
   `result_id`       INT        NOT NULL AUTO_INCREMENT,
   `command_id`      INT        NOT NULL,
   `tournament_id`   INT        NOT NULL,
   `date`            DATE       NOT NULL,
-  `attempts3points` INT        NULL DEFAULT 0,
-  `scored3points`   INT        NULL DEFAULT 0,
-  `attempts2points` INT        NULL DEFAULT 0,
-  `scored2points`   INT        NULL DEFAULT 0,
-  `attempts1points` INT        NULL DEFAULT 0,
-  `scored1points`   INT        NULL DEFAULT 0,
-  `score_in`        INT        NULL DEFAULT 0,
-  `score_out`       INT        NULL DEFAULT 0,
+  `attempts3points` INT        NOT NULL DEFAULT 0,
+  `scored3points`   INT        NOT NULL DEFAULT 0,
+  `attempts2points` INT        NOT NULL DEFAULT 0,
+  `scored2points`   INT        NOT NULL DEFAULT 0,
+  `attempts1points` INT        NOT NULL DEFAULT 0,
+  `scored1points`   INT        NOT NULL DEFAULT 0,
+  `score_in`        INT        NOT NULL DEFAULT 0,
+  `score_out`       INT        NOT NULL DEFAULT 0,
   `home_match`      TINYINT(1) NOT NULL,
   `season`          VARCHAR(8) NOT NULL,
   INDEX `fk_results_commands_idx` (`command_id` ASC),
@@ -69,12 +69,12 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`results`
   PRIMARY KEY (`result_id`),
   CONSTRAINT `fk_results_commands`
     FOREIGN KEY (`command_id`)
-      REFERENCES `euroleague`.`commands` (`id`)
+      REFERENCES `basketstat`.`commands` (`id`)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION,
   CONSTRAINT `fk_results_tournaments1`
     FOREIGN KEY (`tournament_id`)
-      REFERENCES `euroleague`.`tournaments` (`id`)
+      REFERENCES `basketstat`.`tournaments` (`id`)
       ON DELETE NO ACTION
       ON UPDATE NO ACTION
 )

@@ -14,7 +14,10 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder(builderClassName = "Builder", toBuilder = true)
 public class Command {
-    @Id
+    @Id @Column(name = "id")
+    @GeneratedValue(
+            strategy= GenerationType.IDENTITY
+    )
     private Integer id;
     @Column(name = "command_name")
     private String commandName;

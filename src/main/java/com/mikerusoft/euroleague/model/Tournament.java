@@ -11,5 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder(builderClassName = "Builder", toBuilder = true)
 public class Tournament {
     private String tournName;
-    private int id;
+    private Integer id;
 }

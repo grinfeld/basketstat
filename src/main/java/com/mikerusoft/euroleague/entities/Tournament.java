@@ -14,7 +14,10 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Builder(builderClassName = "Builder", toBuilder = true)
 public class Tournament {
-    @Id
+    @Id @Column(name = "id")
+    @GeneratedValue(
+            strategy= GenerationType.IDENTITY
+    )
     private Integer id;
     @Column(name = "tourn_name")
     private String tournName;

@@ -10,6 +10,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Builder(builderClassName = "Builder", toBuilder = true)
 public class Command {
-    private int id;
+    private Integer id;
     private String commandName;
 }
