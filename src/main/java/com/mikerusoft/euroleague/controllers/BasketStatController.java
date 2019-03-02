@@ -48,7 +48,7 @@ public class BasketStatController {
     }
 
     private static void assertResult(Result result) {
-        int sunOfSplitScoreIn = result.getScored1Points() + result.getScored2Points() + result.getScored3Points();
+        int sunOfSplitScoreIn = result.getScored1Points() + result.getScored2Points() * 2 + result.getScored3Points() * 3;
         if (sunOfSplitScoreIn != result.getScoreIn()) {
             throw new IllegalArgumentException("Sum of scored points should be the same as score in");
         }
