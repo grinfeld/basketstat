@@ -18,7 +18,7 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/${DB_NAME:basketstat}
+    url: jdbc:mysql://${DB_URL:localhost:3306/basketstat}
     username: ${USER:root}
     password: ${PASSWORD:1946}
 
