@@ -9,7 +9,7 @@ import java.util.TimeZone;
 public class EuroleagueApplication {
 
 	public static void main(String[] args) {
-		TimeZone.setDefault(TimeZone.getTimeZone("IST"));
+		TimeZone.setDefault(TimeZone.getTimeZone("GMT"));
 		SpringApplication.run(EuroleagueApplication.class, args);
 	}
 

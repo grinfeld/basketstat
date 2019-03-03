@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
 import java.util.Calendar;
 import java.util.List;
+import java.util.TimeZone;
 import java.util.function.Consumer;
 
 @Controller
@@ -102,6 +103,9 @@ public class BasketStatController {
         } catch (Exception e) {
             throw new AssertResultException(e.getMessage(), "index");
         }
+
+        result = normalizeData(result);
+
         Result updatedResult = dataService.saveResult(result);
 
         model.addAttribute("currentResult", updatedResult);
@@ -110,6 +114,14 @@ public class BasketStatController {
         model.addAttribute("msg", "Successfully updated result");
 
         return "index";
+    }
+
+    private static Result normalizeData(Result result) {
+        Date date = result.getDate();
+        Calendar instance = Calendar.getInstance(TimeZone.getDefault());
+        instance.setTime(date);
+
+        return result.toBuilder().date(new Date(instance.getTime().getTime())).build();
     }
 
     @PostMapping("/view")
