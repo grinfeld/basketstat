@@ -10,7 +10,7 @@ import java.sql.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder(builderClassName = "Builder", toBuilder = true)
+@Builder(toBuilder = true)
 public class Result {
     private int id;
     private Date date;
