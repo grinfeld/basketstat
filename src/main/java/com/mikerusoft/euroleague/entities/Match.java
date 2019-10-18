@@ -21,7 +21,9 @@ public class Match {
     private int id;
     private Date date;
     private String season;
+    @Column(name = "score_home")
     private int scoreHome;
+    @Column(name = "score_away")
     private int scoreAway;
 
     @ManyToOne

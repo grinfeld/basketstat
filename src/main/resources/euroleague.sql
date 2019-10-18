@@ -7,7 +7,6 @@ SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='TRADITIONAL,ALLOW_INVALID_DATES';
 -- -----------------------------------------------------
 -- Schema euroleague
 -- -----------------------------------------------------
-DROP SCHEMA IF EXISTS `euroleague` ;
 
 -- -----------------------------------------------------
 -- Schema euroleague
@@ -18,8 +17,6 @@ USE `euroleague` ;
 -- -----------------------------------------------------
 -- Table `euroleague`.`commands`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `euroleague`.`commands` ;
-
 CREATE TABLE IF NOT EXISTS `euroleague`.`commands` (
                                                        `id` INT NOT NULL AUTO_INCREMENT,
                                                        `command_name` VARCHAR(255) NOT NULL,
@@ -31,8 +28,6 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`commands` (
 -- -----------------------------------------------------
 -- Table `euroleague`.`tournaments`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `euroleague`.`tournaments` ;
-
 CREATE TABLE IF NOT EXISTS `euroleague`.`tournaments` (
                                                           `id` INT NOT NULL AUTO_INCREMENT,
                                                           `tourn_name` VARCHAR(255) NOT NULL,
@@ -44,8 +39,6 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`tournaments` (
 -- -----------------------------------------------------
 -- Table `euroleague`.`results`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `euroleague`.`results` ;
-
 CREATE TABLE IF NOT EXISTS `euroleague`.`results` (
                                                       `result_id` INT NOT NULL AUTO_INCREMENT,
                                                       `command_id` INT NOT NULL,
@@ -85,8 +78,6 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`results` (
 -- -----------------------------------------------------
 -- Table `euroleague`.`matches`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `euroleague`.`matches` ;
-
 CREATE TABLE IF NOT EXISTS `euroleague`.`matches` (
                                                       `match_id` INT NOT NULL AUTO_INCREMENT,
                                                       `tournament_id` INT NOT NULL,
@@ -122,8 +113,6 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`matches` (
 -- -----------------------------------------------------
 -- Table `euroleague`.`match_to_command_stats`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `euroleague`.`match_to_command_stats` ;
-
 CREATE TABLE IF NOT EXISTS `euroleague`.`match_to_command_stats` (
                                                                      `command_stats_id` INT NOT NULL AUTO_INCREMENT,
                                                                      `match_id` INT NOT NULL,
@@ -141,6 +130,7 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`match_to_command_stats` (
                                                                      `score_bench_score` INT NOT NULL DEFAULT 0,
                                                                      `steals` INT NOT NULL DEFAULT 0,
                                                                      `turnovers` INT NOT NULL DEFAULT 0,
+                                                                     `second_chance_attempt` INT NULL DEFAULT 0,
                                                                      PRIMARY KEY (`command_stats_id`),
                                                                      INDEX `fk_command_stats_match1_idx` (`match_id` ASC),
                                                                      INDEX `fk_command_stats_match2_idx` (`command_id` ASC),
@@ -165,8 +155,6 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`match_to_command_stats` (
 -- -----------------------------------------------------
 -- Table `euroleague`.`command_match_by_types`
 -- -----------------------------------------------------
-DROP TABLE IF EXISTS `euroleague`.`command_match_by_types` ;
-
 CREATE TABLE IF NOT EXISTS `euroleague`.`command_match_by_types` (
                                                                      `command_match_by_type_id` INT NOT NULL AUTO_INCREMENT,
                                                                      `command_stats_id` INT NOT NULL,

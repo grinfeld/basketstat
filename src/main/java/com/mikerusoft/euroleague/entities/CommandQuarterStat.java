@@ -18,7 +18,7 @@ public class CommandQuarterStat {
     @Id
     @Column(name = "command_match_by_type_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     @Enumerated(EnumType.STRING)
     private Quarter quarter;
 

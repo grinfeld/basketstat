@@ -12,24 +12,25 @@ import java.util.List;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CommandMatchStat {
-    private int id;
+    private Integer id;
     private int commandId;
     private Match match;
     private boolean isHome;
 
-    private int rebounds_defense;
-    private int rebounds_offense;
+    private int reboundsDefense;
+    private int reboundsOffense;
     private int assists;
-    private int fouls_defense;
-    private int more_10_points;
-    private String player_max_points_name;
-    private int player_max_points_score;
-    private int max_lead;
-    private String max_lead_quarter;
-    private int score_start5_score;
-    private int score_bench_score;
+    private int foulsDefense;
+    private int more10Points;
+    private String playerMaxPointsName;
+    private int playerMaxPointsScore;
+    private int maxLead;
+    private String maxLeadQuarter;
+    private int scoreStart5Score;
+    private int scoreBenchScore;
     private int steals;
     private int turnovers;
+    private int secondChanceAttempt;
 
     private List<CommandQuarterStat> quarterStats;
 }
