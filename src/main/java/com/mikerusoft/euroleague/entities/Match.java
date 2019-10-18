@@ -29,10 +29,10 @@ public class Match {
     private Tournament tournament;
 
     @ManyToOne
-    @JoinColumn(name = "homeCommandId", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "home_command_id", referencedColumnName = "id", nullable = false)
     private Command homeCommand;
 
     @ManyToOne
-    @JoinColumn(name = "awayCommandId", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "away_command_id", referencedColumnName = "id", nullable = false)
     private Command awayCommand;
 }

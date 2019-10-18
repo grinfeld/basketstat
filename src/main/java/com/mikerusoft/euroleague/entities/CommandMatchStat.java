@@ -1,13 +1,13 @@
-package com.mikerusoft.euroleague.model;
+package com.mikerusoft.euroleague.entities;
 
-import com.mikerusoft.euroleague.entities.Command;
-import com.mikerusoft.euroleague.entities.Match;
+import com.mikerusoft.euroleague.model.Quarter;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import java.util.List;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -16,8 +16,8 @@ import java.util.function.Function;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder(builderClassName = "Builder", toBuilder = true)
-public class MatchStat {
+@Builder(toBuilder = true)
+public class CommandMatchStat {
     @Id
     @Column(name = "command_stats_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,4 +39,23 @@ public class MatchStat {
     private boolean filterCommandByMatchLocation(Function<Match, Command> getCommand) {
         return Optional.of(match).map(getCommand).map(Command::getId).filter(id -> id == commandId).isPresent();
     }
+
+    private int rebounds_defense;
+    private int rebounds_offense;
+    private int assists;
+    private int fouls_defense;
+    private int more_10_points;
+    private String player_max_points_name;
+    private int player_max_points_score;
+    private int max_lead;
+    @Enumerated(EnumType.STRING)
+    private Quarter max_lead_quarter;
+    private int score_start5_score;
+    private int score_bench_score;
+    private int steals;
+    private int turnovers;
+
+    @OneToMany
+    @JoinColumn(name = "command_stats_id")
+    private List<CommandQuarterStat> quarterStats;
 }
