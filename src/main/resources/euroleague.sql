@@ -156,7 +156,7 @@ CREATE TABLE IF NOT EXISTS `euroleague`.`match_to_command_stats` (
                                                                              ON UPDATE NO ACTION,
                                                                      CONSTRAINT `fk_command_stats_match3`
                                                                          FOREIGN KEY (`command_id`)
-                                                                             REFERENCES `euroleague`.`matches` (`away_commands_id`)
+                                                                             REFERENCES `euroleague`.`matches` (`away_command_id`)
                                                                              ON DELETE NO ACTION
                                                                              ON UPDATE NO ACTION)
     ENGINE = InnoDB;
