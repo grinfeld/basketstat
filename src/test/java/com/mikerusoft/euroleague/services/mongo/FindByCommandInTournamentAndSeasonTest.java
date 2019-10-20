@@ -53,7 +53,7 @@ class FindByCommandInTournamentAndSeasonTest {
                 .tournament(tournament)
                 .homeCommand(CommandStat.builder().assists(5).maxLead(5).maxLeadQuarter(Quarter.FIRST).command(team1).build())
                 .awayCommand(CommandStat.builder().assists(10).maxLead(1).maxLeadQuarter(Quarter.OT).command(team2).build())
-                .build();
+            .build();
         match1 = service.createMatch(match1);
         match2 = Match.builder()
                 .date(secondMatchDate)
@@ -61,7 +61,7 @@ class FindByCommandInTournamentAndSeasonTest {
                 .tournament(tournament)
                 .homeCommand(CommandStat.builder().assists(4).maxLead(3).maxLeadQuarter(Quarter.THIRD).command(team3).build())
                 .awayCommand(CommandStat.builder().assists(2).maxLead(2).maxLeadQuarter(Quarter.SECOND).command(team1).build())
-                .build();
+            .build();
         match2 = service.createMatch(match2);
     }
 
