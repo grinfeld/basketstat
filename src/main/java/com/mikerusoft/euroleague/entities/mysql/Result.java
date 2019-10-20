@@ -1,4 +1,4 @@
-package com.mikerusoft.euroleague.entities;
+package com.mikerusoft.euroleague.entities.mysql;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +23,7 @@ public class Result {
     @GeneratedValue(
         strategy= GenerationType.IDENTITY
     )
-    private int id;
+    private Integer id;
     private Date date;
     @Min(0L)
     @Max(199L)

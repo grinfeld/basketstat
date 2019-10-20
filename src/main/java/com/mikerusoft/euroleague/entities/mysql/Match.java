@@ -1,4 +1,4 @@
-package com.mikerusoft.euroleague.entities;
+package com.mikerusoft.euroleague.entities.mysql;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ public class Match {
     @Id
     @Column(name = "match_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Integer id;
     private Date date;
     private String season;
     @Column(name = "score_home")
@@ -37,4 +37,6 @@ public class Match {
     @ManyToOne
     @JoinColumn(name = "away_command_id", referencedColumnName = "id", nullable = false)
     private Command awayCommand;
+
+
 }

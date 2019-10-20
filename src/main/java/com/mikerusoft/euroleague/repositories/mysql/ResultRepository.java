@@ -1,6 +1,6 @@
-package com.mikerusoft.euroleague.repositories;
+package com.mikerusoft.euroleague.repositories.mysql;
 
-import com.mikerusoft.euroleague.entities.Result;
+import com.mikerusoft.euroleague.entities.mysql.Result;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;

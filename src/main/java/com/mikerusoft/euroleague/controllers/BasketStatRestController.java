@@ -27,13 +27,13 @@ public class BasketStatRestController {
         this.dataService = dataService;
     }
 
-    @GetMapping(value = "/command/delete/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/command/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody Response deleteCommand(@PathVariable("id") int id) {
         dataService.deleteCommand(id);
         return Response.<Boolean>builder().data(true).build();
     }
 
-    @GetMapping(value = "/tournament/delete/{id}", produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
+    @GetMapping(value = "/tournament/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody Response deleteTournament(@PathVariable("id") int id) {
         dataService.deleteTournament(id);
         return Response.<Boolean>builder().data(true).build();

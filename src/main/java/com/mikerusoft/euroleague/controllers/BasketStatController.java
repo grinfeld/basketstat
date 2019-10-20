@@ -67,11 +67,10 @@ public class BasketStatController {
         }
     }
 
-    @Data
     private static class AssertResultException extends RuntimeException {
         private String fromPage;
 
-        public AssertResultException(String message, String fromPage) {
+        AssertResultException(String message, String fromPage) {
             super(message);
             this.fromPage = fromPage;
         }
@@ -268,7 +267,6 @@ public class BasketStatController {
     public String editTournament(@ModelAttribute("tourn") Tournament tournament, Model model) {
         model.addAttribute("menus", this.menus);
 
-
         tournament = tournament.getId() == null ? dataService.insertTournament(tournament.getTournName()) :
                 dataService.updateTournament(tournament);
         model.addAttribute("tourn", tournament);
@@ -296,7 +294,6 @@ public class BasketStatController {
 
             return na;
         }
-
     }
 
     @Data

@@ -12,3 +12,7 @@ spring:
     url: jdbc:mysql://${DB_URL:localhost:2215/basketstat}
     username: ${USER:test}
     password: ${PASSWORD:test}
+
+  data:
+    mongodb:
+      port: 0

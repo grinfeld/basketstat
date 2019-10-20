@@ -1,6 +1,6 @@
 package com.mikerusoft.euroleague.modelToEntityConvertor;
 
-import com.mikerusoft.euroleague.entities.*;
+import com.mikerusoft.euroleague.entities.mysql.*;
 import com.mikerusoft.euroleague.model.Quarter;
 
 import java.util.*;

@@ -19,6 +19,7 @@
 		<bootstrap.version>4.2.1</bootstrap.version>
 		<mysql.embedded>4.6.0</mysql.embedded>
 		<compiler.plugin>3.8.1</compiler.plugin>
+		<apt.version>1.1.3</apt.version>
 	</properties>
 
 	<dependencies>
@@ -29,6 +30,29 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>de.flapdoodle.embed</groupId>
+			<artifactId>de.flapdoodle.embed.mongo</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-mongodb</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.mongodb</groupId>
+					<artifactId>mongo-java-driver</artifactId>
+				</exclusion>
+			</exclusions>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-mongodb-reactive</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -90,6 +114,31 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>${compiler.plugin}</version>
+			</plugin>
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+				<version>${apt.version}</version>
+				<dependencies>
+					<dependency>
+						<groupId>com.querydsl</groupId>
+						<artifactId>querydsl-apt</artifactId>
+						<version>${querydsl.version}</version>
+					</dependency>
+				</dependencies>
+				<executions>
+					<execution>
+						<phase>generate-sources</phase>
+						<goals>
+							<goal>process</goal>
+						</goals>
+						<configuration>
+							<outputDirectory>target/generated-sources/queries</outputDirectory>
+							<processor>org.springframework.data.mongodb.repository.support.MongoAnnotationProcessor</processor>
+							<logOnlyOnError>true</logOnlyOnError>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>

@@ -1,4 +1,4 @@
-package com.mikerusoft.euroleague.entities;
+package com.mikerusoft.euroleague.entities.mysql;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

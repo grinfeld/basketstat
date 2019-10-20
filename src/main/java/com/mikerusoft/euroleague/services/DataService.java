@@ -1,20 +1,18 @@
 package com.mikerusoft.euroleague.services;
 
 
-import com.mikerusoft.euroleague.model.Command;
-import com.mikerusoft.euroleague.model.Result;
-import com.mikerusoft.euroleague.model.Tournament;
+import com.mikerusoft.euroleague.model.*;
 
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
-public interface DataService {
+public interface DataService<T> {
 
     Command insertCommand(String command);
-    Command getCommand(int commandId);
+    Command getCommand(T commandId);
     Tournament insertTournament (String tournament);
-    Tournament getTournament(int tournId);
+    Tournament getTournament(T tournId);
 
     Result saveResult (Result result);
 
@@ -25,20 +23,27 @@ public interface DataService {
 
     List<Tournament> getTournaments();
 
-    List<Result> getLastResults(int commandId, int limit);
+    List<Result> getLastResults(T commandId, int limit);
 
-    List<Result> getLastResults(int tournId, int commandId, int limit);
+    List<Result> getLastResults(T tournId, T commandId, int limit);
 
     void writeAllResults(OutputStream outputStream) throws IOException;
 
-    List<Result> getResults(int commandId, String season);
+    List<Result> getResults(T commandId, String season);
 
-    List<Result> getResults(int tournId, int commandId, String season);
+    List<Result> getResults(T tournId, T commandId, String season);
 
-    Result getResult(int resultId);
+    Result getResult(T resultId);
 
-    void deleteCommand(int cmdId);
-    void deleteTournament(int tournId);
-    void deleteResult(int resultId);
+    void deleteCommand(T cmdId);
+    void deleteTournament(T tournId);
+    void deleteResult(T resultId);
+
+    void deleteMatch(T matchId);
+    void deleteCommandMatchStat(T matchId, T commandId);
+    void deleteQuarterStat(T matchId, T commandId, Quarter quarter, Quarter ... quarters);
+
+    CommandMatchStat createMatchStat (CommandMatchStat matchStat);
+    CommandMatchStat updateMatchStat (CommandMatchStat matchStat);
 
 }
