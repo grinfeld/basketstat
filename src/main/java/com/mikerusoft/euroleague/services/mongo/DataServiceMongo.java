@@ -7,12 +7,19 @@ import com.mikerusoft.euroleague.entities.mongo.Tournament;
 import com.mikerusoft.euroleague.repositories.mongo.CommandMongoRepository;
 import com.mikerusoft.euroleague.repositories.mongo.MatchRepository;
 import com.mikerusoft.euroleague.repositories.mongo.TournamentMongoRepository;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static com.mikerusoft.euroleague.utils.Utils.*;
 
 @Service
 public class DataServiceMongo {
+
+    private static final int MAX_NUM_OF_RECORDS = 1000;
 
     private CommandMongoRepository commandRepository;
     private TournamentMongoRepository tournamentRepository;
@@ -33,8 +40,8 @@ public class DataServiceMongo {
         return commandRepository.findById(id).orElse(null);
     }
 
-    public Tournament createTournament(String command) {
-        return tournamentRepository.save(Tournament.builder().name(command).build());
+    public Tournament createTournament(String tournament) {
+        return tournamentRepository.save(Tournament.builder().name(tournament).build());
     }
 
     public Tournament findTournament(String id) {
@@ -76,6 +83,12 @@ public class DataServiceMongo {
         return matchRepository.save(match.toBuilder().id(null).build());
     }
 
-
+    public List<Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, int records) {
+        if (records <= 0)
+            throw new IllegalArgumentException("Num of requested records couldn't be zero or negative: " + records);
+        if (records > MAX_NUM_OF_RECORDS)
+            throw new IllegalArgumentException("Num of records per request should be maximum " + 1000 + " and not " + records);
+        return matchRepository.findByCommandInTournamentAndSeason(tournId, season, commandId, records);
+    }
 
 }
