@@ -5,9 +5,9 @@ import com.mikerusoft.euroleague.entities.mongo.CommandStat;
 import com.mikerusoft.euroleague.entities.mongo.Match;
 import com.mikerusoft.euroleague.entities.mongo.Tournament;
 import com.mikerusoft.euroleague.model.Quarter;
+import com.mikerusoft.euroleague.modelToEntityConvertor.Converter;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Profile;
@@ -99,8 +99,8 @@ class DataServiceMongoTest {
         @Test
         void whenNewTournament_expectedCreatedNewTournamentAndNewMatchWithExistedHomeAndAwayCommands() {
             Date now = new Date(System.currentTimeMillis());
-            Command homeTeam = service.createCommand("HomeTeam");
-            Command awayTeam = service.createCommand("AwayTeam");
+            Command homeTeam = Converter.convertM(service.insertCommand("HomeTeam"));
+            Command awayTeam = Converter.convertM(service.insertCommand("AwayTeam"));
             Match match = Match.builder()
                     .date(now)
                     .season("201920120")

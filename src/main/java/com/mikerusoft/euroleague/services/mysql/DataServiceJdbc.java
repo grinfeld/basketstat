@@ -3,7 +3,6 @@ package com.mikerusoft.euroleague.services.mysql;
 import com.mikerusoft.euroleague.model.*;
 import com.mikerusoft.euroleague.modelToEntityConvertor.Converter;
 import com.mikerusoft.euroleague.repositories.mysql.CommandRepository;
-import com.mikerusoft.euroleague.repositories.mysql.MatchStatRepository;
 import com.mikerusoft.euroleague.repositories.mysql.ResultRepository;
 import com.mikerusoft.euroleague.repositories.mysql.TournamentRepository;
 import com.mikerusoft.euroleague.services.DataService;
@@ -22,14 +21,12 @@ public class DataServiceJdbc implements DataService<Integer> {
     private CommandRepository commandRepository;
     private TournamentRepository tournamentRepository;
     private ResultRepository resultRepository;
-    private MatchStatRepository matchStatRepository;
 
     public DataServiceJdbc(CommandRepository commandRepository, TournamentRepository tournamentRepository,
-                           ResultRepository resultRepository, MatchStatRepository matchStatRepository) {
+                           ResultRepository resultRepository) {
         this.commandRepository = commandRepository;
         this.tournamentRepository = tournamentRepository;
         this.resultRepository = resultRepository;
-        this.matchStatRepository = matchStatRepository;
     }
 
     @Override
@@ -134,33 +131,6 @@ public class DataServiceJdbc implements DataService<Integer> {
     @Transactional
     public void deleteResult(Integer resultId) {
         resultRepository.deleteById(resultId);
-    }
-
-    @Override
-    public void deleteMatch(Integer matchId) {
-
-    }
-
-    @Override
-    public void deleteCommandMatchStat(Integer matchId, Integer commandId) {
-
-    }
-
-    @Override
-    public void deleteQuarterStat(Integer matchId, Integer commandId, Quarter quarter, Quarter... quarters) {
-
-    }
-
-    @Override
-    public CommandMatchStat createMatchStat(CommandMatchStat matchStat) {
-        com.mikerusoft.euroleague.entities.mysql.CommandMatchStat commandMatchStat = Converter.convert(matchStat);
-        return Converter.convert(matchStatRepository.saveAndFlush(commandMatchStat));
-    }
-
-    @Override
-    public CommandMatchStat updateMatchStat(CommandMatchStat matchStat) {
-        com.mikerusoft.euroleague.entities.mysql.CommandMatchStat commandMatchStat = Converter.convert(matchStat);
-        return Converter.convert(matchStatRepository.saveAndFlush(commandMatchStat));
     }
 
     @Override

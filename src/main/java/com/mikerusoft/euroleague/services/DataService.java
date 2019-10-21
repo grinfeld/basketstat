@@ -38,12 +38,4 @@ public interface DataService<T> {
     void deleteCommand(T cmdId);
     void deleteTournament(T tournId);
     void deleteResult(T resultId);
-
-    void deleteMatch(T matchId);
-    void deleteCommandMatchStat(T matchId, T commandId);
-    void deleteQuarterStat(T matchId, T commandId, Quarter quarter, Quarter ... quarters);
-
-    CommandMatchStat createMatchStat (CommandMatchStat matchStat);
-    CommandMatchStat updateMatchStat (CommandMatchStat matchStat);
-
 }

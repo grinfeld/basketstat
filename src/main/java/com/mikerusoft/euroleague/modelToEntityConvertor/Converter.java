@@ -2,6 +2,8 @@ package com.mikerusoft.euroleague.modelToEntityConvertor;
 
 import com.mikerusoft.euroleague.entities.mysql.*;
 import com.mikerusoft.euroleague.model.Quarter;
+import com.mikerusoft.euroleague.utils.Utils;
+import org.bson.types.ObjectId;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -13,27 +15,55 @@ public class Converter {
     public static Command convert(com.mikerusoft.euroleague.model.Command source) {
         if (source == null)
             return null;
-        return Command.builder().id(source.getId()).commandName(source.getCommandName()).build();
+        return Command.builder().id(Utils.parseIntWithDeNull(source.getId())).commandName(source.getCommandName()).build();
     }
 
     public static Tournament convert(com.mikerusoft.euroleague.model.Tournament source) {
         if (source == null)
             return null;
-        return Tournament.builder().id(source.getId()).tournName(source.getTournName()).build();
+        return Tournament.builder().id(Utils.parseIntWithDeNull(source.getId())).tournName(source.getTournName()).build();
     }
 
     public static com.mikerusoft.euroleague.model.Command convert(Command source) {
         if (source == null)
             return null;
         return com.mikerusoft.euroleague.model.Command.builder()
-                .id(source.getId()).commandName(source.getCommandName()).build();
+                .id(Utils.toStringWithDeNull(source.getId())).commandName(source.getCommandName()).build();
+    }
+
+    public static com.mikerusoft.euroleague.model.Tournament convertM(com.mikerusoft.euroleague.entities.mongo.Tournament source) {
+        if (source == null)
+            return null;
+        return com.mikerusoft.euroleague.model.Tournament.builder()
+                .id(Utils.deNull(source.getId(), ObjectId::toHexString)).tournName(source.getName()).build();
+    }
+
+    public static com.mikerusoft.euroleague.entities.mongo.Tournament convertM(com.mikerusoft.euroleague.model.Tournament source) {
+        if (source == null)
+            return null;
+        return com.mikerusoft.euroleague.entities.mongo.Tournament.builder()
+                .id(new ObjectId(source.getId())).name(source.getTournName()).build();
+    }
+
+    public static com.mikerusoft.euroleague.model.Command convertM(com.mikerusoft.euroleague.entities.mongo.Command source) {
+        if (source == null)
+            return null;
+        return com.mikerusoft.euroleague.model.Command.builder()
+                .id(Utils.deNull(source.getId(), ObjectId::toHexString)).commandName(source.getName()).build();
+    }
+
+    public static com.mikerusoft.euroleague.entities.mongo.Command convertM(com.mikerusoft.euroleague.model.Command source) {
+        if (source == null)
+            return null;
+        return com.mikerusoft.euroleague.entities.mongo.Command.builder()
+                .id(new ObjectId(source.getId())).name(source.getCommandName()).build();
     }
 
     public static com.mikerusoft.euroleague.model.Tournament convert(Tournament source) {
         if (source == null)
             return null;
         return com.mikerusoft.euroleague.model.Tournament.builder()
-                .id(source.getId()).tournName(source.getTournName()).build();
+                .id(Utils.toStringWithDeNull(source.getId())).tournName(source.getTournName()).build();
     }
 
     public static Result convert(com.mikerusoft.euroleague.model.Result source) {
@@ -112,7 +142,7 @@ public class Converter {
         if (match == null)
             return null;
         return com.mikerusoft.euroleague.model.Match.builder()
-                .id(match.getId())
+                .id(Utils.toStringWithDeNull(match.getId()))
                 .awayCommand(convert(match.getAwayCommand().toBuilder().build()))
                 .homeCommand(convert(match.getHomeCommand().toBuilder().build()))
                 .date(Optional.ofNullable(match.getDate()).map(d -> new Date(d.getTime())).orElse(null))
@@ -127,7 +157,7 @@ public class Converter {
         if (match == null)
             return null;
         return Match.builder()
-                .id(match.getId())
+                .id(Utils.parseIntWithDeNull(match.getId()))
                 .awayCommand(convert(match.getAwayCommand().toBuilder().build()))
                 .homeCommand(convert(match.getHomeCommand().toBuilder().build()))
                 .date(Optional.ofNullable(match.getDate()).map(d -> new java.sql.Date(d.getTime())).orElse(null))
@@ -195,4 +225,5 @@ public class Converter {
                 )
             .build();
     }
+
 }

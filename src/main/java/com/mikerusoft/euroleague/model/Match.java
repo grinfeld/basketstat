@@ -12,7 +12,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class Match {
-    private Integer id;
+    private String id;
     private Date date;
     private String season;
     private Command awayCommand;

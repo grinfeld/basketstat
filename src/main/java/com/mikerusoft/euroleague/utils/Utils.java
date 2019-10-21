@@ -1,5 +1,7 @@
 package com.mikerusoft.euroleague.utils;
 
+import java.util.function.Function;
+
 public class Utils {
     private Utils() {}
 
@@ -20,5 +22,21 @@ public class Utils {
 
     public static void assertNotEmptyTrimmed(String str) {
         assertNotEmptyTrimmed(str, null);
+    }
+
+    public static String toStringWithDeNull(Integer val) {
+        return val == null ? null : String.valueOf(val);
+    }
+
+    public static Integer parseIntWithDeNull(String val) {
+        return val == null ? null : Integer.parseInt(val);
+    }
+
+    public static <T> String deNull(T obj, Function<T, String> func) {
+        return obj == null ? null : func.apply(obj);
+    }
+
+    public static String deNullTemp(String str) {
+        return str;
     }
 }

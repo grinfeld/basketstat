@@ -5,6 +5,7 @@ import com.mikerusoft.euroleague.model.Command;
 import com.mikerusoft.euroleague.model.Result;
 import com.mikerusoft.euroleague.model.Tournament;
 import com.mikerusoft.euroleague.services.DataService;
+import com.mikerusoft.euroleague.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -93,8 +94,8 @@ public class BasketStatController {
     public String edit(@ModelAttribute("result") Result result, Model model) {
         fillModelWithInitialData(model);
 
-        Integer commandId = result.getCommand() != null ? result.getCommand().getId() : null;
-        Integer tournId = result.getTournament() != null ? result.getTournament().getId() : null;
+        Integer commandId = result.getCommand() != null ? Utils.parseIntWithDeNull(result.getCommand().getId()) : null;
+        Integer tournId = result.getTournament() != null ? Utils.parseIntWithDeNull(result.getTournament().getId()) : null;
 
         if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
         try {

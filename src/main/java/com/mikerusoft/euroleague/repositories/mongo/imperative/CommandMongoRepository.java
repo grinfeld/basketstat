@@ -1,4 +1,4 @@
-package com.mikerusoft.euroleague.repositories.mongo;
+package com.mikerusoft.euroleague.repositories.mongo.imperative;
 
 import com.mikerusoft.euroleague.entities.mongo.Command;
 import org.springframework.data.repository.CrudRepository;
