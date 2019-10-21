@@ -4,7 +4,7 @@ import com.mikerusoft.euroleague.entities.mongo.Command;
 import com.mikerusoft.euroleague.entities.mongo.CommandStat;
 import com.mikerusoft.euroleague.entities.mongo.Match;
 import com.mikerusoft.euroleague.entities.mongo.Tournament;
-import com.mikerusoft.euroleague.modelToEntityConvertor.Converter;
+import com.mikerusoft.euroleague.modelToEntityConvertor.ConverterI;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.CommandMongoRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.MatchRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.TournamentMongoRepository;
@@ -19,15 +19,21 @@ public class DataServiceMongo {
 
     private static final int MAX_NUM_OF_RECORDS = 1000;
 
+    private static final Class<com.mikerusoft.euroleague.model.Command> COMMAND_CLASS = com.mikerusoft.euroleague.model.Command.class;
+    private static final Class<com.mikerusoft.euroleague.model.Tournament> TOURN_CLASS = com.mikerusoft.euroleague.model.Tournament.class;
+
+
     private CommandMongoRepository commandRepository;
     private TournamentMongoRepository tournamentRepository;
     private MatchRepository matchRepository;
+    private ConverterI converter;
 
     public DataServiceMongo(CommandMongoRepository commandRepository, TournamentMongoRepository tournamentRepository,
-                            MatchRepository matchRepository) {
+                            MatchRepository matchRepository, ConverterI converter) {
         this.commandRepository = commandRepository;
         this.tournamentRepository = tournamentRepository;
         this.matchRepository = matchRepository;
+        this.converter = converter;
     }
 
     private Command createCommand(String command) {
@@ -35,11 +41,11 @@ public class DataServiceMongo {
     }
 
     public com.mikerusoft.euroleague.model.Command insertCommand(String command) {
-        return Converter.convertM(createCommand(command));
+        return converter.convert(createCommand(command), COMMAND_CLASS);
     }
 
     public com.mikerusoft.euroleague.model.Command getCommand(String id) {
-        return Converter.convertM(commandRepository.findById(id).orElse(null));
+        return converter.convert(commandRepository.findById(id).orElse(null), COMMAND_CLASS);
     }
 
     private Tournament createTournament(String tournament) {
@@ -47,11 +53,11 @@ public class DataServiceMongo {
     }
 
     public com.mikerusoft.euroleague.model.Tournament insertTournament(String tournament) {
-        return Converter.convertM(createTournament(tournament));
+        return converter.convert((createTournament(tournament)), TOURN_CLASS);
     }
 
     public com.mikerusoft.euroleague.model.Tournament getTournament(String id) {
-        return Converter.convertM(tournamentRepository.findById(id).orElse(null));
+        return converter.convert((tournamentRepository.findById(id).orElse(null)), TOURN_CLASS);
     }
 
     public Match createMatch(Match match) {

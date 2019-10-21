@@ -39,4 +39,13 @@ public class Utils {
     public static String deNullTemp(String str) {
         return str;
     }
+
+    public static <T> T rethrowRuntime(Throwable t) {
+        if (t instanceof Error)
+            throw (Error)t;
+        else if (t instanceof RuntimeException)
+            throw (RuntimeException)t;
+        else
+            throw new RuntimeException(t);
+    }
 }
