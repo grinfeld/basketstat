@@ -48,4 +48,8 @@ public class Utils {
         else
             throw new RuntimeException(t);
     }
+
+    public static boolean isEmptyTrimmed(String str) {
+        return str == null || str.trim().isEmpty();
+    }
 }

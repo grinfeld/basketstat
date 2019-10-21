@@ -1,7 +1,7 @@
 package com.mikerusoft.euroleague.services.mongo;
 
 import com.mikerusoft.euroleague.entities.mongo.Command;
-import com.mikerusoft.euroleague.entities.mongo.CommandStat;
+import com.mikerusoft.euroleague.entities.mongo.CommandMatchStat;
 import com.mikerusoft.euroleague.entities.mongo.Match;
 import com.mikerusoft.euroleague.entities.mongo.Tournament;
 import com.mikerusoft.euroleague.model.Quarter;
@@ -33,7 +33,7 @@ class DataServiceMongoTest {
                     .date(new Date(System.currentTimeMillis()))
                     .season("201920120")
                     .tournament(Tournament.builder().name("tourn").build())
-                    .awayCommand(CommandStat.builder().command(Command.builder().name("name").build()).build())
+                    .awayCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
                 .build();
             assertThrows(NullPointerException.class, () -> service.createMatch(match));
         }
@@ -44,8 +44,8 @@ class DataServiceMongoTest {
                     .date(new Date(System.currentTimeMillis()))
                     .season("201920120")
                     .tournament(Tournament.builder().name("tourn").build())
-                    .awayCommand(CommandStat.builder().command(Command.builder().name("name").build()).build())
-                    .homeCommand(CommandStat.builder().command(Command.builder().name("").build()).build())
+                    .awayCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
+                    .homeCommand(CommandMatchStat.builder().command(Command.builder().name("").build()).build())
                 .build();
             assertThrows(NullPointerException.class, () -> service.createMatch(match));
         }
@@ -56,7 +56,7 @@ class DataServiceMongoTest {
                     .date(new Date(System.currentTimeMillis()))
                     .season("201920120")
                     .tournament(Tournament.builder().name("tourn").build())
-                    .homeCommand(CommandStat.builder().command(Command.builder().name("name").build()).build())
+                    .homeCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
                 .build();
             assertThrows(NullPointerException.class, () -> service.createMatch(match));
         }
@@ -67,8 +67,8 @@ class DataServiceMongoTest {
                     .date(new Date(System.currentTimeMillis()))
                     .season("201920120")
                     .tournament(Tournament.builder().name("tourn").build())
-                    .homeCommand(CommandStat.builder().command(Command.builder().name("name").build()).build())
-                    .awayCommand(CommandStat.builder().command(Command.builder().name("").build()).build())
+                    .homeCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
+                    .awayCommand(CommandMatchStat.builder().command(Command.builder().name("").build()).build())
                 .build();
             assertThrows(NullPointerException.class, () -> service.createMatch(match));
         }
@@ -78,8 +78,8 @@ class DataServiceMongoTest {
             Match match = Match.builder()
                     .date(new Date(System.currentTimeMillis()))
                     .season("201920120")
-                    .homeCommand(CommandStat.builder().command(Command.builder().name("name").build()).build())
-                    .awayCommand(CommandStat.builder().command(Command.builder().name("name").build()).build())
+                    .homeCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
+                    .awayCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
                 .build();
             assertThrows(NullPointerException.class, () -> service.createMatch(match));
         }
@@ -90,8 +90,8 @@ class DataServiceMongoTest {
                     .date(new Date(System.currentTimeMillis()))
                     .season("201920120")
                     .tournament(Tournament.builder().name("").build())
-                    .homeCommand(CommandStat.builder().command(Command.builder().name("name").build()).build())
-                    .awayCommand(CommandStat.builder().command(Command.builder().name("name").build()).build())
+                    .homeCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
+                    .awayCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
                 .build();
             assertThrows(NullPointerException.class, () -> service.createMatch(match));
         }
@@ -105,8 +105,8 @@ class DataServiceMongoTest {
                     .date(now)
                     .season("201920120")
                     .tournament(Tournament.builder().name("Tourn").build())
-                    .homeCommand(CommandStat.builder().assists(5).maxLead(5).maxLeadQuarter(Quarter.FIRST).command(homeTeam).build())
-                    .awayCommand(CommandStat.builder().assists(10).maxLead(1).maxLeadQuarter(Quarter.OT).command(awayTeam).build())
+                    .homeCommand(CommandMatchStat.builder().assists(5).maxLead(5).maxLeadQuarter(Quarter.FIRST).command(homeTeam).build())
+                    .awayCommand(CommandMatchStat.builder().assists(10).maxLead(1).maxLeadQuarter(Quarter.OT).command(awayTeam).build())
                 .build();
             Match createdMatch = service.createMatch(match);
             assertThat(createdMatch).isNotNull()

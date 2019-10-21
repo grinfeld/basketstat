@@ -1,13 +1,14 @@
 package com.mikerusoft.euroleague.services.mongo;
 
 import com.mikerusoft.euroleague.entities.mongo.Command;
-import com.mikerusoft.euroleague.entities.mongo.CommandStat;
+import com.mikerusoft.euroleague.entities.mongo.CommandMatchStat;
 import com.mikerusoft.euroleague.entities.mongo.Match;
 import com.mikerusoft.euroleague.entities.mongo.Tournament;
 import com.mikerusoft.euroleague.modelToEntityConvertor.ConverterI;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.CommandMongoRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.MatchRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.TournamentMongoRepository;
+import com.mikerusoft.euroleague.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -69,27 +70,33 @@ public class DataServiceMongo {
         if (tournament.getId() == null) {
             assertNotEmptyTrimmed(tournament.getName());
             match.setTournament(createTournament(tournament.getName()));
+        } else if (Utils.isEmptyTrimmed(tournament.getName())) {
+            match.setTournament(tournamentRepository.findById(tournament.getId().toHexString()).orElse(null));
         }
 
-        CommandStat awayCommand = match.getAwayCommand();
-        CommandStat homeCommand = match.getHomeCommand();
-
+        CommandMatchStat awayCommand = match.getAwayCommand();
         assertNotNull(awayCommand);
         assertNotNull(awayCommand.getCommand());
-
-        assertNotNull(homeCommand);
-        assertNotNull(homeCommand.getCommand());
 
         if (awayCommand.getCommand().getId() == null) {
             assertNotEmptyTrimmed(awayCommand.getCommand().getName());
             Command command = createCommand(awayCommand.getCommand().getName());
             match.getAwayCommand().setCommand(command);
+        } else if (Utils.isEmptyTrimmed(awayCommand.getCommand().getName())) {
+            match.getHomeCommand().setCommand(commandRepository.findById(awayCommand.getCommand().getId().toHexString()).orElse(null));
         }
+
+
+        CommandMatchStat homeCommand = match.getHomeCommand();
+        assertNotNull(homeCommand);
+        assertNotNull(homeCommand.getCommand());
 
         if (homeCommand.getCommand().getId() == null) {
             assertNotEmptyTrimmed(homeCommand.getCommand().getName());
             Command command = createCommand(homeCommand.getCommand().getName());
             match.getHomeCommand().setCommand(command);
+        } else if (Utils.isEmptyTrimmed(homeCommand.getCommand().getName())) {
+            match.getHomeCommand().setCommand(commandRepository.findById(homeCommand.getCommand().getId().toHexString()).orElse(null));
         }
 
         return matchRepository.save(match.toBuilder().id(null).build());

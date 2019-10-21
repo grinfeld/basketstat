@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(builderClassName = "Builder", toBuilder = true)
-public class CommandStat {
+public class CommandMatchStat {
     @Indexed private Command command;
     private int score;
     private int reboundsDefense;

@@ -123,6 +123,34 @@ public class Converter {
             .build();
     }
 
+    public static com.mikerusoft.euroleague.model.CommandQuarterStat convertM(com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat stat) {
+        if (stat == null)
+            return null;
+        return com.mikerusoft.euroleague.model.CommandQuarterStat.builder()
+                .attempts1(stat.getAttempts1())
+                .points1(stat.getPoints1())
+                .attempts2(stat.getAttempts2())
+                .points2(stat.getPoints2())
+                .attempts3(stat.getAttempts3())
+                .points3(stat.getPoints3())
+                .quarter(stat.getQuarter().getDisplay())
+            .build();
+    }
+
+    public static com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat convertM(com.mikerusoft.euroleague.model.CommandQuarterStat stat) {
+        if (stat == null)
+            return null;
+        return com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat.builder()
+                .attempts1(stat.getAttempts1())
+                .points1(stat.getPoints1())
+                .attempts2(stat.getAttempts2())
+                .points2(stat.getPoints2())
+                .attempts3(stat.getAttempts3())
+                .points3(stat.getPoints3())
+                .quarter(Quarter.byDisplayName(stat.getQuarter()))
+            .build();
+    }
+
     public static CommandQuarterStat convert(com.mikerusoft.euroleague.model.CommandQuarterStat stat) {
         if (stat == null)
             return null;

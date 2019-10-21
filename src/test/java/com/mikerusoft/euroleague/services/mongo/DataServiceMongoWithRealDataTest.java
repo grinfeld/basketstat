@@ -1,7 +1,7 @@
 package com.mikerusoft.euroleague.services.mongo;
 
 import com.mikerusoft.euroleague.entities.mongo.Command;
-import com.mikerusoft.euroleague.entities.mongo.CommandStat;
+import com.mikerusoft.euroleague.entities.mongo.CommandMatchStat;
 import com.mikerusoft.euroleague.entities.mongo.Match;
 import com.mikerusoft.euroleague.entities.mongo.Tournament;
 import com.mikerusoft.euroleague.model.Quarter;
@@ -51,16 +51,16 @@ class DataServiceMongoWithRealDataTest {
                 .date(firstMatchDate)
                 .season("201920120")
                 .tournament(tournament)
-                .homeCommand(CommandStat.builder().assists(5).maxLead(5).maxLeadQuarter(Quarter.FIRST).command(team1).build())
-                .awayCommand(CommandStat.builder().assists(10).maxLead(1).maxLeadQuarter(Quarter.OT).command(team2).build())
+                .homeCommand(CommandMatchStat.builder().assists(5).maxLead(5).maxLeadQuarter(Quarter.FIRST).command(team1).build())
+                .awayCommand(CommandMatchStat.builder().assists(10).maxLead(1).maxLeadQuarter(Quarter.OT).command(team2).build())
             .build();
         match1 = service.createMatch(match1);
         match2 = Match.builder()
                 .date(secondMatchDate)
                 .season("201920120")
                 .tournament(tournament)
-                .homeCommand(CommandStat.builder().assists(4).maxLead(3).maxLeadQuarter(Quarter.THIRD).command(team3).build())
-                .awayCommand(CommandStat.builder().assists(2).maxLead(2).maxLeadQuarter(Quarter.SECOND).command(team1).build())
+                .homeCommand(CommandMatchStat.builder().assists(4).maxLead(3).maxLeadQuarter(Quarter.THIRD).command(team3).build())
+                .awayCommand(CommandMatchStat.builder().assists(2).maxLead(2).maxLeadQuarter(Quarter.SECOND).command(team1).build())
             .build();
         match2 = service.createMatch(match2);
     }

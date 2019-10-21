@@ -22,6 +22,6 @@ public class Match {
     @Indexed private String season;
     @Indexed private Tournament tournament;
 
-    private CommandStat homeCommand;
-    private CommandStat awayCommand;
+    private CommandMatchStat homeCommand;
+    private CommandMatchStat awayCommand;
 }
