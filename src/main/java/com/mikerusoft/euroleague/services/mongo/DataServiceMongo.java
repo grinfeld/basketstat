@@ -8,6 +8,7 @@ import com.mikerusoft.euroleague.modelToEntityConvertor.ConverterI;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.CommandMongoRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.MatchRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.TournamentMongoRepository;
+import com.mikerusoft.euroleague.services.DataService;
 import com.mikerusoft.euroleague.utils.Utils;
 import org.springframework.stereotype.Service;
 
@@ -16,13 +17,15 @@ import java.util.List;
 import static com.mikerusoft.euroleague.utils.Utils.*;
 
 @Service
-public class DataServiceMongo {
+public class DataServiceMongo implements DataService<String> {
 
     private static final int MAX_NUM_OF_RECORDS = 1000;
 
-    private static final Class<com.mikerusoft.euroleague.model.Command> COMMAND_CLASS = com.mikerusoft.euroleague.model.Command.class;
-    private static final Class<com.mikerusoft.euroleague.model.Tournament> TOURN_CLASS = com.mikerusoft.euroleague.model.Tournament.class;
+    private static final Class<com.mikerusoft.euroleague.model.Command> COMMAND_MODEL_CLASS = com.mikerusoft.euroleague.model.Command.class;
+    private static final Class<com.mikerusoft.euroleague.model.Tournament> TOURN_MODEL_CLASS = com.mikerusoft.euroleague.model.Tournament.class;
+    private static final Class<com.mikerusoft.euroleague.model.Match> MATCH_MODEL_CLASS = com.mikerusoft.euroleague.model.Match.class;
 
+    private static final Class<com.mikerusoft.euroleague.entities.mongo.Match> MATCH_MONGO_CLASS = com.mikerusoft.euroleague.entities.mongo.Match.class;
 
     private CommandMongoRepository commandRepository;
     private TournamentMongoRepository tournamentRepository;
@@ -41,24 +44,63 @@ public class DataServiceMongo {
         return commandRepository.save(Command.builder().name(command).build());
     }
 
+    @Override
     public com.mikerusoft.euroleague.model.Command insertCommand(String command) {
-        return converter.convert(createCommand(command), COMMAND_CLASS);
+        return converter.convert(createCommand(command), COMMAND_MODEL_CLASS);
     }
 
+    @Override
     public com.mikerusoft.euroleague.model.Command getCommand(String id) {
-        return converter.convert(commandRepository.findById(id).orElse(null), COMMAND_CLASS);
+        return converter.convert(commandRepository.findById(id).orElse(null), COMMAND_MODEL_CLASS);
     }
 
     private Tournament createTournament(String tournament) {
         return tournamentRepository.save(Tournament.builder().name(tournament).build());
     }
 
+    @Override
     public com.mikerusoft.euroleague.model.Tournament insertTournament(String tournament) {
-        return converter.convert((createTournament(tournament)), TOURN_CLASS);
+        return converter.convert((createTournament(tournament)), TOURN_MODEL_CLASS);
     }
 
+    @Override
     public com.mikerusoft.euroleague.model.Tournament getTournament(String id) {
-        return converter.convert((tournamentRepository.findById(id).orElse(null)), TOURN_CLASS);
+        return converter.convert((tournamentRepository.findById(id).orElse(null)), TOURN_MODEL_CLASS);
+    }
+
+    @Override
+    public com.mikerusoft.euroleague.model.Command updateCommand(com.mikerusoft.euroleague.model.Command command) {
+        return null;
+    }
+
+    @Override
+    public com.mikerusoft.euroleague.model.Tournament updateTournament(com.mikerusoft.euroleague.model.Tournament tournament) {
+        return null;
+    }
+
+    @Override
+    public List<com.mikerusoft.euroleague.model.Command> getCommands() {
+        return null;
+    }
+
+    @Override
+    public List<com.mikerusoft.euroleague.model.Tournament> getTournaments() {
+        return null;
+    }
+
+    @Override
+    public void deleteCommand(String cmdId) {
+
+    }
+
+    @Override
+    public void deleteTournament(String tournId) {
+
+    }
+
+    @Override
+    public com.mikerusoft.euroleague.model.Match createMatch(com.mikerusoft.euroleague.model.Match match) {
+        return converter.convert(createMatch(converter.convert(match.toBuilder().build(), MATCH_MONGO_CLASS)), MATCH_MODEL_CLASS);
     }
 
     public Match createMatch(Match match) {

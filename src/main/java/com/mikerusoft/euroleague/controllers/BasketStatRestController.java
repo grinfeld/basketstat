@@ -20,10 +20,10 @@ import java.io.OutputStream;
 @RequestMapping("/api")
 public class BasketStatRestController {
 
-    private DataService dataService;
+    private DataService<Integer> dataService;
 
     @Autowired
-    public BasketStatRestController(DataService dataService) {
+    public BasketStatRestController(DataService<Integer> dataService) {
         this.dataService = dataService;
     }
 

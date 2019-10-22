@@ -12,11 +12,10 @@ import java.util.List;
 @NoArgsConstructor
 @Builder(toBuilder = true)
 public class CommandMatchStat {
-    private Integer id;
-    private int commandId;
-    private Match match;
+    private Command command;
     private boolean isHome;
 
+    private int score;
     private int reboundsDefense;
     private int reboundsOffense;
     private int assists;

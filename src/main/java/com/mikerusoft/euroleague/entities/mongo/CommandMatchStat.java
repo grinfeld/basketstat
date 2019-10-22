@@ -31,5 +31,5 @@ public class CommandMatchStat {
     private int turnovers;
     private int secondChanceAttempt;
 
-    private List<CommandQuarterStat> quarterStat;
+    private List<CommandQuarterStat> quarterStats;
 }

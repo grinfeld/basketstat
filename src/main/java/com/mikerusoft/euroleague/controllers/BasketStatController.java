@@ -33,11 +33,11 @@ public class BasketStatController {
 
     private int matchesMaxNumber;
     private List<MenuProperties.Menu> menus;
-    private DataService dataService;
+    private DataService<Integer> dataService;
 
     @Autowired
     public BasketStatController(@Value("${matches-max-number}") int matchesMaxNumber,
-                                MenuProperties menu, DataService dataService) {
+                                MenuProperties menu, DataService<Integer> dataService) {
         this.menus = menu.getMenus();
         this.dataService = dataService;
         this.matchesMaxNumber = matchesMaxNumber;

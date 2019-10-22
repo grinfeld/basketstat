@@ -10,14 +10,13 @@ import java.util.Date;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder(toBuilder = true)
+@Builder(toBuilder = true, builderClassName = "Builder")
 public class Match {
     private String id;
     private Date date;
     private String season;
-    private Command awayCommand;
-    private Command homeCommand;
     private Tournament tournament;
-    private int scoreHome;
-    private int scoreAway;
+
+    private CommandMatchStat awayCommand;
+    private CommandMatchStat homeCommand;
 }
