@@ -21,10 +21,12 @@ import java.io.OutputStream;
 public class BasketStatRestController {
 
     private DataService<Integer> dataService;
+    private DataService<String> dataServiceMongo;
 
     @Autowired
-    public BasketStatRestController(DataService<Integer> dataService) {
+    public BasketStatRestController(DataService<Integer> dataService, DataService<String> dataServiceMongo) {
         this.dataService = dataService;
+        this.dataServiceMongo = dataServiceMongo;
     }
 
     @GetMapping(value = "/command/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)

@@ -34,12 +34,14 @@ public class BasketStatController {
     private int matchesMaxNumber;
     private List<MenuProperties.Menu> menus;
     private DataService<Integer> dataService;
+    private DataService<String> dataServiceMongo;
 
     @Autowired
     public BasketStatController(@Value("${matches-max-number}") int matchesMaxNumber,
-                                MenuProperties menu, DataService<Integer> dataService) {
+                                MenuProperties menu, DataService<Integer> dataService, DataService<String> dataServiceMongo) {
         this.menus = menu.getMenus();
         this.dataService = dataService;
+        this.dataServiceMongo = dataServiceMongo;
         this.matchesMaxNumber = matchesMaxNumber;
     }
 
@@ -94,8 +96,8 @@ public class BasketStatController {
     public String edit(@ModelAttribute("result") Result result, Model model) {
         fillModelWithInitialData(model);
 
-        Integer commandId = result.getCommand() != null ? Utils.parseIntWithDeNull(result.getCommand().getId()) : null;
-        Integer tournId = result.getTournament() != null ? Utils.parseIntWithDeNull(result.getTournament().getId()) : null;
+        Integer commandId = result.getCommand() != null ? Utils.parseIntWithEmptyToNull(result.getCommand().getId()) : null;
+        Integer tournId = result.getTournament() != null ? Utils.parseIntWithEmptyToNull(result.getTournament().getId()) : null;
 
         if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
         try {
@@ -234,13 +236,13 @@ public class BasketStatController {
     }
 
     private void fillTournament(Consumer<List<Tournament>> consumer) {
-        List<Tournament> tournaments = dataService.getTournaments();
+        List<Tournament> tournaments = dataServiceMongo.getTournaments();
         consumer.accept(tournaments);
         //model.addAttribute("tournaments", tournaments);
     }
 
     private void fillCommand(Consumer<List<Command>> consumer) {
-        List<Command> commands = dataService.getCommands();
+        List<Command> commands = dataServiceMongo.getCommands();
         consumer.accept(commands);
         //model.addAttribute("commands", commands);
     }
@@ -257,8 +259,8 @@ public class BasketStatController {
     public String editCommand(@ModelAttribute("command") Command command, Model model) {
         model.addAttribute("menus", this.menus);
 
-        command = command.getId() == null ? dataService.insertCommand(command.getCommandName()) :
-                dataService.updateCommand(command);
+        command = Utils.isEmptyTrimmed(command.getId()) ? dataServiceMongo.insertCommand(command.getCommandName()) :
+                dataServiceMongo.updateCommand(command);
         model.addAttribute("command", command);
         fillCommand(commands -> model.addAttribute("commands", commands));
         return "command";
@@ -268,8 +270,8 @@ public class BasketStatController {
     public String editTournament(@ModelAttribute("tourn") Tournament tournament, Model model) {
         model.addAttribute("menus", this.menus);
 
-        tournament = tournament.getId() == null ? dataService.insertTournament(tournament.getTournName()) :
-                dataService.updateTournament(tournament);
+        tournament = Utils.isEmptyTrimmed(tournament.getId()) ? dataServiceMongo.insertTournament(tournament.getTournName()) :
+                dataServiceMongo.updateTournament(tournament);
         model.addAttribute("tourn", tournament);
         fillTournament(tournaments -> model.addAttribute("tournaments", tournaments));
         return "tournament";

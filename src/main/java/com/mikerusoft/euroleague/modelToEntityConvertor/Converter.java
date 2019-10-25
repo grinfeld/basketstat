@@ -17,13 +17,13 @@ public class Converter {
     public static Command convert(com.mikerusoft.euroleague.model.Command source) {
         if (source == null)
             return null;
-        return Command.builder().id(Utils.parseIntWithDeNull(source.getId())).commandName(source.getCommandName()).build();
+        return Command.builder().id(Utils.parseIntWithEmptyToNull(source.getId())).commandName(source.getCommandName()).build();
     }
 
     public static Tournament convert(com.mikerusoft.euroleague.model.Tournament source) {
         if (source == null)
             return null;
-        return Tournament.builder().id(Utils.parseIntWithDeNull(source.getId())).tournName(source.getTournName()).build();
+        return Tournament.builder().id(Utils.parseIntWithEmptyToNull(source.getId())).tournName(source.getTournName()).build();
     }
 
     public static com.mikerusoft.euroleague.model.Command convert(Command source) {

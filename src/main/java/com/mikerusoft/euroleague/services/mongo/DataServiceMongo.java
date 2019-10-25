@@ -13,6 +13,9 @@ import com.mikerusoft.euroleague.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static com.mikerusoft.euroleague.utils.Utils.*;
 
@@ -70,22 +73,28 @@ public class DataServiceMongo implements DataService<String> {
 
     @Override
     public com.mikerusoft.euroleague.model.Command updateCommand(com.mikerusoft.euroleague.model.Command command) {
+        Optional<Command> cmd = commandRepository.findById(command.getId());
+        // todo - continue
         return null;
     }
 
     @Override
     public com.mikerusoft.euroleague.model.Tournament updateTournament(com.mikerusoft.euroleague.model.Tournament tournament) {
+        Optional<Tournament> tourn = tournamentRepository.findById(tournament.getId());
+        // todo - continue
         return null;
     }
 
     @Override
     public List<com.mikerusoft.euroleague.model.Command> getCommands() {
-        return null;
+        return StreamSupport.stream(commandRepository.findAll().spliterator(), false)
+                .map(c -> converter.convert(c, COMMAND_MODEL_CLASS)).collect(Collectors.toList());
     }
 
     @Override
     public List<com.mikerusoft.euroleague.model.Tournament> getTournaments() {
-        return null;
+        return StreamSupport.stream(tournamentRepository.findAll().spliterator(), false)
+            .map(t -> converter.convert(t, TOURN_MODEL_CLASS)).collect(Collectors.toList());
     }
 
     @Override
@@ -113,7 +122,9 @@ public class DataServiceMongo implements DataService<String> {
             assertNotEmptyTrimmed(tournament.getName());
             match.setTournament(createTournament(tournament.getName()));
         } else if (Utils.isEmptyTrimmed(tournament.getName())) {
-            match.setTournament(tournamentRepository.findById(tournament.getId().toHexString()).orElse(null));
+            Tournament createTourn = tournamentRepository.findById(tournament.getId().toHexString()).orElse(null);
+            assertNotNull(createTourn);
+            match.setTournament(createTourn);
         }
 
         CommandMatchStat awayCommand = match.getAwayCommand();
@@ -125,7 +136,9 @@ public class DataServiceMongo implements DataService<String> {
             Command command = createCommand(awayCommand.getCommand().getName());
             match.getAwayCommand().setCommand(command);
         } else if (Utils.isEmptyTrimmed(awayCommand.getCommand().getName())) {
-            match.getHomeCommand().setCommand(commandRepository.findById(awayCommand.getCommand().getId().toHexString()).orElse(null));
+            Command command = commandRepository.findById(awayCommand.getCommand().getId().toHexString()).orElse(null);
+            assertNotNull(command);
+            match.getHomeCommand().setCommand(command);
         }
 
 
@@ -138,7 +151,9 @@ public class DataServiceMongo implements DataService<String> {
             Command command = createCommand(homeCommand.getCommand().getName());
             match.getHomeCommand().setCommand(command);
         } else if (Utils.isEmptyTrimmed(homeCommand.getCommand().getName())) {
-            match.getHomeCommand().setCommand(commandRepository.findById(homeCommand.getCommand().getId().toHexString()).orElse(null));
+            Command command = commandRepository.findById(homeCommand.getCommand().getId().toHexString()).orElse(null);
+            assertNotNull(command);
+            match.getHomeCommand().setCommand(command);
         }
 
         return matchRepository.save(match.toBuilder().id(null).build());

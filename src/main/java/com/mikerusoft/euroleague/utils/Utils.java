@@ -28,8 +28,8 @@ public class Utils {
         return val == null ? null : String.valueOf(val);
     }
 
-    public static Integer parseIntWithDeNull(String val) {
-        return val == null ? null : Integer.parseInt(val);
+    public static Integer parseIntWithEmptyToNull(String val) {
+        return isEmptyTrimmed(val) ? null : Integer.parseInt(val);
     }
 
     public static <T> String deNull(T obj, Function<T, String> func) {

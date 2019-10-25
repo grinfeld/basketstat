@@ -18,13 +18,17 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_URL:localhost:3306/basketstat}
+    url: jdbc:mysql://${DB_URL:root@localhost:3306/basketstat}?useSSL=false
     username: ${USER:root}
     password: ${PASSWORD:1946}
 
   thymeleaf:
     cache: false
 
+  data:
+    mongodb:
+      port: ${MONGO.PORT:27017}
+      auto-index-creation: true
 menu:
   menus:
     - name: "Results"
