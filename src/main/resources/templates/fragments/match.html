@@ -1,0 +1,149 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org">
+    <head></head>
+    <body>
+        <form action="#" th:action="@{/edit}" th:object="${currentMatch}" method="post">
+            <table cellpadding="5" cellspacing="5" border="1" th:if="${currentMatch != null}">
+                <tr>
+                    <td colspan="3"><input type="hidden" name="id" id="id" th:value="*{id}" /></td>
+                </tr>
+                <tr>
+                    <th>Tournament</th>
+                    <td colspan="2">
+                        <select th:field="${currentMatch.tournament.id}">
+                            <option th:each="tournament : ${tournaments}" th:value="${tournament.id}"
+                                    th:text="${tournament.getTournName()}"></option>
+                        </select>
+                    </td>
+                    <input type="hidden" th:value="*{tournament.tournName}" />
+                </tr>
+                <tr>
+                    <th>Match Date</th>
+                    <td colspan="2"><input type="date" th:field="*{date}" /></td>
+                </tr>
+                <tr>
+                    <th>Season</th>
+                    <td colspan="2"><input maxlength="8" size="8" type="text" th:field="*{season}" /></td>
+                </tr>
+                <tr>
+                    <th></th>
+                    <td>Home</td>
+                    <td>Away</td>
+                </tr>
+                <tr>
+                    <th>Command</th>
+                    <td>
+                        <select th:field="${currentMatch.homeCommand.command.id}">
+                            <option th:each="hcommand : ${commands}" th:value="${hcommand.id}"
+                                    th:text="${hcommand.getCommandName()}"></option>
+                        </select>
+                        <input type="hidden" th:value="*{homeCommand.command.commandName}" />
+                    </td>
+                    <td>
+                        <select th:field="${currentMatch.awayCommand.command.id}">
+                            <option th:each="acommand : ${commands}" th:value="${acommand.id}"
+                                    th:text="${acommand.getCommandName()}"></option>
+                        </select>
+                        <input type="hidden" th:value="*{awayCommand.command.commandName}" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>Game Score</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.score}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.score}" /></td>
+                </tr>
+                <tr>
+                    <th>Defense Rebounds</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.reboundsDefense}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.reboundsDefense}" /></td>
+                </tr>
+                <tr>
+                    <th>Offense Rebounds</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.reboundsOffense}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.reboundsOffense}" /></td>
+                </tr>
+                <tr>
+                    <th>Assists</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.assists}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.assists}" /></td>
+                </tr>
+                <tr>
+                    <th>Fouls Defense</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.foulsDefense}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.foulsDefense}" /></td>
+                </tr>
+                <tr>
+                    <th>Number of players scored more than 10 Points</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.more10Points}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.more10Points}" /></td>
+                </tr>
+                <tr>
+                    <th>Player scored maximum points in game</th>
+                    <td>
+                        <input size="3" min="0" max="199" type="number" placeholder="points" th:field="*{homeCommand.playerMaxPointsScore}" /><br/>
+                        <input type="text" placeholder="name" th:field="*{homeCommand.playerMaxPointsName}" />
+                    </td>
+                    <td>
+                        <input size="3" min="0" max="199" type="number" placeholder="points" th:field="*{awayCommand.playerMaxPointsScore}" /><br/>
+                        <input type="text" placeholder="name" th:field="*{homeCommand.playerMaxPointsName}" />
+                    </td>
+                </tr>
+                <tr>
+                    <th>Maximum lead in Game</th>
+                    <td>
+                        <input size="3" min="0" max="199" type="number" th:field="*{homeCommand.maxLead}" /><br/>
+                        <select th:field="${currentMatch.homeCommand.maxLeadQuarter}">
+                            <option th:each="hquarter : ${T(com.mikerusoft.euroleague.model.Quarter).values()}"
+                                    th:value="${hquarter}"
+                                    th:text="${hquarter}">
+                            </option>
+                        </select>
+                    </td>
+                    <td>
+                        <input size="3" min="0" max="199" type="number" th:field="*{awayCommand.maxLead}" /><br/>
+                        <select th:field="${currentMatch.homeCommand.awayCommand}">
+                            <option th:each="aquarter : ${T(com.mikerusoft.euroleague.model.Quarter).values()}"
+                                    th:value="${aquarter}"
+                                    th:text="${aquarter}">
+                            </option>
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <th>Starting 5 score in a game</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.scoreStart5Score}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.scoreStart5Score}" /></td>
+                </tr>
+                <tr>
+                    <th>Bench players scored in a game</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.scoreBenchScore}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.scoreBenchScore}" /></td>
+                </tr>
+                <tr>
+                    <th>Steals</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.steals}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.steals}" /></td>
+                </tr>
+                <tr>
+                    <th>Turnovers</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.turnovers}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.turnovers}" /></td>
+                </tr>
+                <tr>
+                    <th>Second Chance Attempts scored in a game</th>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{homeCommand.secondChanceAttempt}" /></td>
+                    <td><input size="3" min="0" max="199" type="number" th:field="*{awayCommand.secondChanceAttempt}" /></td>
+                </tr>
+                <tr>
+                    <th colspan="3">Quarters</th>
+                </tr>
+
+                <tr>
+                    <th></th>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+        </form>
+    </body>
+</html>

@@ -231,6 +231,8 @@ public class BasketStatController {
 
     private void fillModelWithInitialData(Model model) {
         model.addAttribute("menus", this.menus);
+        if (model.getAttribute("setResult") == null)
+            model.addAttribute("setResult", false);
         fillCommand(commands -> model.addAttribute("commands", commands));
         fillTournament(tournaments -> model.addAttribute("tournaments", tournaments));
     }
