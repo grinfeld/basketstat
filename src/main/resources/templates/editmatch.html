@@ -355,30 +355,31 @@
         </div>
         <script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
         <script type="text/javascript">
-            $('document').on('load', function() {
-                $('#saveMatch').on('submit', function(event) {
-                    var homeCommandScore = sumAllQuarters('homeCommand');
-                    $('#homeCommand.score').val(homeCommandScore);
-                    var awayCommandScore = sumAllQuarters('awayCommand');
-                    $('#awayCommand.score').val(homeCommandScore);
-                    $('#tournament.tournName').val($('#tournament.id').text());
-                    $('#homeCommand.command.commandName').val($('#homeCommand.command.id').text());
-                    $('#awayCommand.command.commandName').val($('#awayCommand.command.id').text());
+            $('document').ready(function() {
+                $('#saveMatch').submit(function(event) {
                     debugger;
+                    var homeCommandScore = sumAllQuarters('homeCommand');
+                    $('#homeCommand\\.score').val(homeCommandScore);
+                    var awayCommandScore = sumAllQuarters('awayCommand');
+                    $('#awayCommand\\.score').val(homeCommandScore);
+
+                    $('#tournament\\.tournName').val($('#tournament\\.id').val() == '' ? '' : $('#tournament\\.id option:selected').text());
+                    $('#homeCommand\\.command\\.commandName').val($('#homeCommand\\.command.id').val() == '' ? '' : $('#homeCommand\\.command.id option:selected').text());
+                    $('#awayCommand\\.command\\.commandName').val($('#awayCommand\\.command.id').val() == '' ? '' : $('#awayCommand\\.command.id option:selected').text());
                 });
             });
 
             function sumAllQuarters(name) {
                 var sum = 0;
                 for (var i=0; i<5; i++) {
-                    sum += sumQuarterPoints(name + 'quarterStats' + i);
+                    sum += sumQuarterPoints(name + '\\.quarterStats' + i);
                 }
             }
 
             function sumQuarterPoints(name) {
-                return parseInt($('#' + name + '.points1').val()) +
-                parseInt($('#' + name + '.points2').val()) * 2 +
-                parseInt($('#' + name + '.points3').val()) * 3;
+                return parseInt($('#' + name + '\\.points1').val()) +
+                parseInt($('#' + name + '\\.points2').val()) * 2 +
+                parseInt($('#' + name + '\\.points3').val()) * 3;
             }
         </script>
     </body>

@@ -46,7 +46,7 @@ public class Converter {
         if (source == null)
             return null;
         return com.mikerusoft.euroleague.entities.mongo.Tournament.builder()
-                .id(Utils.deNullObject(source, s -> s != null && isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
+                .id(Utils.deNullObject(source, s -> s != null && !isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
                 .name(Utils.deNull(source, s -> s != null && !isEmptyTrimmed(s.getTournName()) ? s.getTournName() : null)).build();
     }
 
@@ -61,7 +61,7 @@ public class Converter {
         if (source == null)
             return null;
         return com.mikerusoft.euroleague.entities.mongo.Command.builder()
-                .id(Utils.deNullObject(source, s -> s != null && isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
+                .id(Utils.deNullObject(source, s -> s != null && !isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
                 .name(Utils.deNull(source, s -> s != null && !isEmptyTrimmed(s.getCommandName()) ? s.getCommandName() : null)).build();
     }
 
