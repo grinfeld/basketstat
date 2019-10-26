@@ -28,6 +28,6 @@ public interface DataService<T> {
     default void deleteResult(T resultId) {}
     default Result saveResult (Result result){ return null; }
 
-    default public com.mikerusoft.euroleague.model.Match createMatch(com.mikerusoft.euroleague.model.Match match) { return null; }
+    default public com.mikerusoft.euroleague.model.Match saveMatch(com.mikerusoft.euroleague.model.Match match) { return null; }
     default public com.mikerusoft.euroleague.model.Match getMatch(String matchId) { return null; }
 }

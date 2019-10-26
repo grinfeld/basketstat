@@ -10,6 +10,8 @@ import java.util.Comparator;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
+
 public class Converter {
 
     private Converter() {}
@@ -44,7 +46,8 @@ public class Converter {
         if (source == null)
             return null;
         return com.mikerusoft.euroleague.entities.mongo.Tournament.builder()
-                .id(new ObjectId(source.getId())).name(source.getTournName()).build();
+                .id(Utils.deNullObject(source, s -> s != null && isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
+                .name(Utils.deNull(source, s -> s != null && !isEmptyTrimmed(s.getTournName()) ? s.getTournName() : null)).build();
     }
 
     public static com.mikerusoft.euroleague.model.Command convertM(com.mikerusoft.euroleague.entities.mongo.Command source) {
@@ -58,7 +61,8 @@ public class Converter {
         if (source == null)
             return null;
         return com.mikerusoft.euroleague.entities.mongo.Command.builder()
-                .id(new ObjectId(source.getId())).name(source.getCommandName()).build();
+                .id(Utils.deNullObject(source, s -> s != null && isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
+                .name(Utils.deNull(source, s -> s != null && !isEmptyTrimmed(s.getCommandName()) ? s.getCommandName() : null)).build();
     }
 
     public static com.mikerusoft.euroleague.model.Tournament convert(Tournament source) {
@@ -110,6 +114,32 @@ public class Converter {
         .build();
     }
 
+    public static com.mikerusoft.euroleague.model.Match convertM(com.mikerusoft.euroleague.entities.mongo.Match stat) {
+        if (stat == null)
+            return null;
+        return com.mikerusoft.euroleague.model.Match.builder()
+                .season(stat.getSeason())
+                .date(stat.getDate())
+                .tournament(convertM(stat.getTournament()))
+                .awayCommand(convertM(stat.getAwayCommand()))
+                .homeCommand(convertM(stat.getHomeCommand()))
+                .id(Utils.deNull(stat.getId(), ObjectId::toHexString))
+            .build();
+    }
+
+    public static com.mikerusoft.euroleague.entities.mongo.Match convertM(com.mikerusoft.euroleague.model.Match source) {
+        if (source == null)
+            return null;
+        return com.mikerusoft.euroleague.entities.mongo.Match.builder()
+                .season(source.getSeason())
+                .date(source.getDate())
+                .tournament(convertM(source.getTournament()))
+                .awayCommand(convertM(source.getAwayCommand()))
+                .homeCommand(convertM(source.getHomeCommand()))
+                .id(Utils.deNullObject(source, s -> s != null && !isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
+            .build();
+    }
+
     public static com.mikerusoft.euroleague.model.CommandQuarterStat convertM(com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat stat) {
         if (stat == null)
             return null;
@@ -134,7 +164,7 @@ public class Converter {
                 .points2(stat.getPoints2())
                 .attempts3(stat.getAttempts3())
                 .points3(stat.getPoints3())
-                .quarter(Quarter.byDisplayName(stat.getQuarter()))
+                .quarter(Quarter.valueOf(stat.getQuarter()))
             .build();
     }
 
@@ -187,14 +217,10 @@ public class Converter {
                 .turnovers(stat.getTurnovers())
                 .secondChanceAttempt(stat.getSecondChanceAttempt())
                 .quarterStats(
-                        Optional.ofNullable(stat.getQuarterStats()).orElseGet(ArrayList::new)
-                                .stream().map(Converter::convertM)
-                                .sorted(Comparator.comparingInt(o -> o.getQuarter().getOrder()))
-                                .collect(Collectors.toList())
-                )
-                .build();
+                    Optional.ofNullable(stat.getQuarterStats()).orElseGet(ArrayList::new)
+                        .stream().map(Converter::convertM)
+                        .sorted(Comparator.comparingInt(o -> o.getQuarter().getOrder()))
+                        .collect(Collectors.toList())
+                ).build();
     }
-
-
-
 }

@@ -176,6 +176,17 @@ public class BasketStatController {
         return "editmatch";
     }
 
+    @PostMapping("/savematch")
+    public String saveMatch(@ModelAttribute("currentMatch") Match match, Model model) {
+        Utils.assertNotNull(match);
+
+        Match updatedMatch = dataServiceMongo.saveMatch(match);
+
+        model.addAttribute("currentMatch", updatedMatch);
+
+        return "editmatch";
+    }
+
     private static String extractSeason(Date now) {
         Calendar calendarForNextYear = Calendar.getInstance();
         calendarForNextYear.setTime(now);

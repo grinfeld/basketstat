@@ -36,6 +36,10 @@ public class Utils {
         return obj == null ? null : func.apply(obj);
     }
 
+    public static <T, R> R deNullObject(T obj, Function<T, R> func) {
+        return obj == null ? null : func.apply(obj);
+    }
+
     public static String deNullTemp(String str) {
         return str;
     }

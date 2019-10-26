@@ -47,7 +47,7 @@ public class ConverterService implements ConverterI {
                 .filter(m -> isAssignableFrom(classFrom, m.getParameterTypes()[0]))
                 .findFirst()
             .orElseThrow(() -> new RuntimeException(new NoSuchMethodException("Not found method to convert from " + classFrom.getName() +
-                                                                                    " to " + classTo.getSimpleName())));
+                                                                                    " to " + classTo.getName())));
     }
 
     private static final Set<String> map;

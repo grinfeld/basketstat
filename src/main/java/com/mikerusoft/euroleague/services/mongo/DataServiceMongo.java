@@ -108,7 +108,7 @@ public class DataServiceMongo implements DataService<String> {
     }
 
     @Override
-    public com.mikerusoft.euroleague.model.Match createMatch(com.mikerusoft.euroleague.model.Match match) {
+    public com.mikerusoft.euroleague.model.Match saveMatch(com.mikerusoft.euroleague.model.Match match) {
         return converter.convert(createMatch(converter.convert(match.toBuilder().build(), MATCH_MONGO_CLASS)), MATCH_MODEL_CLASS);
     }
 

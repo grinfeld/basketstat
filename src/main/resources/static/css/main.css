@@ -87,3 +87,7 @@ select.shortSelect {
     width: 67px;
     font-size: 12px;
 }
+
+td.submit .pull-right .btn-success {
+    height: 36px;
+}

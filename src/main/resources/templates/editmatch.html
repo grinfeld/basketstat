@@ -15,9 +15,12 @@
             <div id="successMsg" class="successMsg" th:if="msg != null" th:text="${msg}"></div>
         </main>
         <div class="starter-template">
-            <form action="#" th:action="@{/edit}" th:object="${currentMatch}" method="post">
+            <form name="saveMatch" id="saveMatch" action="#" th:action="@{/savematch}" th:object="${currentMatch}" method="post">
                 <input type="hidden" name="id" id="id" th:value="*{id}" />
                 <table class="createMatch" cellpadding="5" cellspacing="5" border="1" th:if="${currentMatch != null}">
+                    <tr>
+                        <td class="submit" colspan="3" align="right"><span class="pull-right"><input type="submit" class="btn btn-success" id="submitButton" th:value="Save"></span></td>
+                    </tr>
                     <tr>
                         <th>Tournament</th>
                         <td colspan="2">
@@ -27,7 +30,7 @@
                                         th:text="${tournament.getTournName()}"></option>
                             </select>
                         </td>
-                        <input type="hidden" th:value="*{tournament.tournName}" />
+                        <input type="hidden" name="tournament.tournName" id="tournament.tournName" value="" />
                     </tr>
                     <tr>
                         <th>Match Date</th>
@@ -50,7 +53,7 @@
                                 <option th:each="hcommand : ${commands}" th:value="${hcommand.id}"
                                         th:text="${hcommand.getCommandName()}"></option>
                             </select>
-                            <input type="hidden" th:value="*{homeCommand.command.commandName}" />
+                            <input type="hidden" name="homeCommand.command.commandName" id="homeCommand.command.commandName" value="" />
                         </td>
                         <td>
                             <select th:field="${currentMatch.awayCommand.command.id}">
@@ -58,7 +61,7 @@
                                 <option th:each="acommand : ${commands}" th:value="${acommand.id}"
                                         th:text="${acommand.getCommandName()}"></option>
                             </select>
-                            <input type="hidden" th:value="*{awayCommand.command.commandName}" />
+                            <input type="hidden" name="awayCommand.command.commandName" id="awayCommand.command.commandName" value="" />
                         </td>
                     </tr>
                     <tr>
@@ -173,7 +176,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__0__].attempts1}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>2 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__0__].points2}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__0__].points2}" /></td>
                     </tr>
@@ -183,7 +186,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__0__].attempts2}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>3 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__0__].points3}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__0__].points3}" /></td>
                     </tr>
@@ -196,8 +199,8 @@
                         <td></td>
                         <th colspan="2">
                             Quarter 2
-                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).SECOND.name()}" th:field="*{homeCommand.quarterStats[__0__].quarter}" />
-                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).SECOND.name()}" th:field="*{awayCommand.quarterStats[__0__].quarter}" />
+                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).SECOND.name()}" th:field="*{homeCommand.quarterStats[__1__].quarter}" />
+                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).SECOND.name()}" th:field="*{awayCommand.quarterStats[__1__].quarter}" />
                         </th>
                     </tr>
                     <tr>
@@ -211,7 +214,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__1__].attempts1}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>2 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__1__].points2}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__1__].points2}" /></td>
                     </tr>
@@ -221,7 +224,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__1__].attempts2}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>3 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__1__].points3}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__1__].points3}" /></td>
                     </tr>
@@ -234,8 +237,8 @@
                         <td></td>
                         <th colspan="2">
                             Quarter 3
-                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).THIRD.name()}" th:field="*{homeCommand.quarterStats[__0__].quarter}" />
-                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).THIRD.name()}" th:field="*{awayCommand.quarterStats[__0__].quarter}" />
+                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).THIRD.name()}" th:field="*{homeCommand.quarterStats[__2__].quarter}" />
+                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).THIRD.name()}" th:field="*{awayCommand.quarterStats[__2__].quarter}" />
                         </th>
                     </tr>
                     <tr>
@@ -249,7 +252,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__2__].attempts1}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>2 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__2__].points2}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__2__].points2}" /></td>
                     </tr>
@@ -259,7 +262,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__2__].attempts2}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>3 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__2__].points3}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__2__].points3}" /></td>
                     </tr>
@@ -272,8 +275,8 @@
                         <td></td>
                         <th colspan="2">
                             Quarter 4
-                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).FOURTH.name()}" th:field="*{homeCommand.quarterStats[__0__].quarter}" />
-                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).FOURTH.name()}" th:field="*{awayCommand.quarterStats[__0__].quarter}" />
+                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).FOURTH.name()}" th:field="*{homeCommand.quarterStats[__3__].quarter}" />
+                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).FOURTH.name()}" th:field="*{awayCommand.quarterStats[__3__].quarter}" />
                         </th>
                     </tr>
                     <tr>
@@ -287,7 +290,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__3__].attempts1}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>2 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__3__].points2}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__3__].points2}" /></td>
                     </tr>
@@ -297,7 +300,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__3__].attempts2}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>3 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__3__].points3}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__3__].points3}" /></td>
                     </tr>
@@ -310,8 +313,8 @@
                         <td></td>
                         <th colspan="2">
                             Overtime
-                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).OT.name()}" th:field="*{homeCommand.quarterStats[__0__].quarter}" />
-                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).OT.name()}" th:field="*{awayCommand.quarterStats[__0__].quarter}" />
+                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).OT.name()}" th:field="*{homeCommand.quarterStats[__4__].quarter}" />
+                            <input type="hidden" th:value="${T(com.mikerusoft.euroleague.model.Quarter).OT.name()}" th:field="*{awayCommand.quarterStats[__4__].quarter}" />
                         </th>
                     </tr>
                     <tr>
@@ -325,7 +328,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__4__].attempts1}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>2 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__4__].points2}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__4__].points2}" /></td>
                     </tr>
@@ -335,7 +338,7 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__4__].attempts2}" /></td>
                     </tr>
                     <tr>
-                        <th>1 points scored</th>
+                        <th>3 points scored</th>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__4__].points3}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__4__].points3}" /></td>
                     </tr>
@@ -344,9 +347,39 @@
                         <td><input size="3" min="0" max="100" type="number" th:field="*{homeCommand.quarterStats[__4__].attempts3}" /></td>
                         <td><input size="3" min="0" max="100" type="number" th:field="*{awayCommand.quarterStats[__4__].attempts3}" /></td>
                     </tr>
+                    <tr>
+                        <td class="submit" colspan="3" align="right"><span class="pull-right"><input class="btn btn-success" type="submit" id="submitButton" th:value="Save"></span></td>
+                    </tr>
                 </table>
             </form>
         </div>
         <script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
+        <script type="text/javascript">
+            $('document').on('load', function() {
+                $('#saveMatch').on('submit', function(event) {
+                    var homeCommandScore = sumAllQuarters('homeCommand');
+                    $('#homeCommand.score').val(homeCommandScore);
+                    var awayCommandScore = sumAllQuarters('awayCommand');
+                    $('#awayCommand.score').val(homeCommandScore);
+                    $('#tournament.tournName').val($('#tournament.id').text());
+                    $('#homeCommand.command.commandName').val($('#homeCommand.command.id').text());
+                    $('#awayCommand.command.commandName').val($('#awayCommand.command.id').text());
+                    debugger;
+                });
+            });
+
+            function sumAllQuarters(name) {
+                var sum = 0;
+                for (var i=0; i<5; i++) {
+                    sum += sumQuarterPoints(name + 'quarterStats' + i);
+                }
+            }
+
+            function sumQuarterPoints(name) {
+                return parseInt($('#' + name + '.points1').val()) +
+                parseInt($('#' + name + '.points2').val()) * 2 +
+                parseInt($('#' + name + '.points3').val()) * 3;
+            }
+        </script>
     </body>
 </html>
