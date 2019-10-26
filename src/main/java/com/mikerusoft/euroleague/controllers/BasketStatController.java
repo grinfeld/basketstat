@@ -1,9 +1,7 @@
 package com.mikerusoft.euroleague.controllers;
 
 import com.mikerusoft.euroleague.menus.MenuProperties;
-import com.mikerusoft.euroleague.model.Command;
-import com.mikerusoft.euroleague.model.Result;
-import com.mikerusoft.euroleague.model.Tournament;
+import com.mikerusoft.euroleague.model.*;
 import com.mikerusoft.euroleague.services.DataService;
 import com.mikerusoft.euroleague.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -23,6 +21,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -145,6 +144,56 @@ public class BasketStatController {
         }
 
         return "index";
+    }
+
+    @GetMapping("/creatematch")
+    public String createMatch(Model model) {
+        return editMatch(null, null, model);
+    }
+
+    @PostMapping("/editmatch")
+    public String editMatch(@ModelAttribute("tournament") String tournamentId, @ModelAttribute("match") String matchId, Model model) {
+
+        fillModelWithInitialData(model);
+
+        Match match = null;
+        if (matchId != null) {
+            match = dataServiceMongo.getMatch(matchId);
+        }
+
+        if (match == null) {
+            Date now = new Date(System.currentTimeMillis());
+            match = Match.builder().tournament(Tournament.builder().id(tournamentId).build())
+                    .date(now)
+                    .season(extractSeason(now))
+                    .awayCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(initialCommandStats()).build())
+                    .homeCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(initialCommandStats()).build())
+                .build();
+        }
+
+        model.addAttribute("currentMatch", match);
+
+        return "editmatch";
+    }
+
+    private static String extractSeason(Date now) {
+        Calendar calendarForNextYear = Calendar.getInstance();
+        calendarForNextYear.setTime(now);
+        int month = calendarForNextYear.get(Calendar.MONTH);
+        int nextYearBuilder = calendarForNextYear.get(Calendar.YEAR);
+        nextYearBuilder = month > 1 && month <= 6 ? nextYearBuilder - 1 : nextYearBuilder;
+        calendarForNextYear.set(Calendar.YEAR, nextYearBuilder + 1);
+        return nextYearBuilder + String.valueOf(calendarForNextYear.get(Calendar.YEAR));
+    }
+
+    private static List<CommandQuarterStat> initialCommandStats() {
+        return Arrays.asList(
+            CommandQuarterStat.builder().quarter(Quarter.FIRST.name()).build(),
+            CommandQuarterStat.builder().quarter(Quarter.SECOND.name()).build(),
+            CommandQuarterStat.builder().quarter(Quarter.THIRD.name()).build(),
+            CommandQuarterStat.builder().quarter(Quarter.FOURTH.name()).build(),
+            CommandQuarterStat.builder().quarter(Quarter.OT.name()).build()
+        );
     }
 
     private boolean needLastResultsAfterHandleAction(Model model, Integer commandId, Integer tournId, Action actionEnum, Integer resultId) {

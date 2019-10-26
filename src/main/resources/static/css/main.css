@@ -63,3 +63,27 @@ select {
 th {
     text-align: center;
 }
+
+table.createMatch {
+    border-bottom: none;
+    border-top: none;
+    border-left: none;
+    border-right: 1px solid black;
+}
+
+table.createMatch td {
+}
+
+table.createMatch th {
+    text-align: left;
+    font-size: 12px;
+}
+
+input[type="text"].shortText {
+    width: 67px;
+}
+
+select.shortSelect {
+    width: 67px;
+    font-size: 12px;
+}

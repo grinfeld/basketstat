@@ -159,6 +159,11 @@ public class DataServiceMongo implements DataService<String> {
         return matchRepository.save(match.toBuilder().id(null).build());
     }
 
+    @Override
+    public com.mikerusoft.euroleague.model.Match getMatch(String matchId) {
+        return matchRepository.findById(matchId).map(m -> converter.convert(m, MATCH_MODEL_CLASS)).orElse(null);
+    }
+
     public List<Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, int records) {
         assertNumOfRecords(records);
         return matchRepository.findByCommandInTournamentAndSeason(tournId, season, commandId, records);
