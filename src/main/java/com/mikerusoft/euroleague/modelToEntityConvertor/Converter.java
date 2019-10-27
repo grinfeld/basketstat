@@ -114,16 +114,16 @@ public class Converter {
         .build();
     }
 
-    public static com.mikerusoft.euroleague.model.Match convertM(com.mikerusoft.euroleague.entities.mongo.Match stat) {
-        if (stat == null)
+    public static com.mikerusoft.euroleague.model.Match convertM(com.mikerusoft.euroleague.entities.mongo.Match source) {
+        if (source == null)
             return null;
         return com.mikerusoft.euroleague.model.Match.builder()
-                .season(stat.getSeason())
-                .date(stat.getDate())
-                .tournament(convertM(stat.getTournament()))
-                .awayCommand(convertM(stat.getAwayCommand()))
-                .homeCommand(convertM(stat.getHomeCommand()))
-                .id(Utils.deNull(stat.getId(), ObjectId::toHexString))
+                .season(source.getSeason())
+                .date(source.getDate())
+                .tournament(convertM(source.getTournament()))
+                .awayCommand(convertM(source.getAwayCommand()))
+                .homeCommand(convertM(source.getHomeCommand()))
+                .id(Utils.deNull(source.getId(), ObjectId::toHexString))
             .build();
     }
 
@@ -140,17 +140,14 @@ public class Converter {
             .build();
     }
 
-    public static com.mikerusoft.euroleague.model.CommandQuarterStat convertM(com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat stat) {
-        if (stat == null)
+    public static com.mikerusoft.euroleague.model.CommandQuarterStat convertM(com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat source) {
+        if (source == null)
             return null;
         return com.mikerusoft.euroleague.model.CommandQuarterStat.builder()
-                .attempts1(stat.getAttempts1())
-                .points1(stat.getPoints1())
-                .attempts2(stat.getAttempts2())
-                .points2(stat.getPoints2())
-                .attempts3(stat.getAttempts3())
-                .points3(stat.getPoints3())
-                .quarter(stat.getQuarter().getDisplay())
+                .points1(source.getPoints1())
+                .points2(source.getPoints2())
+                .points3(source.getPoints3())
+                .quarter(source.getQuarter().getDisplay())
             .build();
     }
 
@@ -158,66 +155,69 @@ public class Converter {
         if (stat == null)
             return null;
         return com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat.builder()
-                .attempts1(stat.getAttempts1())
                 .points1(stat.getPoints1())
-                .attempts2(stat.getAttempts2())
                 .points2(stat.getPoints2())
-                .attempts3(stat.getAttempts3())
                 .points3(stat.getPoints3())
                 .quarter(Quarter.valueOf(stat.getQuarter()))
             .build();
     }
 
-    public static com.mikerusoft.euroleague.model.CommandMatchStat convertM(com.mikerusoft.euroleague.entities.mongo.CommandMatchStat stat) {
-        if (stat == null)
+    public static com.mikerusoft.euroleague.model.CommandMatchStat convertM(com.mikerusoft.euroleague.entities.mongo.CommandMatchStat source) {
+        if (source == null)
             return null;
         return com.mikerusoft.euroleague.model.CommandMatchStat.builder()
-                .command(convertM(stat.getCommand()))
-                .score(stat.getScore())
-                .reboundsDefense(stat.getReboundsDefense())
-                .reboundsOffense(stat.getReboundsOffense())
-                .assists(stat.getAssists())
-                .foulsDefense(stat.getFoulsDefense())
-                .more10Points(stat.getMore10Points())
-                .playerMaxPointsName(stat.getPlayerMaxPointsName())
-                .playerMaxPointsScore(stat.getPlayerMaxPointsScore())
-                .maxLead(stat.getMaxLead())
-                .maxLeadQuarter(stat.getMaxLeadQuarter().getDisplay())
-                .scoreStart5Score(stat.getScoreStart5Score())
-                .scoreBenchScore(stat.getScoreBenchScore())
-                .steals(stat.getSteals())
-                .turnovers(stat.getTurnovers())
-                .secondChanceAttempt(stat.getSecondChanceAttempt())
+                .command(convertM(source.getCommand()))
+                .score(source.getScore())
+                .reboundsDefense(source.getReboundsDefense())
+                .reboundsOffense(source.getReboundsOffense())
+                .assists(source.getAssists())
+                .foulsDefense(source.getFoulsDefense())
+                .more10Points(source.getMore10Points())
+                .playerMaxPointsName(source.getPlayerMaxPointsName())
+                .playerMaxPointsScore(source.getPlayerMaxPointsScore())
+                .maxLead(source.getMaxLead())
+                .maxLeadQuarter(source.getMaxLead() > 0 ? source.getMaxLeadQuarter().getDisplay() : null)
+                .scoreStart5Score(source.getScoreStart5Score())
+                .scoreBenchScore(source.getScoreBenchScore())
+                .steals(source.getSteals())
+                .turnovers(source.getTurnovers())
+                .secondChanceAttempt(source.getSecondChanceAttempt())
+                .attempts1(source.getAttempts1())
+                .attempts2(source.getAttempts2())
+                .attempts3(source.getAttempts3())
                 .quarterStats(
-                    Optional.ofNullable(stat.getQuarterStats()).orElseGet(ArrayList::new)
+                    Optional.ofNullable(source.getQuarterStats()).orElseGet(ArrayList::new)
                     .stream().sorted(Comparator.comparingInt(o -> o.getQuarter().getOrder()))
                     .map(Converter::convertM).collect(Collectors.toList())
                 )
             .build();
     }
 
-    public static com.mikerusoft.euroleague.entities.mongo.CommandMatchStat convertM(com.mikerusoft.euroleague.model.CommandMatchStat stat) {
-        if (stat == null)
+    public static com.mikerusoft.euroleague.entities.mongo.CommandMatchStat convertM(com.mikerusoft.euroleague.model.CommandMatchStat source) {
+        if (source == null)
             return null;
         return com.mikerusoft.euroleague.entities.mongo.CommandMatchStat.builder()
-                .command(convertM(stat.getCommand()))
-                .score(stat.getScore())
-                .reboundsDefense(stat.getReboundsDefense())
-                .reboundsOffense(stat.getReboundsOffense())
-                .assists(stat.getAssists())
-                .foulsDefense(stat.getFoulsDefense())
-                .more10Points(stat.getMore10Points())
-                .playerMaxPointsName(stat.getPlayerMaxPointsName())
-                .playerMaxPointsScore(stat.getPlayerMaxPointsScore())
-                .maxLead(stat.getMaxLead())
-                .maxLeadQuarter(Quarter.byDisplayName(stat.getMaxLeadQuarter()))
-                .scoreStart5Score(stat.getScoreStart5Score())
-                .scoreBenchScore(stat.getScoreBenchScore())
-                .steals(stat.getSteals())
-                .turnovers(stat.getTurnovers())
-                .secondChanceAttempt(stat.getSecondChanceAttempt())
+                .command(convertM(source.getCommand()))
+                .score(source.getScore())
+                .reboundsDefense(source.getReboundsDefense())
+                .reboundsOffense(source.getReboundsOffense())
+                .assists(source.getAssists())
+                .foulsDefense(source.getFoulsDefense())
+                .more10Points(source.getMore10Points())
+                .playerMaxPointsName(source.getPlayerMaxPointsName())
+                .playerMaxPointsScore(source.getPlayerMaxPointsScore())
+                .maxLead(source.getMaxLead())
+                .maxLeadQuarter(Quarter.byDisplayName(source.getMaxLeadQuarter()))
+                .scoreStart5Score(source.getScoreStart5Score())
+                .scoreBenchScore(source.getScoreBenchScore())
+                .steals(source.getSteals())
+                .turnovers(source.getTurnovers())
+                .secondChanceAttempt(source.getSecondChanceAttempt())
+                .attempts1(source.getAttempts1())
+                .attempts2(source.getAttempts2())
+                .attempts3(source.getAttempts3())
                 .quarterStats(
-                    Optional.ofNullable(stat.getQuarterStats()).orElseGet(ArrayList::new)
+                    Optional.ofNullable(source.getQuarterStats()).orElseGet(ArrayList::new)
                         .stream().map(Converter::convertM)
                         .sorted(Comparator.comparingInt(o -> o.getQuarter().getOrder()))
                         .collect(Collectors.toList())

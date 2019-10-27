@@ -13,9 +13,6 @@ public class CommandQuarterStat {
     private String quarter;
 
     private int points1;
-    private int attempts1;
     private int points2;
-    private int attempts2;
     private int points3;
-    private int attempts3;
 }

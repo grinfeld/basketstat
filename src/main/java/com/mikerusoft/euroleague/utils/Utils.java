@@ -1,5 +1,7 @@
 package com.mikerusoft.euroleague.utils;
 
+import java.sql.Date;
+import java.util.Calendar;
 import java.util.function.Function;
 
 public class Utils {
@@ -40,6 +42,10 @@ public class Utils {
         return obj == null ? null : func.apply(obj);
     }
 
+    public static String deNull(String str) {
+        return str == null ? "" : str;
+    }
+
     public static String deNullTemp(String str) {
         return str;
     }
@@ -55,5 +61,15 @@ public class Utils {
 
     public static boolean isEmptyTrimmed(String str) {
         return str == null || str.trim().isEmpty();
+    }
+
+    public static String extractSeason(Date now) {
+        Calendar calendarForNextYear = Calendar.getInstance();
+        calendarForNextYear.setTime(now);
+        int month = calendarForNextYear.get(Calendar.MONTH);
+        int nextYearBuilder = calendarForNextYear.get(Calendar.YEAR);
+        nextYearBuilder = month > 1 && month <= 6 ? nextYearBuilder - 1 : nextYearBuilder;
+        calendarForNextYear.set(Calendar.YEAR, nextYearBuilder + 1);
+        return nextYearBuilder + String.valueOf(calendarForNextYear.get(Calendar.YEAR));
     }
 }

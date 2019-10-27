@@ -4,10 +4,12 @@ import com.mikerusoft.euroleague.menus.MenuProperties;
 import com.mikerusoft.euroleague.model.*;
 import com.mikerusoft.euroleague.services.DataService;
 import com.mikerusoft.euroleague.utils.Utils;
+import com.mikerusoft.euroleague.utils.Validations;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -21,13 +23,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.function.Consumer;
 
+import static com.mikerusoft.euroleague.utils.Utils.assertNotNull;
+import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
+
 @Controller
+@Slf4j
 public class BasketStatController {
 
     private int matchesMaxNumber;
@@ -147,54 +150,68 @@ public class BasketStatController {
     }
 
     @GetMapping("/creatematch")
-    public String createMatch(Model model) {
-        return editMatch(null, null, model);
+    public String createMatch(@ModelAttribute("tournament") String tournament, Model model) {
+        return editMatch(tournament, null, model, "creatematch");
     }
 
     @PostMapping("/editmatch")
-    public String editMatch(@ModelAttribute("tournament") String tournamentId, @ModelAttribute("match") String matchId, Model model) {
+    public String editMatch(@ModelAttribute("match") Match match, Model model) {
+        return editMatch(null, match, model, "editmatch");
+    }
 
-        fillModelWithInitialData(model);
+    private String editMatch(String tournamentId, Match match, Model model, String from) {
+        try {
+            fillModelWithInitialData(model);
 
-        Match match = null;
-        if (matchId != null) {
-            match = dataServiceMongo.getMatch(matchId);
+            if (match == null) {
+                Date now = new Date(System.currentTimeMillis());
+                match = Match.builder().tournament(Tournament.builder().id(Utils.isEmptyTrimmed(tournamentId) ? null : tournamentId.trim()).build())
+                        .date(now)
+                        .season(Utils.extractSeason(now))
+                        .awayCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(initialCommandStats()).build())
+                        .homeCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(initialCommandStats()).build())
+                    .build();
+            }
+
+            match = normalizeMatch(match);
+
+            model.addAttribute("currentMatch", match);
+            from = "editmatch";
+        } catch (Exception e) {
+            model.addAttribute("error", e.getMessage());
+            log.error("", e);
         }
-
-        if (match == null) {
-            Date now = new Date(System.currentTimeMillis());
-            match = Match.builder().tournament(Tournament.builder().id(tournamentId).build())
-                    .date(now)
-                    .season(extractSeason(now))
-                    .awayCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(initialCommandStats()).build())
-                    .homeCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(initialCommandStats()).build())
-                .build();
-        }
-
-        model.addAttribute("currentMatch", match);
-
-        return "editmatch";
+        return from;
     }
 
     @PostMapping("/savematch")
     public String saveMatch(@ModelAttribute("currentMatch") Match match, Model model) {
-        Utils.assertNotNull(match);
-
-        Match updatedMatch = dataServiceMongo.saveMatch(match);
-
-        model.addAttribute("currentMatch", updatedMatch);
-
-        return "editmatch";
+        try {
+            Validations.validateMatch(match);
+            Match updatedMatch = Optional.ofNullable(dataServiceMongo.saveMatch(match)).map(BasketStatController::normalizeMatch).orElse(null);
+            assertNotNull(updatedMatch, "Something went wrong");
+            model.addAttribute("currentMatch", updatedMatch);
+            model.addAttribute("msg", "Match saved successfully");
+        } catch (Exception e) {
+            model.addAttribute("currentMatch", match);
+            model.addAttribute("error", e.getMessage());
+            log.error("", e);
+        }
+        return "forward:/editmatch";
     }
 
-    private static String extractSeason(Date now) {
-        Calendar calendarForNextYear = Calendar.getInstance();
-        calendarForNextYear.setTime(now);
-        int month = calendarForNextYear.get(Calendar.MONTH);
-        int nextYearBuilder = calendarForNextYear.get(Calendar.YEAR);
-        nextYearBuilder = month > 1 && month <= 6 ? nextYearBuilder - 1 : nextYearBuilder;
-        calendarForNextYear.set(Calendar.YEAR, nextYearBuilder + 1);
-        return nextYearBuilder + String.valueOf(calendarForNextYear.get(Calendar.YEAR));
+    private static Match normalizeMatch(Match updatedMatch) {
+        List<CommandQuarterStat> homeQuarterStats = updatedMatch.getHomeCommand().getQuarterStats();
+        if (homeQuarterStats.size() == 4){
+            homeQuarterStats.add(CommandQuarterStat.builder().quarter(Quarter.OT.name()).build());
+            updatedMatch.getHomeCommand().setQuarterStats(homeQuarterStats);
+        }
+        List<CommandQuarterStat> awayQuarterStats = updatedMatch.getAwayCommand().getQuarterStats();
+        if (awayQuarterStats.size() == 4){
+            awayQuarterStats.add(CommandQuarterStat.builder().quarter(Quarter.OT.name()).build());
+            updatedMatch.getAwayCommand().setQuarterStats(awayQuarterStats);
+        }
+        return updatedMatch;
     }
 
     private static List<CommandQuarterStat> initialCommandStats() {
@@ -299,12 +316,14 @@ public class BasketStatController {
 
     private void fillTournament(Consumer<List<Tournament>> consumer) {
         List<Tournament> tournaments = dataServiceMongo.getTournaments();
+        tournaments.sort((o1, o2) -> o1.getTournName().compareToIgnoreCase(o2.getTournName()));
         consumer.accept(tournaments);
         //model.addAttribute("tournaments", tournaments);
     }
 
     private void fillCommand(Consumer<List<Command>> consumer) {
-        List<Command> commands = dataServiceMongo.getCommands();
+        List<Command> commands = Optional.ofNullable(dataServiceMongo.getCommands()).orElseGet(ArrayList::new);
+        commands.sort((o1, o2) -> o1.getCommandName().compareToIgnoreCase(o2.getCommandName()));
         consumer.accept(commands);
         //model.addAttribute("commands", commands);
     }
@@ -321,7 +340,7 @@ public class BasketStatController {
     public String editCommand(@ModelAttribute("command") Command command, Model model) {
         model.addAttribute("menus", this.menus);
 
-        command = Utils.isEmptyTrimmed(command.getId()) ? dataServiceMongo.insertCommand(command.getCommandName()) :
+        command = isEmptyTrimmed(command.getId()) ? dataServiceMongo.insertCommand(command.getCommandName()) :
                 dataServiceMongo.updateCommand(command);
         model.addAttribute("command", command);
         fillCommand(commands -> model.addAttribute("commands", commands));
@@ -332,7 +351,7 @@ public class BasketStatController {
     public String editTournament(@ModelAttribute("tourn") Tournament tournament, Model model) {
         model.addAttribute("menus", this.menus);
 
-        tournament = Utils.isEmptyTrimmed(tournament.getId()) ? dataServiceMongo.insertTournament(tournament.getTournName()) :
+        tournament = isEmptyTrimmed(tournament.getId()) ? dataServiceMongo.insertTournament(tournament.getTournName()) :
                 dataServiceMongo.updateTournament(tournament);
         model.addAttribute("tourn", tournament);
         fillTournament(tournaments -> model.addAttribute("tournaments", tournaments));

@@ -117,7 +117,7 @@ public class DataServiceMongo implements DataService<String> {
         match = match.toBuilder().build();
 
         Tournament tournament = match.getTournament();
-        assertNotNull(tournament);
+        assertNotNull(tournament, "Tournament couldn't be empty");
         if (tournament.getId() == null) {
             assertNotEmptyTrimmed(tournament.getName());
             match.setTournament(createTournament(tournament.getName()));
@@ -128,8 +128,7 @@ public class DataServiceMongo implements DataService<String> {
         }
 
         CommandMatchStat awayCommand = match.getAwayCommand();
-        assertNotNull(awayCommand);
-        assertNotNull(awayCommand.getCommand());
+        validateCommand(awayCommand, "Away Command couldn't be empty");
 
         if (awayCommand.getCommand().getId() == null) {
             assertNotEmptyTrimmed(awayCommand.getCommand().getName());
@@ -137,14 +136,13 @@ public class DataServiceMongo implements DataService<String> {
             match.getAwayCommand().setCommand(command);
         } else if (Utils.isEmptyTrimmed(awayCommand.getCommand().getName())) {
             Command command = commandRepository.findById(awayCommand.getCommand().getId().toHexString()).orElse(null);
-            assertNotNull(command);
+            assertNotNull(command, "Away Command doesn't exist");
             match.getHomeCommand().setCommand(command);
         }
 
 
         CommandMatchStat homeCommand = match.getHomeCommand();
-        assertNotNull(homeCommand);
-        assertNotNull(homeCommand.getCommand());
+        validateCommand(homeCommand, "Home Command couldn't be empty");
 
         if (homeCommand.getCommand().getId() == null) {
             assertNotEmptyTrimmed(homeCommand.getCommand().getName());
@@ -152,11 +150,16 @@ public class DataServiceMongo implements DataService<String> {
             match.getHomeCommand().setCommand(command);
         } else if (Utils.isEmptyTrimmed(homeCommand.getCommand().getName())) {
             Command command = commandRepository.findById(homeCommand.getCommand().getId().toHexString()).orElse(null);
-            assertNotNull(command);
+            assertNotNull(command, "Home Command doesn't exist");
             match.getHomeCommand().setCommand(command);
         }
 
         return matchRepository.save(match.toBuilder().id(null).build());
+    }
+
+    private static void validateCommand(CommandMatchStat awayCommand, String s) {
+        assertNotNull(awayCommand, s);
+        assertNotNull(awayCommand.getCommand(), s);
     }
 
     @Override

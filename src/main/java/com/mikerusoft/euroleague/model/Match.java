@@ -14,7 +14,7 @@ import java.util.Date;
 @Builder(toBuilder = true, builderClassName = "Builder")
 public class Match {
     private String id;
-    @DateTimeFormat(pattern = "dd/MM/yyyy")
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date date;
     private String season;
     private Tournament tournament;

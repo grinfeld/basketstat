@@ -30,6 +30,9 @@ public class CommandMatchStat {
     private int steals;
     private int turnovers;
     private int secondChanceAttempt;
+    private int attempts1;
+    private int attempts2;
+    private int attempts3;
 
     private List<CommandQuarterStat> quarterStats;
 }
