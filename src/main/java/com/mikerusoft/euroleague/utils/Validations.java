@@ -34,16 +34,24 @@ public class Validations {
             throw new IllegalArgumentException("Away team: Sum of all quarters score should be equal to game score");
         }
 
-        boolean hasNegativeHome = homeCommand.getQuarterStats().stream()
+        boolean hasNegativeHome = !homeCommand.getQuarterStats().stream()
             .mapToInt(CommandQuarterStat::getScore).filter(i -> i >= 0).findAny().isPresent();
         if (hasNegativeHome) {
-            throw new IllegalArgumentException("Home team: any score/attempts field shouldn't be negative");
+            throw new IllegalArgumentException("Home team: any score field shouldn't be negative");
         }
 
-        boolean hasNegativeAway = awayCommand.getQuarterStats().stream()
+        boolean hasNegativeAway = !awayCommand.getQuarterStats().stream()
             .mapToInt(CommandQuarterStat::getScore).filter(i -> i >= 0).findAny().isPresent();
         if (hasNegativeAway) {
-            throw new IllegalArgumentException("Away team: any score/attempts field shouldn't be negative");
+            throw new IllegalArgumentException("Away team: any score field shouldn't be negative");
+        }
+
+        if (homeCommand.getScore() != homeCommand.getPoints1() + homeCommand.getPoints2() * 2 + homeCommand.getPoints3() * 3) {
+            throw new IllegalArgumentException("Home team: sum of points should be equal to game score");
+        }
+
+        if (awayCommand.getScore() != awayCommand.getPoints1() + awayCommand.getPoints2() * 2 + awayCommand.getPoints3() * 3) {
+            throw new IllegalArgumentException("Away team: sum of points should be equal to game score");
         }
     }
 
