@@ -3,8 +3,6 @@ package com.mikerusoft.euroleague.utils;
 import com.mikerusoft.euroleague.model.*;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
-import java.util.stream.Stream;
-
 import static com.mikerusoft.euroleague.utils.Utils.assertNotNull;
 import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
 
@@ -26,34 +24,27 @@ public class Validations {
             throw new IllegalArgumentException("Score should be positive");
         }
 
-        int homeScore = homeCommand.getQuarterStats().stream().mapToInt(Validations::sumPoints).sum();
+        int homeScore = homeCommand.getQuarterStats().stream().mapToInt(CommandQuarterStat::getScore).sum();
         if (homeScore != homeCommand.getScore()) {
             throw new IllegalArgumentException("Home team: Sum of all quarters score should be equal to game score");
         }
 
-        int awayScore = awayCommand.getQuarterStats().stream().mapToInt(Validations::sumPoints).sum();
+        int awayScore = awayCommand.getQuarterStats().stream().mapToInt(CommandQuarterStat::getScore).sum();
         if (awayScore != awayCommand.getScore()) {
             throw new IllegalArgumentException("Away team: Sum of all quarters score should be equal to game score");
         }
 
         boolean hasNegativeHome = homeCommand.getQuarterStats().stream()
-            .flatMap(m -> Stream.of(m.getPoints1(), m.getPoints2(), m.getPoints3()))
-            .mapToInt(i -> i).filter(i -> i >= 0).findAny().isPresent();
+            .mapToInt(CommandQuarterStat::getScore).filter(i -> i >= 0).findAny().isPresent();
         if (hasNegativeHome) {
             throw new IllegalArgumentException("Home team: any score/attempts field shouldn't be negative");
         }
 
         boolean hasNegativeAway = awayCommand.getQuarterStats().stream()
-            .flatMap(m -> Stream.of(m.getPoints1(), m.getPoints2(), m.getPoints3()))
-            .mapToInt(i -> i).filter(i -> i >= 0).findAny().isPresent();
+            .mapToInt(CommandQuarterStat::getScore).filter(i -> i >= 0).findAny().isPresent();
         if (hasNegativeAway) {
             throw new IllegalArgumentException("Away team: any score/attempts field shouldn't be negative");
         }
-
-    }
-
-    private static int sumPoints(CommandQuarterStat m) {
-        return m.getPoints1() + m.getPoints2() * 2 + m.getPoints3() * 3;
     }
 
     private static void validateTournament(Tournament tournament) {

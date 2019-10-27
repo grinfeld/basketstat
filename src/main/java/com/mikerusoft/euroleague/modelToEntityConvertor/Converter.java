@@ -144,21 +144,17 @@ public class Converter {
         if (source == null)
             return null;
         return com.mikerusoft.euroleague.model.CommandQuarterStat.builder()
-                .points1(source.getPoints1())
-                .points2(source.getPoints2())
-                .points3(source.getPoints3())
+                .score(source.getScore())
                 .quarter(source.getQuarter().getDisplay())
             .build();
     }
 
-    public static com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat convertM(com.mikerusoft.euroleague.model.CommandQuarterStat stat) {
-        if (stat == null)
+    public static com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat convertM(com.mikerusoft.euroleague.model.CommandQuarterStat source) {
+        if (source == null)
             return null;
         return com.mikerusoft.euroleague.entities.mongo.CommandQuarterStat.builder()
-                .points1(stat.getPoints1())
-                .points2(stat.getPoints2())
-                .points3(stat.getPoints3())
-                .quarter(Quarter.valueOf(stat.getQuarter()))
+                .score(source.getScore())
+                .quarter(Quarter.valueOf(source.getQuarter()))
             .build();
     }
 
@@ -181,7 +177,7 @@ public class Converter {
                 .scoreBenchScore(source.getScoreBenchScore())
                 .steals(source.getSteals())
                 .turnovers(source.getTurnovers())
-                .secondChanceAttempt(source.getSecondChanceAttempt())
+                .secondChancePoints(source.getSecondChancePoints())
                 .attempts1(source.getAttempts1())
                 .attempts2(source.getAttempts2())
                 .attempts3(source.getAttempts3())
@@ -212,7 +208,7 @@ public class Converter {
                 .scoreBenchScore(source.getScoreBenchScore())
                 .steals(source.getSteals())
                 .turnovers(source.getTurnovers())
-                .secondChanceAttempt(source.getSecondChanceAttempt())
+                .secondChancePoints(source.getSecondChancePoints())
                 .attempts1(source.getAttempts1())
                 .attempts2(source.getAttempts2())
                 .attempts3(source.getAttempts3())

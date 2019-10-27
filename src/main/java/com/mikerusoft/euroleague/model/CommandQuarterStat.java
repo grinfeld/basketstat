@@ -11,8 +11,5 @@ import lombok.NoArgsConstructor;
 @Builder(toBuilder = true)
 public class CommandQuarterStat {
     private String quarter;
-
-    private int points1;
-    private int points2;
-    private int points3;
+    private int score;
 }
