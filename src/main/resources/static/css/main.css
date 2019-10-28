@@ -99,3 +99,8 @@ input.readonly-plaintext {
     margin: 0;
     background-color: #eeeeee;
 }
+
+.container {
+    margin-left: 20px;
+    text-align: left;
+}
