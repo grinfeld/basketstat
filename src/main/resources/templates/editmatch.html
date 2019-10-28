@@ -66,8 +66,8 @@
                     </tr>
                     <tr>
                         <th>Game Score</th>
-                        <td><input size="2" readonly="readonly" min="0" max="199" type="number" th:field="*{homeCommand.score}" /></td>
-                        <td><input size="2" readonly="readonly" min="0" max="199" type="number" th:field="*{awayCommand.score}" /></td>
+                        <td><input size="2" class="readonly-plaintext" readonly="readonly" min="0" max="199" type="number" th:field="*{homeCommand.score}" /></td>
+                        <td><input size="2" class="readonly-plaintext" readonly="readonly" min="0" max="199" type="number" th:field="*{awayCommand.score}" /></td>
                     </tr>
                     <tr>
                         <th>Score Quarter 1</th>
@@ -125,16 +125,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>Defense Rebounds</th>
-                        <td><input size="2" min="0" max="199" type="number" th:field="*{homeCommand.reboundsDefense}" /></td>
-                        <td><input size="2" min="0" max="199" type="number" th:field="*{awayCommand.reboundsDefense}" /></td>
-                    </tr>
-                    <tr>
-                        <th>Offense Rebounds</th>
-                        <td><input size="2" min="0" max="199" type="number" th:field="*{homeCommand.reboundsOffense}" /></td>
-                        <td><input size="2" min="0" max="199" type="number" th:field="*{awayCommand.reboundsOffense}" /></td>
-                    </tr>
-                    <tr>
                         <th>Assists</th>
                         <td><input size="2" min="0" max="199" type="number" th:field="*{homeCommand.assists}" /></td>
                         <td><input size="2" min="0" max="199" type="number" th:field="*{awayCommand.assists}" /></td>
@@ -182,16 +172,6 @@
                         </td>
                     </tr>
                     <tr>
-                        <th>Starting 5 score in a game</th>
-                        <td><input size="2" min="0" max="199" type="number" th:field="*{homeCommand.scoreStart5Score}" /></td>
-                        <td><input size="2" min="0" max="199" type="number" th:field="*{awayCommand.scoreStart5Score}" /></td>
-                    </tr>
-                    <tr>
-                        <th>Bench players scored in a game</th>
-                        <td><input size="2" min="0" max="199" type="number" th:field="*{homeCommand.scoreBenchScore}" /></td>
-                        <td><input size="2" min="0" max="199" type="number" th:field="*{awayCommand.scoreBenchScore}" /></td>
-                    </tr>
-                    <tr>
                         <th>Steals</th>
                         <td><input size="2" min="0" max="199" type="number" th:field="*{homeCommand.steals}" /></td>
                         <td><input size="2" min="0" max="199" type="number" th:field="*{awayCommand.steals}" /></td>
@@ -207,36 +187,66 @@
                         <td><input size="2" min="0" max="199" type="number" th:field="*{awayCommand.secondChancePoints}" /></td>
                     </tr>
                     <tr>
-                        <th>1 Point (scored/attempts)</th>
+                        <th>Starting 5/Bench scoreed</th>
                         <td>
-                            <input size="2" min="0" max="99" type="number" th:field="*{homeCommand.points1}" />
-                            <input size="2" min="0" max="99" type="number" th:field="*{homeCommand.attempts1}" />
+                            <input size="2" min="0" max="199" type="number" th:field="*{homeCommand.scoreStart5Score}" />
+                            <input size="2" min="0" max="199" type="number" th:field="*{homeCommand.scoreBenchScore}" />
                         </td>
                         <td>
-                            <input size="2" min="0" max="99" type="number" th:field="*{awayCommand.points1}" />
-                            <input size="2" min="0" max="99" type="number" th:field="*{awayCommand.attempts1}" />
+                            <input size="2" min="0" max="199" type="number" th:field="*{awayCommand.scoreStart5Score}" />
+                            <input size="2" min="0" max="199" type="number" th:field="*{awayCommand.scoreBenchScore}" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Rebounds Defense/Offense</th>
+                        <td>
+                            <input class="homeRebounds" size="2" min="0" max="99" type="number" th:field="*{homeCommand.reboundsDefense}" />
+                            <input class="homeRebounds" size="2" min="0" max="99" type="number" th:field="*{homeCommand.reboundsOffense}" />
+                            <input maxlength="6" size="6" class="readonly-plaintext" disabled="disabled" type="text" value="0" id="homeRebounds" />
+                        </td>
+                        <td>
+                            <input class="awayRebounds" size="2" min="0" max="99" type="number" th:field="*{awayCommand.reboundsDefense}" />
+                            <input class="awayRebounds" size="2" min="0" max="99" type="number" th:field="*{awayCommand.reboundsOffense}" />
+                            <input maxlength="6" size="6" class="readonly-plaintext" disabled="disabled" type="text" value="0" id="awayRebounds" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>1 Point (scored/attempts)</th>
+                        <td>
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{homeCommand.points1}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{homeCommand.attempts1}" />
+                            <input maxlength="6" size="6" class="readonly-plaintext" disabled="disabled" type="text" value="0" id="hpercP1" />
+                        </td>
+                        <td>
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{awayCommand.points1}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{awayCommand.attempts1}" />
+                            <input maxlength="6" size="6" class="readonly-plaintext" disabled="disabled" type="text" value="0" id="apercP1" />
                         </td>
                     </tr>
                     <tr>
                         <th>2 Point (scored/attempts)</th>
                         <td>
-                            <input size="2" min="0" max="99" type="number" th:field="*{homeCommand.points2}" />
-                            <input size="2" min="0" max="99" type="number" th:field="*{homeCommand.attempts2}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{homeCommand.points2}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{homeCommand.attempts2}" />
+                            <input maxlength="6" size="6" class="readonly-plaintext" disabled="disabled" type="text" value="0" id="hpercP2" />
                         </td>
                         <td>
-                            <input size="2" min="0" max="99" type="number" th:field="*{awayCommand.points2}" />
-                            <input size="2" min="0" max="99" type="number" th:field="*{awayCommand.attempts2}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{awayCommand.points2}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{awayCommand.attempts2}" />
+                            <input maxlength="6" size="6" class="readonly-plaintext" disabled="disabled" type="text" value="0" id="apercP2" />
                         </td>
                     </tr>
                     <tr>
                         <th>3 Point (scored/attempts)</th>
                         <td>
-                            <input size="2" min="0" max="99" type="number" th:field="*{homeCommand.points3}" />
-                            <input size="2" min="0" max="99" type="number" th:field="*{homeCommand.attempts3}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{homeCommand.points3}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{homeCommand.attempts3}" />
+                            <input maxlength="6" size="6" class="readonly-plaintext" disabled="disabled" type="text" value="0" id="hpercP3" />
                         </td>
                         <td>
-                            <input size="2" min="0" max="99" type="number" th:field="*{awayCommand.points3}" />
-                            <input size="2" min="0" max="99" type="number" th:field="*{awayCommand.attempts3}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{awayCommand.points3}" />
+                            <input class="calcPoints" size="2" min="0" max="99" type="number" th:field="*{awayCommand.attempts3}" />
+                            <input maxlength="6" size="6" class="readonly-plaintext" disabled="disabled" type="text" value="0" id="apercP3" />
                         </td>
                     </tr>
                     <tr>
@@ -250,9 +260,15 @@
             $('document').ready(function() {
                 $('#saveMatch').submit(function(event) {
                     sumScore();
+                    fillAllRebounds();
+                    calcAllPoints();
                 });
                 bindSumScore('homeCommand');
                 bindSumScore('awayCommand');
+                $('.homeRebounds').change(function() { fillAllRebounds(); });
+                $('.calcPoints').change(function() { calcAllPoints(); });
+                fillAllRebounds();
+                calcAllPoints();
             });
 
             function sumScore() {
@@ -264,6 +280,38 @@
                 $('#tournament\\.tournName').val($('#tournament\\.id option:selected').val() == '' ? '' : $('#tournament\\.id option:selected').text());
                 $('#homeCommand\\.command\\.commandName').val($('#homeCommand\\.command.id').val() == '' ? '' : $('#homeCommand\\.command.id option:selected').text());
                 $('#awayCommand\\.command\\.commandName').val($('#awayCommand\\.command.id').val() == '' ? '' : $('#awayCommand\\.command.id option:selected').text());
+            }
+
+            function fillAllRebounds() {
+                fillRebounds('homeCommand', 'homeRebounds');
+                fillRebounds('awayCommand', 'awayRebounds');
+            }
+
+            function fillRebounds(name, id) {
+                $('#' + id).val(
+                    parseInt($('#' + name + '\\.reboundsDefense').val()) +
+                    parseInt($('#' + name + '\\.reboundsOffense').val())
+                )
+            }
+
+            function calcAllPoints() {
+                calcPercent('homeCommand', 1, 'hpercP1');
+                calcPercent('homeCommand', 2, 'hpercP2');
+                calcPercent('homeCommand', 3, 'hpercP3');
+                calcPercent('awayCommand', 1, 'apercP1');
+                calcPercent('awayCommand', 2, 'apercP2');
+                calcPercent('awayCommand', 3, 'apercP3');
+            }
+
+            function calcPercent(name, i, id) {
+                let attempts = parseFloat($('#' + name + '\\.attempts' + i).val());
+                let points = parseFloat($('#' + name + '\\.points' + i).val());
+                let perc = attempts > 0 ? Math.round((points/attempts) * 10000)/100 : 0;
+                let pecStr = perc + "";
+                for(let i=0; i<5-pecStr.length; i++) {
+                    pecStr += " "
+                }
+                $('#' + id).val(pecStr + "%")
             }
 
             function sumAllQuarters(name) {

@@ -16,10 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
@@ -150,8 +147,8 @@ public class BasketStatController {
     }
 
     @GetMapping("/creatematch")
-    public String createMatch(@ModelAttribute("tournament") String tournament, Model model) {
-        return editMatch(tournament, null, model, "creatematch");
+    public String createMatch(@RequestParam("tournament") Optional<String> tournament, Model model) {
+        return editMatch(tournament.orElse(null), null, model, "creatematch");
     }
 
     @PostMapping("/editmatch")

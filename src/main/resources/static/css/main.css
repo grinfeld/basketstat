@@ -91,3 +91,11 @@ select.shortSelect {
 td.submit .pull-right .btn-success {
     height: 36px;
 }
+
+input.readonly-plaintext {
+    border: 1px solid black;
+    font-size: 1em;
+    padding: 0;
+    margin: 0;
+    background-color: #eeeeee;
+}

@@ -29,6 +29,7 @@ spring:
     mongodb:
       port: ${MONGO.PORT:27017}
       auto-index-creation: true
+      database: ${MONGO.DB_NAME:test}
 menu:
   menus:
     - name: "Results"

@@ -78,8 +78,8 @@ class DataServiceMongoTest {
             Match match = Match.builder()
                     .date(new Date(System.currentTimeMillis()))
                     .season("201920120")
-                    .homeCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
-                    .awayCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
+                    .homeCommand(CommandMatchStat.builder().command(Command.builder().name("name1").build()).build())
+                    .awayCommand(CommandMatchStat.builder().command(Command.builder().name("name2").build()).build())
                 .build();
             assertThrows(NullPointerException.class, () -> service.createMatch(match));
         }
@@ -90,8 +90,8 @@ class DataServiceMongoTest {
                     .date(new Date(System.currentTimeMillis()))
                     .season("201920120")
                     .tournament(Tournament.builder().name("").build())
-                    .homeCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
-                    .awayCommand(CommandMatchStat.builder().command(Command.builder().name("name").build()).build())
+                    .homeCommand(CommandMatchStat.builder().command(Command.builder().name("name1").build()).build())
+                    .awayCommand(CommandMatchStat.builder().command(Command.builder().name("name2").build()).build())
                 .build();
             assertThrows(NullPointerException.class, () -> service.createMatch(match));
         }
@@ -120,7 +120,7 @@ class DataServiceMongoTest {
             assertThat(createdMatch.getAwayCommand()).isNotNull()
                     .hasFieldOrPropertyWithValue("assists", 10)
                     .hasFieldOrPropertyWithValue("maxLead", 1)
-                    .hasFieldOrPropertyWithValue("maxLeadQuarter", Quarter.OT);
+                    .hasFieldOrPropertyWithValue("maxLeadQuarter", Quarter.OT.name());
             assertThat(createdMatch.getTournament()).isNotNull()
                 .hasFieldOrPropertyWithValue("name", "Tourn")
                 .hasNoNullFieldsOrProperties();
