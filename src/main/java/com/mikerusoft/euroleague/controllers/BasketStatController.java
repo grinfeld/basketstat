@@ -146,19 +146,28 @@ public class BasketStatController {
         return "index";
     }
 
-    @GetMapping("/creatematch")
+    @GetMapping(value = {"/creatematch", "creatematch.html"})
     public String createMatch(@RequestParam("tournament") Optional<String> tournament, Model model) {
-        return editMatch(tournament.orElse(null), null, model, "creatematch");
+        return editMatch(null, tournament.orElse(null), null, model);
+    }
+
+    @GetMapping("/editmatch")
+    public String editMatchGet(@RequestParam("matchId") Optional<String> matchId, Model model) {
+        return editMatch(null, null, matchId.orElse(null), model);
     }
 
     @PostMapping("/editmatch")
-    public String editMatch(@ModelAttribute("match") Match match, Model model) {
-        return editMatch(null, match, model, "editmatch");
+    public String editMatch(@RequestParam("matchId") Optional<String> matchId, @ModelAttribute("match") Optional<Match> match, Model model) {
+        return editMatch(match.orElse(null), null, matchId.orElse(null), model);
     }
 
-    private String editMatch(String tournamentId, Match match, Model model, String from) {
+    private String editMatch(Match match, String tournamentId, String matchId, Model model) {
         try {
             fillModelWithInitialData(model);
+
+            if (match == null && !Utils.isEmptyTrimmed(matchId)) {
+                match = dataServiceMongo.getMatch(matchId);
+            }
 
             if (match == null) {
                 Date now = new Date(System.currentTimeMillis());
@@ -173,12 +182,11 @@ public class BasketStatController {
             match = normalizeMatch(match);
 
             model.addAttribute("currentMatch", match);
-            from = "editmatch";
         } catch (Exception e) {
             model.addAttribute("error", e.getMessage());
             log.error("", e);
         }
-        return from;
+        return "editmatch";
     }
 
     @PostMapping("/savematch")
@@ -197,18 +205,20 @@ public class BasketStatController {
         return "forward:/editmatch";
     }
 
-    private static Match normalizeMatch(Match updatedMatch) {
-        List<CommandQuarterStat> homeQuarterStats = updatedMatch.getHomeCommand().getQuarterStats();
+    private static Match normalizeMatch(Match match) {
+        if (match == null)
+            return null;
+        List<CommandQuarterStat> homeQuarterStats = match.getHomeCommand().getQuarterStats();
         if (homeQuarterStats.size() == 4){
             homeQuarterStats.add(CommandQuarterStat.builder().quarter(Quarter.OT.name()).build());
-            updatedMatch.getHomeCommand().setQuarterStats(homeQuarterStats);
+            match.getHomeCommand().setQuarterStats(homeQuarterStats);
         }
-        List<CommandQuarterStat> awayQuarterStats = updatedMatch.getAwayCommand().getQuarterStats();
+        List<CommandQuarterStat> awayQuarterStats = match.getAwayCommand().getQuarterStats();
         if (awayQuarterStats.size() == 4){
             awayQuarterStats.add(CommandQuarterStat.builder().quarter(Quarter.OT.name()).build());
-            updatedMatch.getAwayCommand().setQuarterStats(awayQuarterStats);
+            match.getAwayCommand().setQuarterStats(awayQuarterStats);
         }
-        return updatedMatch;
+        return match;
     }
 
     private static List<CommandQuarterStat> initialCommandStats() {

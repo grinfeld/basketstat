@@ -16,7 +16,7 @@
         </main>
         <div class="starter-template">
             <form name="saveMatch" id="saveMatch" action="#" th:action="@{/savematch}" th:object="${currentMatch}" method="post">
-                <input type="hidden" name="id" id="id" th:value="*{id}" />
+                <input type="hidden" th:field="*{id}" />
                 <table class="createMatch" cellpadding="5" cellspacing="5" border="1" th:if="${currentMatch != null}">
                     <tr>
                         <td class="submit" colspan="3" align="right"><span class="pull-right"><input type="submit" class="btn btn-success" id="submitButton" th:value="Save"></span></td>
@@ -30,15 +30,27 @@
                                         th:text="${tournament.getTournName()}"></option>
                             </select>
                         </td>
-                        <input type="hidden" name="tournament.tournName" id="tournament.tournName" value="" />
+                        <input type="hidden" th:field="*{tournament.tournName}" />
                     </tr>
                     <tr>
                         <th>Match Date</th>
-                        <td colspan="2"><input required="required" type="date" th:field="*{date}" /></td>
+                        <td colspan="2">
+                            <div class="form-row align-items-center">
+                                <div class="col-auto">
+                                    <input class="form-control mx-sm-0" required="required" type="date" th:field="*{date}" />
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <th>Season</th>
-                        <td colspan="2"><input required="required" maxlength="8" size="8" type="text" th:field="*{season}" /></td>
+                        <td colspan="2">
+                            <div class="form-row align-items-center">
+                                <div class="col-auto">
+                                    <input class="form-control mx-sm-0" required="required" maxlength="8" size="8" type="text" th:field="*{season}" />
+                                </div>
+                            </div>
+                        </td>
                     </tr>
                     <tr>
                         <th></th>
@@ -53,7 +65,7 @@
                                 <option th:each="hcommand : ${commands}" th:value="${hcommand.id}"
                                         th:text="${hcommand.getCommandName()}"></option>
                             </select>
-                            <input type="hidden" name="homeCommand.command.commandName" id="homeCommand.command.commandName" value="" />
+                            <input type="hidden" th:field="*{homeCommand.command.commandName}" />
                         </td>
                         <td>
                             <select class="custom-select" required="required" th:field="${currentMatch.awayCommand.command.id}">
@@ -61,7 +73,7 @@
                                 <option th:each="acommand : ${commands}" th:value="${acommand.id}"
                                         th:text="${acommand.getCommandName()}"></option>
                             </select>
-                            <input type="hidden" name="awayCommand.command.commandName" id="awayCommand.command.commandName" value="" />
+                            <input type="hidden" th:field="*{awayCommand.command.commandName}" />
                         </td>
                     </tr>
                     <tr>
@@ -262,10 +274,14 @@
                     sumScore();
                     fillAllRebounds();
                     calcAllPoints();
+                    $('#tournament\\.tournName').val($('#tournament\\.id option:selected').val() == '' ? '' : $('#tournament\\.id option:selected').text());
+                    $('#homeCommand\\.command\\.commandName').val($('#homeCommand\\.command\\.id').val() == '' ? '' : $('#homeCommand\\.command\\.id option:selected').text());
+                    $('#awayCommand\\.command\\.commandName').val($('#awayCommand\\.command\\.id').val() == '' ? '' : $('#awayCommand\\.command\\.id option:selected').text());
                 });
                 bindSumScore('homeCommand');
                 bindSumScore('awayCommand');
                 $('.homeRebounds').change(function() { fillAllRebounds(); });
+                $('.awayRebounds').change(function() { fillAllRebounds(); });
                 $('.calcPoints').change(function() { calcAllPoints(); });
                 fillAllRebounds();
                 calcAllPoints();
@@ -276,10 +292,6 @@
                 $('#homeCommand\\.score').val(homeCommandScore);
                 let awayCommandScore = sumAllQuarters('awayCommand');
                 $('#awayCommand\\.score').val(awayCommandScore);
-
-                $('#tournament\\.tournName').val($('#tournament\\.id option:selected').val() == '' ? '' : $('#tournament\\.id option:selected').text());
-                $('#homeCommand\\.command\\.commandName').val($('#homeCommand\\.command.id').val() == '' ? '' : $('#homeCommand\\.command.id option:selected').text());
-                $('#awayCommand\\.command\\.commandName').val($('#awayCommand\\.command.id').val() == '' ? '' : $('#awayCommand\\.command.id option:selected').text());
             }
 
             function fillAllRebounds() {

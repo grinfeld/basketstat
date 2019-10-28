@@ -136,7 +136,7 @@ public class Converter {
                 .tournament(convertM(source.getTournament()))
                 .awayCommand(convertM(source.getAwayCommand()))
                 .homeCommand(convertM(source.getHomeCommand()))
-                .id(Utils.deNullObject(source, s -> s != null && !isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
+                .id(!isEmptyTrimmed(source.getId()) ? new ObjectId(source.getId()) : null)
             .build();
     }
 
@@ -145,7 +145,7 @@ public class Converter {
             return null;
         return com.mikerusoft.euroleague.model.CommandQuarterStat.builder()
                 .score(source.getScore())
-                .quarter(source.getQuarter().getDisplay())
+                .quarter(source.getQuarter().name())
             .build();
     }
 
@@ -172,7 +172,7 @@ public class Converter {
                 .playerMaxPointsName(source.getPlayerMaxPointsName())
                 .playerMaxPointsScore(source.getPlayerMaxPointsScore())
                 .maxLead(source.getMaxLead())
-                .maxLeadQuarter(source.getMaxLead() > 0 ? source.getMaxLeadQuarter().name() : null)
+                .maxLeadQuarter(source.getMaxLead() > 0 && source.getMaxLeadQuarter() != null ? source.getMaxLeadQuarter().name() : null)
                 .scoreStart5Score(source.getScoreStart5Score())
                 .scoreBenchScore(source.getScoreBenchScore())
                 .steals(source.getSteals())
@@ -181,6 +181,9 @@ public class Converter {
                 .attempts1(source.getAttempts1())
                 .attempts2(source.getAttempts2())
                 .attempts3(source.getAttempts3())
+                .points1(source.getPoints1())
+                .points2(source.getPoints2())
+                .points3(source.getPoints3())
                 .quarterStats(
                     Optional.ofNullable(source.getQuarterStats()).orElseGet(ArrayList::new)
                     .stream().sorted(Comparator.comparingInt(o -> o.getQuarter().getOrder()))
@@ -212,6 +215,9 @@ public class Converter {
                 .attempts1(source.getAttempts1())
                 .attempts2(source.getAttempts2())
                 .attempts3(source.getAttempts3())
+                .points1(source.getPoints1())
+                .points2(source.getPoints2())
+                .points3(source.getPoints3())
                 .quarterStats(
                     Optional.ofNullable(source.getQuarterStats()).orElseGet(ArrayList::new)
                         .stream().map(Converter::convertM)

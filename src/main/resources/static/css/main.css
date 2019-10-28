@@ -95,8 +95,8 @@ td.submit .pull-right .btn-success {
 input.readonly-plaintext {
     border: 1px solid black;
     font-size: 1em;
-    padding: 0;
-    margin: 0;
+    padding: 1px;
+    margin: 1px;
     background-color: #eeeeee;
 }
 

@@ -137,9 +137,8 @@ public class DataServiceMongo implements DataService<String> {
         } else if (Utils.isEmptyTrimmed(awayCommand.getCommand().getName())) {
             Command command = commandRepository.findById(awayCommand.getCommand().getId().toHexString()).orElse(null);
             assertNotNull(command, "Away Command doesn't exist");
-            match.getHomeCommand().setCommand(command);
+            match.getAwayCommand().setCommand(command);
         }
-
 
         CommandMatchStat homeCommand = match.getHomeCommand();
         validateCommand(homeCommand, "Home Command couldn't be empty");
@@ -154,7 +153,7 @@ public class DataServiceMongo implements DataService<String> {
             match.getHomeCommand().setCommand(command);
         }
 
-        return matchRepository.save(match.toBuilder().id(null).build());
+        return matchRepository.save(match.toBuilder().build());
     }
 
     private static void validateCommand(CommandMatchStat awayCommand, String s) {

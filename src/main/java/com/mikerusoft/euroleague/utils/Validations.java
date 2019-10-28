@@ -53,6 +53,14 @@ public class Validations {
         if (awayCommand.getScore() != awayCommand.getPoints1() + awayCommand.getPoints2() * 2 + awayCommand.getPoints3() * 3) {
             throw new IllegalArgumentException("Away team: sum of points should be equal to game score");
         }
+
+        if (homeCommand.getScoreStart5Score() + homeCommand.getScoreBenchScore() != homeScore) {
+            throw new IllegalArgumentException("Home team: sum of start 5 and bench players should be equal to game score");
+        }
+
+        if (awayCommand.getScoreStart5Score() + awayCommand.getScoreBenchScore() != awayScore) {
+            throw new IllegalArgumentException("Away team: sum of start 5 and bench players should be equal to game score");
+        }
     }
 
     private static void validateTournament(Tournament tournament) {
