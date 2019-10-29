@@ -12,8 +12,7 @@ import com.mikerusoft.euroleague.services.DataService;
 import com.mikerusoft.euroleague.utils.Utils;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -153,7 +152,30 @@ public class DataServiceMongo implements DataService<String> {
             match.getHomeCommand().setCommand(command);
         }
 
+        validateNewMatchDoesNotExist(match);
+
         return matchRepository.save(match.toBuilder().build());
+    }
+
+    private void validateNewMatchDoesNotExist(Match match) {
+        if (match.getId() != null && !isEmptyTrimmed(match.getId().toString()))
+            return;
+        Tournament tournament = match.getTournament();
+        Calendar matchDate = Calendar.getInstance();
+        matchDate.setTime(match.getDate());
+        matchDate.set(Calendar.HOUR, 0);
+        matchDate.set(Calendar.MINUTE, 0);
+        matchDate.set(Calendar.MILLISECOND, 0);
+
+        Match found = matchRepository.findByMatchInTournamentAndSeasonWithDate(
+            tournament.getId().toHexString(), match.getSeason(), matchDate.getTime(),
+            match.getHomeCommand().getCommand().getId().toString(),
+            match.getHomeCommand().getCommand().getId().toString()
+        );
+
+        if (found != null) {
+            throw new IllegalArgumentException("Such match at the same date already exists");
+        }
     }
 
     private static void validateCommand(CommandMatchStat awayCommand, String s) {

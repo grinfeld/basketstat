@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -18,6 +19,11 @@ public interface MatchRepository extends CrudRepository<Match, String> {
         sort = "{'date': -1}"
     )
     List<Match> findByHomeCommandInTournamentAndSeason(String tournId, String season, String commandId, Pageable pageable);
+
+    @Query(
+        value = "{'tournament.id': ?0, 'season': ?1, 'date': ?2, 'homeCommand.command.id': ?3, 'awayCommand.command.id': ?4}"
+    )
+    Match findByMatchInTournamentAndSeasonWithDate(String tournId, String season, Date date, String commandId1, String commandId2);
 
     @Query(
         value = "{'tournament.id': ?0, 'season': ?1, 'awayCommand.command.id': ?2}",
