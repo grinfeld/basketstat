@@ -2,6 +2,7 @@ package com.mikerusoft.euroleague.utils;
 
 import java.sql.Date;
 import java.util.Calendar;
+import java.util.Optional;
 import java.util.function.Function;
 
 public class Utils {
@@ -60,7 +61,11 @@ public class Utils {
     }
 
     public static boolean isEmptyTrimmed(String str) {
-        return str == null || str.trim().isEmpty();
+        return isEmptyTrimmed(Optional.ofNullable(str));
+    }
+
+    public static boolean isEmptyTrimmed(Optional<String> str) {
+        return str.map(String::trim).orElse("").isEmpty();
     }
 
     public static String extractSeason(Date now) {

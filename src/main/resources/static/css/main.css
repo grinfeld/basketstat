@@ -88,7 +88,7 @@ select.shortSelect {
     font-size: 12px;
 }
 
-td.submit .pull-right .btn-success {
+.btn-success {
     height: 36px;
 }
 

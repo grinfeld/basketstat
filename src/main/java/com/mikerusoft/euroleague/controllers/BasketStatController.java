@@ -117,6 +117,51 @@ public class BasketStatController {
         return "index";
     }
 
+    @GetMapping({"/compare.html"})
+    public String compareGet(@RequestParam("tournamentId") Optional<String> tournamentId,
+                             @ModelAttribute("tournament") Optional<Tournament> tournament,
+                             @RequestParam("commandId1") Optional<String> commandId1,
+                             @ModelAttribute("command1") Optional<Command> command1,
+                             @RequestParam("commandId1") Optional<String> commandId2,
+                             @ModelAttribute("command2") Optional<Command> command2,
+                             Model model) {
+        return compare(tournamentId, tournament, commandId1, command1, commandId2, command2, model);
+    }
+
+    @PostMapping({"/compare.html"})
+    public String comparePost(@RequestParam("tournamentId") Optional<String> tournamentId,
+                             @ModelAttribute("tournament") Optional<Tournament> tournament,
+                             @RequestParam("commandId1") Optional<String> commandId1,
+                             @ModelAttribute("command1") Optional<Command> command1,
+                             @RequestParam("commandId1") Optional<String> commandId2,
+                             @ModelAttribute("command2") Optional<Command> command2,
+                             Model model) {
+        return compare(tournamentId, tournament, commandId1, command1, commandId2, command2, model);
+    }
+
+    public String compare(Optional<String> tournamentId,
+                             Optional<Tournament> tournament,
+                             Optional<String> commandId1,
+                             Optional<Command> command1,
+                             Optional<String> commandId2,
+                             Optional<Command> command2,
+                             Model model) {
+        fillModelWithInitialData(model);
+        if(!isEmptyTrimmed(tournamentId)) {
+            tournament = Optional.ofNullable(dataServiceMongo.getTournament(tournamentId.get()));
+            model.addAttribute("tournament", tournament.orElse(null));
+        }
+        if(!isEmptyTrimmed(commandId1)) {
+            command1 = Optional.ofNullable(dataServiceMongo.getCommand(commandId1.get()));
+            model.addAttribute("command1", command1.orElse(null));
+        }
+        if(!isEmptyTrimmed(commandId2)) {
+            command2 = Optional.ofNullable(dataServiceMongo.getCommand(commandId2.get()));
+            model.addAttribute("command2", command2.orElse(null));
+        }
+        return "compare.html";
+    }
+
     private static Result normalizeData(Result result) {
         Date date = result.getDate();
         Calendar instance = Calendar.getInstance(TimeZone.getDefault());
