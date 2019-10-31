@@ -104,3 +104,20 @@ input.readonly-plaintext {
     margin-left: 20px;
     text-align: left;
 }
+
+.shortText.form-control {
+    width: 90px;
+}
+
+.col-sm-3.col.my-6 {
+    max-width: 200px;
+}
+
+.col-sm-2.col-form-label {
+    padding-left: 0;
+    max-width: 100%;
+}
+
+.col.col-sm-3.my-1 {
+    padding-left: 0;
+}

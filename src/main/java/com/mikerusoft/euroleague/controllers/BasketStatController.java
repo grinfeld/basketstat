@@ -124,8 +124,9 @@ public class BasketStatController {
                              @ModelAttribute("command1") Optional<Command> command1,
                              @RequestParam("commandId1") Optional<String> commandId2,
                              @ModelAttribute("command2") Optional<Command> command2,
+                             @RequestParam("records") Optional<Integer> records,
                              Model model) {
-        return compare(tournamentId, tournament, commandId1, command1, commandId2, command2, model);
+        return compare(tournamentId, tournament, commandId1, command1, commandId2, command2, records, model);
     }
 
     @PostMapping({"/compare.html"})
@@ -135,8 +136,9 @@ public class BasketStatController {
                              @ModelAttribute("command1") Optional<Command> command1,
                              @RequestParam("commandId1") Optional<String> commandId2,
                              @ModelAttribute("command2") Optional<Command> command2,
+                             @RequestParam("records") Optional<Integer> records,
                              Model model) {
-        return compare(tournamentId, tournament, commandId1, command1, commandId2, command2, model);
+        return compare(tournamentId, tournament, commandId1, command1, commandId2, command2, records, model);
     }
 
     public String compare(Optional<String> tournamentId,
@@ -145,6 +147,7 @@ public class BasketStatController {
                              Optional<Command> command1,
                              Optional<String> commandId2,
                              Optional<Command> command2,
+                             Optional<Integer> records,
                              Model model) {
         fillModelWithInitialData(model);
         if(!isEmptyTrimmed(tournamentId)) {
@@ -159,6 +162,11 @@ public class BasketStatController {
             command2 = Optional.ofNullable(dataServiceMongo.getCommand(commandId2.get()));
             model.addAttribute("command2", command2.orElse(null));
         }
+
+        if (tournament.isPresent() && command1.isPresent() && command2.isPresent() && records.isPresent()) {
+            //dataServiceMongo.
+        }
+
         return "compare.html";
     }
 

@@ -197,6 +197,10 @@ public class DataServiceMongo implements DataService<String> {
         assertNumOfRecords(records);
         return matchRepository.findMatchesByCommands(tournId, season, awayCommandId, homeCommandId, records);
     }
+/*
+    public List<Match> ff() {
+        matchRepository.findByHomeCommandInTournamentAndSeason()
+    }*/
 
     private static void assertNumOfRecords(int records) {
         if (records <= 0)
