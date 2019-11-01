@@ -188,19 +188,17 @@ public class DataServiceMongo implements DataService<String> {
         return matchRepository.findById(matchId).map(m -> converter.convert(m, MATCH_MODEL_CLASS)).orElse(null);
     }
 
-    public List<Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, int records) {
+    public List<com.mikerusoft.euroleague.model.Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, int records) {
         assertNumOfRecords(records);
-        return matchRepository.findByCommandInTournamentAndSeason(tournId, season, commandId, records);
+        return matchRepository.findByCommandInTournamentAndSeason(tournId, season, commandId, records).stream()
+                .map(m -> converter.convert(m, MATCH_MODEL_CLASS)).collect(Collectors.toList());
     }
 
-    public List<Match> findByCommandsInTournamentAndSeason(String tournId, String season, String awayCommandId, String homeCommandId, int records) {
+    public List<com.mikerusoft.euroleague.model.Match> findByCommandsInTournamentAndSeason(String tournId, String season, String homeCommandId, String awayCommandId, int records) {
         assertNumOfRecords(records);
-        return matchRepository.findMatchesByCommands(tournId, season, awayCommandId, homeCommandId, records);
+        return matchRepository.findMatchesByCommands(tournId, season, homeCommandId, awayCommandId, records).stream()
+                .map(m -> converter.convert(m, MATCH_MODEL_CLASS)).collect(Collectors.toList());
     }
-/*
-    public List<Match> ff() {
-        matchRepository.findByHomeCommandInTournamentAndSeason()
-    }*/
 
     private static void assertNumOfRecords(int records) {
         if (records <= 0)

@@ -22,6 +22,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.sql.Date;
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import static com.mikerusoft.euroleague.utils.Utils.assertNotNull;
 import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
@@ -119,55 +121,73 @@ public class BasketStatController {
 
     @GetMapping({"/compare.html"})
     public String compareGet(@RequestParam("tournamentId") Optional<String> tournamentId,
-                             @ModelAttribute("tournament") Optional<Tournament> tournament,
                              @RequestParam("commandId1") Optional<String> commandId1,
-                             @ModelAttribute("command1") Optional<Command> command1,
                              @RequestParam("commandId1") Optional<String> commandId2,
-                             @ModelAttribute("command2") Optional<Command> command2,
-                             @RequestParam("records") Optional<Integer> records,
+                             @ModelAttribute("filter") Optional<CompareFilter> filter,
                              Model model) {
-        return compare(tournamentId, tournament, commandId1, command1, commandId2, command2, records, model);
+        return compare(tournamentId, commandId1, commandId2, filter, model);
     }
 
     @PostMapping({"/compare.html"})
     public String comparePost(@RequestParam("tournamentId") Optional<String> tournamentId,
-                             @ModelAttribute("tournament") Optional<Tournament> tournament,
                              @RequestParam("commandId1") Optional<String> commandId1,
-                             @ModelAttribute("command1") Optional<Command> command1,
                              @RequestParam("commandId1") Optional<String> commandId2,
-                             @ModelAttribute("command2") Optional<Command> command2,
-                             @RequestParam("records") Optional<Integer> records,
+                             @ModelAttribute("filter") Optional<CompareFilter> filter,
                              Model model) {
-        return compare(tournamentId, tournament, commandId1, command1, commandId2, command2, records, model);
+        return compare(tournamentId, commandId1, commandId2, filter, model);
+    }
+
+    private <T, R> void fillFilterField(T obj, Predicate<T> enterPredicate,
+                                        Function<T, R> action, Predicate<R> resultPredicate, Consumer<R> resultPerform) {
+        Optional.ofNullable(obj)
+                .filter(enterPredicate).map(action).filter(resultPredicate).ifPresent(resultPerform);
     }
 
     public String compare(Optional<String> tournamentId,
-                             Optional<Tournament> tournament,
                              Optional<String> commandId1,
-                             Optional<Command> command1,
                              Optional<String> commandId2,
-                             Optional<Command> command2,
-                             Optional<Integer> records,
+                             Optional<CompareFilter> filter,
                              Model model) {
         fillModelWithInitialData(model);
-        if(!isEmptyTrimmed(tournamentId)) {
-            tournament = Optional.ofNullable(dataServiceMongo.getTournament(tournamentId.get()));
-            model.addAttribute("tournament", tournament.orElse(null));
-        }
-        if(!isEmptyTrimmed(commandId1)) {
-            command1 = Optional.ofNullable(dataServiceMongo.getCommand(commandId1.get()));
-            model.addAttribute("command1", command1.orElse(null));
-        }
-        if(!isEmptyTrimmed(commandId2)) {
-            command2 = Optional.ofNullable(dataServiceMongo.getCommand(commandId2.get()));
-            model.addAttribute("command2", command2.orElse(null));
-        }
+        Date now = new Date(System.currentTimeMillis());
+        CompareFilter compareFilter = filter.orElseGet(() -> CompareFilter.builder().season(Utils.extractSeason(now)).build());
 
-        if (tournament.isPresent() && command1.isPresent() && command2.isPresent() && records.isPresent()) {
-            //dataServiceMongo.
+        fillFilterField(tournamentId, t -> !Utils.isEmptyTrimmed(t), this::getTournament, Objects::nonNull,
+            tournament -> {
+                compareFilter.setTournament(tournament);
+                model.addAttribute("tournament", tournament);
+            }
+        );
+        fillFilterField(commandId1, c -> !Utils.isEmptyTrimmed(c), this::getCommand, Objects::nonNull,
+            command -> {
+                compareFilter.setCommand1(command);
+                model.addAttribute("command1", command);
+            }
+        );
+        fillFilterField(commandId2, c -> !Utils.isEmptyTrimmed(c), this::getCommand, Objects::nonNull,
+            command -> {
+                compareFilter.setCommand2(command);
+                model.addAttribute("command2", command);
+            }
+        );
+        model.addAttribute("filter", compareFilter);
+
+        if (compareFilter.filterReady()) {
+            List<Match> command1Stat = dataServiceMongo.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(), compareFilter.getSeason(),
+                    compareFilter.getCommand1Id(), compareFilter.getRecords());
+            List<Match> command2Stat = dataServiceMongo.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(), compareFilter.getSeason(),
+                    compareFilter.getCommand2Id(), compareFilter.getRecords());
         }
 
         return "compare.html";
+    }
+
+    private Tournament getTournament(Optional<String> tournament) {
+        return dataServiceMongo.getTournament(tournament.get());
+    }
+
+    private Command getCommand(Optional<String> command) {
+        return dataServiceMongo.getCommand(command.get());
     }
 
     private static Result normalizeData(Result result) {
