@@ -1,32 +1,28 @@
 package com.mikerusoft.euroleague.controllers;
 
+import com.mikerusoft.euroleague.controllers.model.Action;
+import com.mikerusoft.euroleague.controllers.model.ResultAvg;
 import com.mikerusoft.euroleague.menus.MenuProperties;
 import com.mikerusoft.euroleague.model.*;
+import com.mikerusoft.euroleague.model.exceptions.AssertResultException;
 import com.mikerusoft.euroleague.services.DataService;
 import com.mikerusoft.euroleague.utils.Utils;
 import com.mikerusoft.euroleague.utils.Validations;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.sql.Date;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-import static com.mikerusoft.euroleague.utils.Utils.assertNotNull;
-import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
+import static com.mikerusoft.euroleague.utils.Utils.*;
 
 @Controller
 @Slf4j
@@ -52,34 +48,6 @@ public class BasketStatController {
         return "index";
     }
 
-    private static void assertResult(Result result) {
-        int sunOfSplitScoreIn = result.getScored1Points() + result.getScored2Points() * 2 + result.getScored3Points() * 3;
-        if (sunOfSplitScoreIn != result.getScoreIn()) {
-            throw new IllegalArgumentException("Sum of scored points should be the same as score in");
-        }
-
-        if (result.getScored1Points() > result.getAttempts1Points()) {
-            throw new IllegalArgumentException("Scored 1 point should be less or equal to attempts");
-        }
-
-        if (result.getScored2Points() > result.getAttempts2Points()) {
-            throw new IllegalArgumentException("Scored 2 point should be less or equal to attempts");
-        }
-
-        if (result.getScored3Points() > result.getAttempts3Points()) {
-            throw new IllegalArgumentException("Scored 3 point should be less or equal to attempts");
-        }
-    }
-
-    private static class AssertResultException extends RuntimeException {
-        private String fromPage;
-
-        AssertResultException(String message, String fromPage) {
-            super(message);
-            this.fromPage = fromPage;
-        }
-    }
-
     @ExceptionHandler({AssertResultException.class})
     public String handleDemoException(AssertResultException exception,
                                       HttpServletRequest req) {
@@ -90,7 +58,7 @@ public class BasketStatController {
 
         fillCommand(commands -> req.setAttribute("commands", commands));
         fillTournament(tournaments -> req.setAttribute("tournaments", tournaments));
-        return "".equals(exception.fromPage) ? "error" : exception.fromPage;
+        return "".equals(exception.getFromPage()) ? "error" : exception.getFromPage();
     }
 
     @PostMapping({"/edit"})
@@ -102,12 +70,12 @@ public class BasketStatController {
 
         if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
         try {
-            assertResult(result);
+            Result.assertResult(result);
         } catch (Exception e) {
             throw new AssertResultException(e.getMessage(), "index");
         }
 
-        result = normalizeData(result);
+        result = Result.normalizeData(result);
 
         Result updatedResult = dataService.saveResult(result);
 
@@ -137,13 +105,7 @@ public class BasketStatController {
         return compare(tournamentId, commandId1, commandId2, filter, model);
     }
 
-    private <T, R> void fillFilterField(T obj, Predicate<T> enterPredicate,
-                                        Function<T, R> action, Predicate<R> resultPredicate, Consumer<R> resultPerform) {
-        Optional.ofNullable(obj)
-                .filter(enterPredicate).map(action).filter(resultPredicate).ifPresent(resultPerform);
-    }
-
-    public String compare(Optional<String> tournamentId,
+    private String compare(Optional<String> tournamentId,
                              Optional<String> commandId1,
                              Optional<String> commandId2,
                              Optional<CompareFilter> filter,
@@ -173,29 +135,20 @@ public class BasketStatController {
         model.addAttribute("filter", compareFilter);
 
         if (compareFilter.filterReady()) {
-            List<Match> command1Stat = dataServiceMongo.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(), compareFilter.getSeason(),
-                    compareFilter.getCommand1Id(), compareFilter.getRecords());
-            List<Match> command2Stat = dataServiceMongo.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(), compareFilter.getSeason(),
-                    compareFilter.getCommand2Id(), compareFilter.getRecords());
+            List<Match> command1Stat = dataServiceMongo.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(),
+                    compareFilter.getSeason(), compareFilter.getCommand1Id(), compareFilter.getRecords());
+            List<Match> command2Stat = dataServiceMongo.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(),
+                    compareFilter.getSeason(), compareFilter.getCommand2Id(), compareFilter.getRecords());
+            model.addAttribute("command1Stat", command1Stat);
+            model.addAttribute("command2Stat", command2Stat);
         }
 
         return "compare.html";
     }
 
-    private Tournament getTournament(Optional<String> tournament) {
-        return dataServiceMongo.getTournament(tournament.get());
-    }
-
-    private Command getCommand(Optional<String> command) {
-        return dataServiceMongo.getCommand(command.get());
-    }
-
-    private static Result normalizeData(Result result) {
-        Date date = result.getDate();
-        Calendar instance = Calendar.getInstance(TimeZone.getDefault());
-        instance.setTime(date);
-
-        return result.toBuilder().date(new Date(instance.getTime().getTime())).build();
+    private static <T, R> void fillFilterField(T obj, Predicate<T> enterPredicate, Function<T, R> action,
+                                               Predicate<R> resultPredicate, Consumer<R> resultPerform) {
+        Optional.ofNullable(obj).filter(enterPredicate).map(action).filter(resultPredicate).ifPresent(resultPerform);
     }
 
     @PostMapping("/view")
@@ -204,13 +157,13 @@ public class BasketStatController {
 
         fillModelWithInitialData(model);
 
-        Integer commandId = convertString(command);
-        Integer tournId = convertString(tournament);
+        Integer commandId = Utils.convertString(command);
+        Integer tournId = Utils.convertString(tournament);
 
         if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
 
         Action actionEnum = Action.byName(action);
-        Integer resultId = convertString(result);
+        Integer resultId = Utils.convertString(result);
 
         if ( (resultId == null && actionEnum != Action.create) || needLastResultsAfterHandleAction(model, commandId, tournId, actionEnum, resultId)) {
             fillLastResults(model, commandId, tournId);
@@ -247,12 +200,12 @@ public class BasketStatController {
                 match = Match.builder().tournament(Tournament.builder().id(Utils.isEmptyTrimmed(tournamentId) ? null : tournamentId.trim()).build())
                         .date(now)
                         .season(Utils.extractSeason(now))
-                        .awayCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(initialCommandStats()).build())
-                        .homeCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(initialCommandStats()).build())
+                        .awayCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(CommandQuarterStat.initialCommandStats()).build())
+                        .homeCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(CommandQuarterStat.initialCommandStats()).build())
                     .build();
             }
 
-            match = normalizeMatch(match);
+            match = Match.normalizeMatch(match);
 
             model.addAttribute("currentMatch", match);
         } catch (Exception e) {
@@ -266,7 +219,7 @@ public class BasketStatController {
     public String saveMatch(@ModelAttribute("currentMatch") Match match, Model model) {
         try {
             Validations.validateMatch(match);
-            Match updatedMatch = Optional.ofNullable(dataServiceMongo.saveMatch(match)).map(BasketStatController::normalizeMatch).orElse(null);
+            Match updatedMatch = Optional.ofNullable(dataServiceMongo.saveMatch(match)).map(Match::normalizeMatch).orElse(null);
             assertNotNull(updatedMatch, "Something went wrong");
             model.addAttribute("currentMatch", updatedMatch);
             model.addAttribute("msg", "Match saved successfully");
@@ -276,32 +229,6 @@ public class BasketStatController {
             log.error("", e);
         }
         return "forward:/editmatch";
-    }
-
-    private static Match normalizeMatch(Match match) {
-        if (match == null)
-            return null;
-        List<CommandQuarterStat> homeQuarterStats = match.getHomeCommand().getQuarterStats();
-        if (homeQuarterStats.size() == 4){
-            homeQuarterStats.add(CommandQuarterStat.builder().quarter(Quarter.OT.name()).build());
-            match.getHomeCommand().setQuarterStats(homeQuarterStats);
-        }
-        List<CommandQuarterStat> awayQuarterStats = match.getAwayCommand().getQuarterStats();
-        if (awayQuarterStats.size() == 4){
-            awayQuarterStats.add(CommandQuarterStat.builder().quarter(Quarter.OT.name()).build());
-            match.getAwayCommand().setQuarterStats(awayQuarterStats);
-        }
-        return match;
-    }
-
-    private static List<CommandQuarterStat> initialCommandStats() {
-        return Arrays.asList(
-            CommandQuarterStat.builder().quarter(Quarter.FIRST.name()).build(),
-            CommandQuarterStat.builder().quarter(Quarter.SECOND.name()).build(),
-            CommandQuarterStat.builder().quarter(Quarter.THIRD.name()).build(),
-            CommandQuarterStat.builder().quarter(Quarter.FOURTH.name()).build(),
-            CommandQuarterStat.builder().quarter(Quarter.OT.name()).build()
-        );
     }
 
     private boolean needLastResultsAfterHandleAction(Model model, Integer commandId, Integer tournId, Action actionEnum, Integer resultId) {
@@ -355,35 +282,10 @@ public class BasketStatController {
                 dataService.getLastResults(commandId, matchesMaxNumber) :
                 dataService.getLastResults(tournId, commandId, matchesMaxNumber);
 
-        ResultAvg avg = aggregateResults(lastResults);
+        ResultAvg avg = ResultAvg.aggregateResults(lastResults);
 
         model.addAttribute("results1st", lastResults);
         model.addAttribute("avg1st", avg);
-    }
-
-    private static Integer convertString(String str) {
-        return StringUtils.isEmpty(str) ? null : (str.trim().replaceAll("\\d", "").equals("") ? Integer.parseInt(str.trim()) : null);
-    }
-
-    private static ResultAvg aggregateResults(List<Result> lastResults) {
-        ResultStat rs = new ResultStat();
-        for (Result r : lastResults) {
-            rs.increaseAttempts1Points(r.getAttempts1Points());
-            rs.increaseScored1Points(r.getScored1Points());
-            rs.increaseAttempts2Points(r.getAttempts2Points());
-            rs.increaseScored2Points(r.getScored2Points());
-            rs.increaseAttempts3Points(r.getAttempts3Points());
-            rs.increaseScored3Points(r.getScored3Points());
-            rs.increaseScoreIn(r.getScoreIn());
-            rs.increaseScoreOut(r.getScoreOut());
-        }
-
-        return ResultAvg.builder().points1(Math.round(10000d * rs.getScored1Points() / rs.getAttempts1Points()) / 100d)
-                .points2(Math.round(10000d * rs.getScored2Points() / rs.getAttempts2Points()) / 100d)
-                .points3(Math.round(10000d * rs.getScored3Points() / rs.getAttempts3Points()) / 100d)
-                .scoreIn(Math.round(10d * rs.getScoreIn() / lastResults.size()) / 10d)
-                .scoreOut(Math.round(10d * rs.getScoreOut() / lastResults.size()) / 10d)
-                .build();
     }
 
     private void fillModelWithInitialData(Model model) {
@@ -398,14 +300,12 @@ public class BasketStatController {
         List<Tournament> tournaments = dataServiceMongo.getTournaments();
         tournaments.sort((o1, o2) -> o1.getTournName().compareToIgnoreCase(o2.getTournName()));
         consumer.accept(tournaments);
-        //model.addAttribute("tournaments", tournaments);
     }
 
     private void fillCommand(Consumer<List<Command>> consumer) {
         List<Command> commands = Optional.ofNullable(dataServiceMongo.getCommands()).orElseGet(ArrayList::new);
         commands.sort((o1, o2) -> o1.getCommandName().compareToIgnoreCase(o2.getCommandName()));
         consumer.accept(commands);
-        //model.addAttribute("commands", commands);
     }
 
     @GetMapping({"/command.html"})
@@ -446,76 +346,16 @@ public class BasketStatController {
         return "tournament";
     }
 
-    private enum Action {
-        delete, edit, create,
-        na;
-
-        public static Action byName(String name) {
-            name = name == null ? "" : name.trim();
-            try {
-                return Action.valueOf(name.toLowerCase());
-            } catch (Exception ignore){}
-
-            return na;
-        }
+    private Tournament getTournament(Optional<String> tournament) {
+        if (!tournament.isPresent())
+            throw new NullPointerException("No tournament");
+        return dataServiceMongo.getTournament(tournament.get());
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    @Builder(builderClassName = "Builder")
-    public static class ResultAvg {
-        private double points3;
-        private double points2;
-        private double points1;
-        private double scoreIn;
-        private double scoreOut;
-    }
-
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    private static class ResultStat {
-        private int attempts3Points;
-        private int scored3Points;
-        private int attempts2Points;
-        private int scored2Points;
-        private int attempts1Points;
-        private int scored1Points;
-        private int scoreIn;
-        private int scoreOut;
-
-        public void increaseScoreIn(int scoreIn) {
-            this.scoreIn = this.scoreIn + scoreIn;
-        }
-
-        public void increaseScoreOut(int scoreOut) {
-            this.scoreOut = this.scoreOut + scoreOut;
-        }
-
-        public void increaseAttempts3Points(int attempts3Points) {
-            this.attempts3Points = this.attempts3Points + attempts3Points;
-        }
-
-        public void increaseScored3Points(int scored3Points) {
-            this.scored3Points = this.scored3Points + scored3Points;
-        }
-
-        public void increaseAttempts2Points(int attempts2Points) {
-            this.attempts2Points = this.attempts2Points + attempts2Points;
-        }
-
-        public void increaseScored2Points(int scored2Points) {
-            this.scored2Points = this.scored2Points + scored2Points;
-        }
-
-        public void increaseAttempts1Points(int attempts1Points) {
-            this.attempts1Points = this.attempts1Points + attempts1Points;
-        }
-
-        public void increaseScored1Points(int scored1Points) {
-            this.scored1Points = this.scored1Points + scored1Points;
-        }
+    private Command getCommand(Optional<String> command) {
+        if (!command.isPresent())
+            throw new NullPointerException("No command");
+        return dataServiceMongo.getCommand(command.get());
     }
 
 }

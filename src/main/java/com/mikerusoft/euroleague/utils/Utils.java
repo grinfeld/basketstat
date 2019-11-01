@@ -1,6 +1,7 @@
 package com.mikerusoft.euroleague.utils;
 
-import java.sql.Date;
+import org.springframework.util.StringUtils;
+
 import java.util.Calendar;
 import java.util.Optional;
 import java.util.function.Function;
@@ -47,10 +48,6 @@ public class Utils {
         return str == null ? "" : str;
     }
 
-    public static String deNullTemp(String str) {
-        return str;
-    }
-
     public static <T> T rethrowRuntime(Throwable t) {
         if (t instanceof Error)
             throw (Error)t;
@@ -68,7 +65,7 @@ public class Utils {
         return str.map(String::trim).orElse("").isEmpty();
     }
 
-    public static String extractSeason(Date now) {
+    public static String extractSeason(java.util.Date now) {
         Calendar calendarForNextYear = Calendar.getInstance();
         calendarForNextYear.setTime(now);
         int month = calendarForNextYear.get(Calendar.MONTH);
@@ -76,5 +73,9 @@ public class Utils {
         nextYearBuilder = month > 1 && month <= 6 ? nextYearBuilder - 1 : nextYearBuilder;
         calendarForNextYear.set(Calendar.YEAR, nextYearBuilder + 1);
         return nextYearBuilder + String.valueOf(calendarForNextYear.get(Calendar.YEAR));
+    }
+
+    public static Integer convertString(String str) {
+        return StringUtils.isEmpty(str) ? null : (str.trim().replaceAll("\\d", "").equals("") ? Integer.parseInt(str.trim()) : null);
     }
 }

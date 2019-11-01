@@ -5,6 +5,7 @@ import com.mikerusoft.euroleague.model.Quarter;
 import com.mikerusoft.euroleague.utils.Utils;
 import org.bson.types.ObjectId;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.Optional;
@@ -77,7 +78,7 @@ public class Converter {
             return null;
         return Result.builder()
             .id(source.getId())
-            .date(source.getDate())
+            .date(Optional.ofNullable(source.getDate()).map(d -> new Date(d.getTime())).orElse(null))
             .attempts1Points(source.getAttempts1Points())
             .attempts2Points(source.getAttempts2Points())
             .attempts3Points(source.getAttempts3Points())
@@ -223,6 +224,6 @@ public class Converter {
                         .stream().map(Converter::convertM)
                         .sorted(Comparator.comparingInt(o -> o.getQuarter().getOrder()))
                         .collect(Collectors.toList())
-                ).build();
+            ).build();
     }
 }
