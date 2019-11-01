@@ -32,6 +32,6 @@ public interface DataService<T> {
     default com.mikerusoft.euroleague.model.Match saveMatch(com.mikerusoft.euroleague.model.Match match) { return null; }
     default com.mikerusoft.euroleague.model.Match getMatch(String matchId) { return null; }
     default List<com.mikerusoft.euroleague.model.Match> findByCommandsInTournamentAndSeason(String tournId, String season, String homeCommandId, String awayCommandId, int records) { return new ArrayList<>(0); }
-    default List<com.mikerusoft.euroleague.model.Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, int records) { return new ArrayList<>(0); }
+    default List<com.mikerusoft.euroleague.model.Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, Place place, int records) { return new ArrayList<>(0); }
 
 }

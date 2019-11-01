@@ -4,6 +4,7 @@ import com.mikerusoft.euroleague.entities.mongo.Command;
 import com.mikerusoft.euroleague.entities.mongo.CommandMatchStat;
 import com.mikerusoft.euroleague.entities.mongo.Match;
 import com.mikerusoft.euroleague.entities.mongo.Tournament;
+import com.mikerusoft.euroleague.model.Place;
 import com.mikerusoft.euroleague.modelToEntityConvertor.ConverterI;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.CommandMongoRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.MatchRepository;
@@ -188,9 +189,9 @@ public class DataServiceMongo implements DataService<String> {
         return matchRepository.findById(matchId).map(m -> converter.convert(m, MATCH_MODEL_CLASS)).orElse(null);
     }
 
-    public List<com.mikerusoft.euroleague.model.Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, int records) {
+    public List<com.mikerusoft.euroleague.model.Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, Place place, int records) {
         assertNumOfRecords(records);
-        return matchRepository.findByCommandInTournamentAndSeason(tournId, season, commandId, records).stream()
+        return matchRepository.findByCommandInTournamentAndSeason(tournId, season, commandId, place, records).stream()
                 .map(m -> converter.convert(m, MATCH_MODEL_CLASS)).collect(Collectors.toList());
     }
 

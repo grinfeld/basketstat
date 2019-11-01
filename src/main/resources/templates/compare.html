@@ -20,19 +20,19 @@
                     <div class="form-group">
                         <div class="row">
                             <div class="col col-sm-3 my-1">
-                                <select class="form-control" id="tournamentId" name="tournamentId" th:field="*{tournament.id}" th:if="${tournaments.size() > 0}">
+                                <select class="form-control" th:field="*{tournament.id}" th:if="${tournaments.size() > 0}">
                                     <option class="def_option" value="">Choose Tournament</option>
                                     <option th:each="tourn : ${tournaments}" th:value="${tourn.getId()}"
                                             th:text="${tourn.getTournName()}" th:selected="${tourn.getId() == tournamentId} OR ${tournament != null} AND ${tourn.getId() == tournament.getId()}"></option>
                                 </select>
                             </div>
                             <div class="col col-sm-3 my-1" th:if="${filter.hasTournament()}">
-                                <select required="required" class="form-control" name="commandId1" id="commandId1" th:if="${commands.size() > 0}" th:field="*{command1.id}">
+                                <select required="required" class="form-control" th:if="${commands.size() > 0}" th:field="*{command1.id}">
                                     <option class="def_option" value="">Choose Command 1</option>
                                     <option th:each="command : ${commands}" th:value="${command.getId()}"
                                             th:text="${command.getCommandName()}"></option>
                                 </select><br/>
-                                <select required="required" class="form-control" name="commandId2" id="commandId2" th:if="${commands.size() > 0}" th:field="*{command2.id}">
+                                <select required="required" class="form-control" th:if="${commands.size() > 0}" th:field="*{command2.id}">
                                     <option class="def_option" value="">Choose Command 2</option>
                                     <option th:each="command : ${commands}" th:value="${command.getId()}"
                                             th:text="${command.getCommandName()}"></option>
@@ -45,6 +45,13 @@
                             <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
                                 <label for="season" class="col-sm-2 col-form-label">Season</label>
                                 <input class="form-control shortText" required="required" th:field="*{season}" />
+                            </div>
+                            <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
+                                <select class="form-control" th:field="*{matchPlace}">
+                                    <option value="all">All</option>
+                                    <option value="home">Home</option>
+                                    <option value="away">Away</option>
+                                </select>
                             </div>
                             <div class="col col-sm-3 my-1" th:if="${filter.hasTournament()}">
                                 <input class="btn btn-success" type="submit" value="Compare" />
@@ -290,7 +297,7 @@
         <script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>
         <script type="text/javascript">
             $('document').ready(function() {
-                $('#tournamentId').change(function() {
+                $('#tournament\\.id').change(function() {
                     $('#compareForm').submit();
                 });
             });

@@ -1,11 +1,7 @@
 package com.mikerusoft.euroleague.services.mongo;
 
-import com.mikerusoft.euroleague.entities.mongo.Command;
-import com.mikerusoft.euroleague.entities.mongo.CommandMatchStat;
-import com.mikerusoft.euroleague.entities.mongo.Match;
-import com.mikerusoft.euroleague.entities.mongo.Tournament;
+import com.mikerusoft.euroleague.model.Place;
 import com.mikerusoft.euroleague.model.Quarter;
-import com.mikerusoft.euroleague.modelToEntityConvertor.Converter;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -72,7 +68,7 @@ class DataServiceMongoWithRealDataTest {
         @DisplayName("when team appears both in home and away in 2 matches, expected 2 matches returned where this team appears")
         void when2Matches_SearchingTeamAppearedIn2Matches() {
             List<com.mikerusoft.euroleague.model.Match> matches = service.findByCommandInTournamentAndSeason(tournament.getId(),
-                    "201920120", team1.getId(), 3);
+                    "201920120", team1.getId(), Place.all, 3);
             assertThat(matches).isNotNull().isNotEmpty().hasSize(2)
                     .containsExactly(match2, match1);
         }
@@ -81,7 +77,7 @@ class DataServiceMongoWithRealDataTest {
         @DisplayName("when team appears as away command in 1 match, expected 1 match returned where this team appears")
         void when2Matches_SearchingAwayTeamAppearedIn1Match() {
             List<com.mikerusoft.euroleague.model.Match> matches = service.findByCommandInTournamentAndSeason(tournament.getId(),
-                    "201920120", team2.getId(), 3);
+                    "201920120", team2.getId(), Place.all, 3);
             assertThat(matches).isNotNull().isNotEmpty().hasSize(1)
                     .containsExactly(match1);
         }
@@ -90,7 +86,7 @@ class DataServiceMongoWithRealDataTest {
         @DisplayName("when team appears as home command in 1 match, expected 1 match returned where this team appears")
         void when2Matches_SearchingHomeTeamAppearedIn1Matches() {
             List<com.mikerusoft.euroleague.model.Match> matches = service.findByCommandInTournamentAndSeason(tournament.getId(),
-                    "201920120", team3.getId(), 3);
+                    "201920120", team3.getId(), Place.all, 3);
             assertThat(matches).isNotNull().isNotEmpty().hasSize(1)
                     .containsExactly(match2);
         }
@@ -99,7 +95,7 @@ class DataServiceMongoWithRealDataTest {
         @DisplayName("when team does not appear in any match, expected no matches to be returned")
         void when2Matches_SearchingTeamInNoOneMatch() {
             List<com.mikerusoft.euroleague.model.Match> matches = service.findByCommandInTournamentAndSeason(tournament.getId(),
-                    "201920120", team4.getId(), 3);
+                    "201920120", team4.getId(), Place.all, 3);
             assertThat(matches).isNotNull().isEmpty();
         }
 
@@ -109,7 +105,7 @@ class DataServiceMongoWithRealDataTest {
             assertThrows(
                     IllegalArgumentException.class,
                     () -> service.findByCommandInTournamentAndSeason(tournament.getId(),
-                            "201920120", team4.getId(), -1)
+                            "201920120", team4.getId(), Place.all, -1)
             );
         }
     }

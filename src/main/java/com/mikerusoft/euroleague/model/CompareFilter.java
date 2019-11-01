@@ -17,6 +17,7 @@ public class CompareFilter {
     private Command command2;
     private String season;
     private int records;
+    private String matchPlace;
 
     public boolean hasTournament() {
         return tournament != null && !isEmptyTrimmed(tournament.getId());

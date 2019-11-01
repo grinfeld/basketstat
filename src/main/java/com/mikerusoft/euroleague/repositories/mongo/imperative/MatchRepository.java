@@ -1,11 +1,13 @@
 package com.mikerusoft.euroleague.repositories.mongo.imperative;
 
 import com.mikerusoft.euroleague.entities.mongo.Match;
+import com.mikerusoft.euroleague.model.Place;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.Query;
 import org.springframework.data.repository.CrudRepository;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -31,14 +33,19 @@ public interface MatchRepository extends CrudRepository<Match, String> {
     )
     List<Match> findByAwayCommandInTournamentAndSeason(String tournId, String season, String commandId, Pageable pageable);
 
-    default List<Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, int records) {
+    default List<Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, Place place, int records) {
         PageRequest pageable = PageRequest.of(0, records);
-        List<Match> awayMatches = findByAwayCommandInTournamentAndSeason(tournId, season, commandId, pageable);
-        List<Match> homeMatches = findByHomeCommandInTournamentAndSeason(tournId, season, commandId, pageable);
+        List<Match> awayMatches = place == Place.home ? new ArrayList<>(0) :
+                findByAwayCommandInTournamentAndSeason(tournId, season, commandId, pageable);
+        List<Match> homeMatches = place == Place.away ? new ArrayList<>(0) :
+                findByHomeCommandInTournamentAndSeason(tournId, season, commandId, pageable);
 
-        awayMatches.addAll(homeMatches);
+        List<Match> showMatches = new ArrayList<>();
+        showMatches.addAll(homeMatches);
+        showMatches.addAll(awayMatches);
+
                                     // we need reverse order - a.k.a. DESC
-        return awayMatches.stream().sorted((o1, o2) -> o2.getDate().compareTo(o1.getDate()))
+        return showMatches.stream().sorted((o1, o2) -> o2.getDate().compareTo(o1.getDate()))
                 .limit(records).collect(Collectors.toList());
     }
 
