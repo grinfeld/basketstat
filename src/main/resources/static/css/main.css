@@ -116,8 +116,25 @@ input.readonly-plaintext {
 .col-sm-2.col-form-label {
     padding-left: 0;
     max-width: 100%;
+    text-align: left;
 }
 
 .col.col-sm-3.my-1 {
     padding-left: 0;
+}
+
+.sm-1.row {
+    font-size: 0.9rem;
+}
+
+.underline {
+    text-decoration: underline;
+}
+
+.col.right-border {
+    border-right: 1px solid black;
+}
+
+.datesmall {
+    font-size: 0.9rem;
 }

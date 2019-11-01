@@ -36,7 +36,11 @@ public class Utils {
         return isEmptyTrimmed(val) ? null : Integer.parseInt(val);
     }
 
-    public static <T> String deNull(T obj, Function<T, String> func) {
+    public static <T, R> R deNull(T obj, Function<T, R> func) {
+        return obj == null ? null : func.apply(obj);
+    }
+
+    public static <T> String deNullString(T obj, Function<T, String> func) {
         return obj == null ? null : func.apply(obj);
     }
 
@@ -44,7 +48,7 @@ public class Utils {
         return obj == null ? null : func.apply(obj);
     }
 
-    public static String deNull(String str) {
+    public static String deNullString(String str) {
         return str == null ? "" : str;
     }
 

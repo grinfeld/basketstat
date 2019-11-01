@@ -27,12 +27,12 @@
                                 </select>
                             </div>
                             <div class="col col-sm-3 my-1" th:if="${filter.hasTournament()}">
-                                <select class="form-control" name="commandId1" id="commandId1" th:if="${commands.size() > 0}" th:field="*{command1.id}">
+                                <select required="required" class="form-control" name="commandId1" id="commandId1" th:if="${commands.size() > 0}" th:field="*{command1.id}">
                                     <option class="def_option" value="">Choose Command 1</option>
                                     <option th:each="command : ${commands}" th:value="${command.getId()}"
                                             th:text="${command.getCommandName()}"></option>
                                 </select><br/>
-                                <select class="form-control" name="commandId2" id="commandId2" th:if="${commands.size() > 0}" th:field="*{command2.id}">
+                                <select required="required" class="form-control" name="commandId2" id="commandId2" th:if="${commands.size() > 0}" th:field="*{command2.id}">
                                     <option class="def_option" value="">Choose Command 2</option>
                                     <option th:each="command : ${commands}" th:value="${command.getId()}"
                                             th:text="${command.getCommandName()}"></option>
@@ -44,7 +44,7 @@
                             </div>
                             <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
                                 <label for="season" class="col-sm-2 col-form-label">Season</label>
-                                <input class="form-control shortText" th:field="*{season}" />
+                                <input class="form-control shortText" required="required" th:field="*{season}" />
                             </div>
                             <div class="col col-sm-3 my-1" th:if="${filter.hasTournament()}">
                                 <input class="btn btn-success" type="submit" value="Compare" />
@@ -52,6 +52,239 @@
                         </div>
                     </div>
                 </form>
+                <div>
+                    <div th:if="${filter != null} AND ${filter.hasSeason()}">
+                        <h3 th:text="${'Season ' + filter.getSeason()}"></h3>
+                    </div>
+                    <div class="container">
+                        <div class="row">
+                            <div class="col right-border">
+                                <div class="container" th:each="match: ${command1Stats}">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h5>
+                                                <a th:href="${'/editmatch?matchId=' + match.getId()}">
+                                                    <span th:text="${match.getHomeCommand().getCommand().getCommandName()}"></span>
+                                                    <span> vs. </span>
+                                                    <span th:text="${match.getAwayCommand().getCommand().getCommandName()}"></span>
+                                                </a>
+                                            </h5>
+                                        </div>
+                                        <div class="col text-right underline datesmall col-sm-3" th:text="${#dates.format(match.getDate(), 'dd-MMM-yyyy')}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getScore()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getScore()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score 1st</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__0__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__0__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score 2nd</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__1__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__1__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score 3rd</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__2__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__2__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score 4th</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__3__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__3__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score OT</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__4__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__4__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">1pt</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getPoints1() + '/' + match.getHomeCommand().getAttempts1() + ' (' + match.getHomeCommand().point1ratio() + '%)'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getPoints1() + '/' + match.getAwayCommand().getAttempts1() + ' (' + match.getAwayCommand().point1ratio() + '%)'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">2pt</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getPoints2() + '/' + match.getHomeCommand().getAttempts2() + ' (' + match.getHomeCommand().point2ratio() + '%)'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getPoints2() + '/' + match.getAwayCommand().getAttempts2() + ' (' + match.getAwayCommand().point2ratio() + '%)'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">3pt</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getPoints3() + '/' + match.getHomeCommand().getAttempts3() + ' (' + match.getHomeCommand().point3ratio() + '%)'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getPoints3() + '/' + match.getAwayCommand().getAttempts3() + ' (' + match.getAwayCommand().point3ratio() + '%)'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Rebounds D/O</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getReboundsDefense() + '/' + match.getHomeCommand().getReboundsOffense() + ' (' + match.getHomeCommand().rebounds() + ')'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getReboundsDefense() + '/' + match.getAwayCommand().getReboundsOffense() + ' (' + match.getAwayCommand().rebounds() + ')'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Assists</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getAssists()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getAssists()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Def. Foulds</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getFoulsDefense()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getFoulsDefense()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Players Scored &gt; 10</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getMore10Points()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getMore10Points()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score Leader</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getPlayerMaxPointsName() + '(' + match.getHomeCommand().getPlayerMaxPointsScore() + ')'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getPlayerMaxPointsName() + '(' + match.getAwayCommand().getPlayerMaxPointsScore() + ')'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Maximum Lead</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getMaxLead() + '(' + match.getHomeCommand().getMaxLeadQuarter() + ')'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getMaxLead() + '(' + match.getAwayCommand().getMaxLeadQuarter() + ')'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Steals</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getSteals()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getSteals()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Turnovers</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getTurnovers()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getTurnovers()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">2nd Chance Points</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getSecondChancePoints()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getSecondChancePoints()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Start/Bench points</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getScoreStart5Score() + '/' + match.getHomeCommand().getScoreBenchScore()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getScoreStart5Score() + '/' + match.getAwayCommand().getScoreBenchScore()}"></div>
+                                    </div>
+                                    <div class="row">&nbsp;</div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="container" th:each="match: ${command2Stats}">
+                                    <div class="row">
+                                        <div class="col">
+                                            <h5>
+                                                <a th:href="${'/editmatch?matchId=' + match.getId()}">
+                                                    <span th:text="${match.getHomeCommand().getCommand().getCommandName()}"></span>
+                                                    <span> vs. </span>
+                                                    <span th:text="${match.getAwayCommand().getCommand().getCommandName()}"></span>
+                                                </a>
+                                            </h5>
+                                        </div>
+                                        <div class="col text-right underline datesmall col-sm-3" th:text="${#dates.format(match.getDate(), 'dd-MMM-yyyy')}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getScore()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getScore()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score 1st</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__0__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__0__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score 2nd</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__1__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__1__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score 3rd</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__2__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__2__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score 4th</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__3__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__3__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score OT</div>
+                                        <div class="col" th:text="${match.getHomeCommand().quarterStats[__4__].score}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().quarterStats[__4__].score}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">1pt</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getPoints1() + '/' + match.getHomeCommand().getAttempts1() + ' (' + match.getHomeCommand().point1ratio() + '%)'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getPoints1() + '/' + match.getAwayCommand().getAttempts1() + ' (' + match.getAwayCommand().point1ratio() + '%)'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">2pt</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getPoints2() + '/' + match.getHomeCommand().getAttempts2() + ' (' + match.getHomeCommand().point2ratio() + '%)'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getPoints2() + '/' + match.getAwayCommand().getAttempts2() + ' (' + match.getAwayCommand().point2ratio() + '%)'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">3pt</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getPoints3() + '/' + match.getHomeCommand().getAttempts3() + ' (' + match.getHomeCommand().point3ratio() + '%)'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getPoints3() + '/' + match.getAwayCommand().getAttempts3() + ' (' + match.getAwayCommand().point3ratio() + '%)'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Rebounds D/O</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getReboundsDefense() + '/' + match.getHomeCommand().getReboundsOffense() + ' (' + match.getHomeCommand().rebounds() + ')'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getReboundsDefense() + '/' + match.getAwayCommand().getReboundsOffense() + ' (' + match.getAwayCommand().rebounds() + ')'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Assists</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getAssists()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getAssists()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Def. Foulds</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getFoulsDefense()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getFoulsDefense()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Players Scored &gt; 10</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getMore10Points()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getMore10Points()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Score Leader</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getPlayerMaxPointsName() + '(' + match.getHomeCommand().getPlayerMaxPointsScore() + ')'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getPlayerMaxPointsName() + '(' + match.getAwayCommand().getPlayerMaxPointsScore() + ')'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Maximum Lead</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getMaxLead() + '(' + match.getHomeCommand().getMaxLeadQuarter() + ')'}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getMaxLead() + '(' + match.getAwayCommand().getMaxLeadQuarter() + ')'}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Steals</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getSteals()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getSteals()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Turnovers</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getTurnovers()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getTurnovers()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">2nd Chance Points</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getSecondChancePoints()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getSecondChancePoints()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col">Start/Bench points</div>
+                                        <div class="col" th:text="${match.getHomeCommand().getScoreStart5Score() + '/' + match.getHomeCommand().getScoreBenchScore()}"></div>
+                                        <div class="col" th:text="${match.getAwayCommand().getScoreStart5Score() + '/' + match.getAwayCommand().getScoreBenchScore()}"></div>
+                                    </div>
+                                    <div class="row">&nbsp;</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </main>
         <script type="text/javascript" th:src="@{webjars/bootstrap/4.2.1/js/bootstrap.min.js}"></script>

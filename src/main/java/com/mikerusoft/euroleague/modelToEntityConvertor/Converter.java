@@ -40,7 +40,7 @@ public class Converter {
         if (source == null)
             return null;
         return com.mikerusoft.euroleague.model.Tournament.builder()
-                .id(Utils.deNull(source.getId(), ObjectId::toHexString)).tournName(source.getName()).build();
+                .id(Utils.deNullString(source.getId(), ObjectId::toHexString)).tournName(source.getName()).build();
     }
 
     public static com.mikerusoft.euroleague.entities.mongo.Tournament convertM(com.mikerusoft.euroleague.model.Tournament source) {
@@ -48,14 +48,14 @@ public class Converter {
             return null;
         return com.mikerusoft.euroleague.entities.mongo.Tournament.builder()
                 .id(Utils.deNullObject(source, s -> s != null && !isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
-                .name(Utils.deNull(source, s -> s != null && !isEmptyTrimmed(s.getTournName()) ? s.getTournName() : null)).build();
+                .name(Utils.deNullString(source, s -> s != null && !isEmptyTrimmed(s.getTournName()) ? s.getTournName() : null)).build();
     }
 
     public static com.mikerusoft.euroleague.model.Command convertM(com.mikerusoft.euroleague.entities.mongo.Command source) {
         if (source == null)
             return null;
         return com.mikerusoft.euroleague.model.Command.builder()
-                .id(Utils.deNull(source.getId(), ObjectId::toHexString)).commandName(source.getName()).build();
+                .id(Utils.deNullString(source.getId(), ObjectId::toHexString)).commandName(source.getName()).build();
     }
 
     public static com.mikerusoft.euroleague.entities.mongo.Command convertM(com.mikerusoft.euroleague.model.Command source) {
@@ -63,7 +63,7 @@ public class Converter {
             return null;
         return com.mikerusoft.euroleague.entities.mongo.Command.builder()
                 .id(Utils.deNullObject(source, s -> s != null && !isEmptyTrimmed(s.getId()) ? new ObjectId(s.getId()) : null))
-                .name(Utils.deNull(source, s -> s != null && !isEmptyTrimmed(s.getCommandName()) ? s.getCommandName() : null)).build();
+                .name(Utils.deNullString(source, s -> s != null && !isEmptyTrimmed(s.getCommandName()) ? s.getCommandName() : null)).build();
     }
 
     public static com.mikerusoft.euroleague.model.Tournament convert(Tournament source) {
@@ -124,7 +124,7 @@ public class Converter {
                 .tournament(convertM(source.getTournament()))
                 .awayCommand(convertM(source.getAwayCommand()))
                 .homeCommand(convertM(source.getHomeCommand()))
-                .id(Utils.deNull(source.getId(), ObjectId::toHexString))
+                .id(Utils.deNullString(source.getId(), ObjectId::toHexString))
             .build();
     }
 

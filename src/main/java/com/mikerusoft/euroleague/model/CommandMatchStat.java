@@ -39,4 +39,35 @@ public class CommandMatchStat {
     private int points3;
 
     private List<CommandQuarterStat> quarterStats;
+
+    public int rebounds() {
+        return reboundsDefense + reboundsOffense;
+    }
+
+    public double point1ratio() {
+        if (attempts1 == 0)
+            return 0;
+        if (points1 == 0)
+            return 0;
+
+        return Math.round((points1/(double)attempts1) * 10000)/100d;
+    }
+
+    public double point2ratio() {
+        if (attempts2 == 0)
+            return 0;
+        if (points2 == 0)
+            return 0;
+
+        return Math.round((points2/(double)attempts2) * 10000)/100d;
+    }
+
+    public double point3ratio() {
+        if (attempts3 == 0)
+            return 0;
+        if (points3 == 0)
+            return 0;
+
+        return Math.round((points3/(double)attempts3) * 10000)/100d;
+    }
 }

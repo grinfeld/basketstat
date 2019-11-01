@@ -6,7 +6,6 @@ import com.mikerusoft.euroleague.menus.MenuProperties;
 import com.mikerusoft.euroleague.model.*;
 import com.mikerusoft.euroleague.model.exceptions.AssertResultException;
 import com.mikerusoft.euroleague.services.DataService;
-import com.mikerusoft.euroleague.utils.Utils;
 import com.mikerusoft.euroleague.utils.Validations;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -65,8 +64,8 @@ public class BasketStatController {
     public String edit(@ModelAttribute("result") Result result, Model model) {
         fillModelWithInitialData(model);
 
-        Integer commandId = result.getCommand() != null ? Utils.parseIntWithEmptyToNull(result.getCommand().getId()) : null;
-        Integer tournId = result.getTournament() != null ? Utils.parseIntWithEmptyToNull(result.getTournament().getId()) : null;
+        Integer commandId = result.getCommand() != null ? parseIntWithEmptyToNull(result.getCommand().getId()) : null;
+        Integer tournId = result.getTournament() != null ? parseIntWithEmptyToNull(result.getTournament().getId()) : null;
 
         if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
         try {
@@ -111,27 +110,9 @@ public class BasketStatController {
                              Optional<CompareFilter> filter,
                              Model model) {
         fillModelWithInitialData(model);
-        Date now = new Date(System.currentTimeMillis());
-        CompareFilter compareFilter = filter.orElseGet(() -> CompareFilter.builder().season(Utils.extractSeason(now)).build());
 
-        fillFilterField(tournamentId, t -> !Utils.isEmptyTrimmed(t), this::getTournament, Objects::nonNull,
-            tournament -> {
-                compareFilter.setTournament(tournament);
-                model.addAttribute("tournament", tournament);
-            }
-        );
-        fillFilterField(commandId1, c -> !Utils.isEmptyTrimmed(c), this::getCommand, Objects::nonNull,
-            command -> {
-                compareFilter.setCommand1(command);
-                model.addAttribute("command1", command);
-            }
-        );
-        fillFilterField(commandId2, c -> !Utils.isEmptyTrimmed(c), this::getCommand, Objects::nonNull,
-            command -> {
-                compareFilter.setCommand2(command);
-                model.addAttribute("command2", command);
-            }
-        );
+        CompareFilter compareFilter = fillFilter(tournamentId, commandId1, commandId2, filter, model);
+
         model.addAttribute("filter", compareFilter);
 
         if (compareFilter.filterReady()) {
@@ -139,11 +120,37 @@ public class BasketStatController {
                     compareFilter.getSeason(), compareFilter.getCommand1Id(), compareFilter.getRecords());
             List<Match> command2Stat = dataServiceMongo.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(),
                     compareFilter.getSeason(), compareFilter.getCommand2Id(), compareFilter.getRecords());
-            model.addAttribute("command1Stat", command1Stat);
-            model.addAttribute("command2Stat", command2Stat);
+            model.addAttribute("command1Stats", command1Stat);
+            model.addAttribute("command2Stats", command2Stat);
         }
 
         return "compare.html";
+    }
+
+    private CompareFilter fillFilter(Optional<String> tournamentId, Optional<String> commandId1, Optional<String> commandId2, Optional<CompareFilter> filter, Model model) {
+        Date now = new Date(System.currentTimeMillis());
+
+        CompareFilter compareFilter = filter.orElseGet(() -> CompareFilter.builder().season(extractSeason(now)).build());
+
+        fillFilterField(tournamentId, t -> !isEmptyTrimmed(t), this::getTournament, Objects::nonNull,
+            tournament -> {
+                compareFilter.setTournament(tournament);
+                model.addAttribute("tournament", tournament);
+            }
+        );
+        fillFilterField(commandId1, c -> !isEmptyTrimmed(c), this::getCommand, Objects::nonNull,
+            command -> {
+                compareFilter.setCommand1(command);
+                model.addAttribute("command1", command);
+            }
+        );
+        fillFilterField(commandId2, c -> !isEmptyTrimmed(c), this::getCommand, Objects::nonNull,
+            command -> {
+                compareFilter.setCommand2(command);
+                model.addAttribute("command2", command);
+            }
+        );
+        return compareFilter;
     }
 
     private static <T, R> void fillFilterField(T obj, Predicate<T> enterPredicate, Function<T, R> action,
@@ -157,13 +164,13 @@ public class BasketStatController {
 
         fillModelWithInitialData(model);
 
-        Integer commandId = Utils.convertString(command);
-        Integer tournId = Utils.convertString(tournament);
+        Integer commandId = convertString(command);
+        Integer tournId = convertString(tournament);
 
         if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
 
         Action actionEnum = Action.byName(action);
-        Integer resultId = Utils.convertString(result);
+        Integer resultId = convertString(result);
 
         if ( (resultId == null && actionEnum != Action.create) || needLastResultsAfterHandleAction(model, commandId, tournId, actionEnum, resultId)) {
             fillLastResults(model, commandId, tournId);
@@ -191,15 +198,15 @@ public class BasketStatController {
         try {
             fillModelWithInitialData(model);
 
-            if (match == null && !Utils.isEmptyTrimmed(matchId)) {
+            if (match == null && !isEmptyTrimmed(matchId)) {
                 match = dataServiceMongo.getMatch(matchId);
             }
 
             if (match == null) {
                 Date now = new Date(System.currentTimeMillis());
-                match = Match.builder().tournament(Tournament.builder().id(Utils.isEmptyTrimmed(tournamentId) ? null : tournamentId.trim()).build())
+                match = Match.builder().tournament(Tournament.builder().id(isEmptyTrimmed(tournamentId) ? null : tournamentId.trim()).build())
                         .date(now)
-                        .season(Utils.extractSeason(now))
+                        .season(extractSeason(now))
                         .awayCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(CommandQuarterStat.initialCommandStats()).build())
                         .homeCommand(CommandMatchStat.builder().command(Command.builder().build()).quarterStats(CommandQuarterStat.initialCommandStats()).build())
                     .build();
@@ -253,10 +260,10 @@ public class BasketStatController {
                 year = month > 1 && month <= 6 ? year - 1 : year;
                 calendar.set(Calendar.YEAR, year + 1);
                 model.addAttribute("currentResult", Result.builder()
-                    .date(now)
-                    .season(year + String.valueOf(calendar.get(Calendar.YEAR)))
-                    .command(dataService.getCommand(commandId))
-                    .tournament(tournId != null ? dataService.getTournament(tournId) : null)
+                        .date(now)
+                        .season(year + String.valueOf(calendar.get(Calendar.YEAR)))
+                        .command(dataService.getCommand(commandId))
+                        .tournament(deNull(tournId, id -> dataService.getTournament(id)))
                     .build()
                 );
                 needLastResults = false;
@@ -266,7 +273,7 @@ public class BasketStatController {
         return needLastResults;
     }
 
-    private boolean fillModelWithCommandAndTournament(Model model, Integer commandId, Integer tournId) {
+    private static boolean fillModelWithCommandAndTournament(Model model, Integer commandId, Integer tournId) {
         if (commandId == null) {
             model.addAttribute("error", "You should choose at least command");
             return false;

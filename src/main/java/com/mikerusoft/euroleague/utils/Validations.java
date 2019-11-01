@@ -91,7 +91,7 @@ public class Validations {
                 throw new IllegalArgumentException(message);
             }
         } else if (isEmptyTrimmed(command1.getId()) && isEmptyTrimmed(command2.getId())) {
-            if (Utils.deNull(command1.getCommandName()).trim().equalsIgnoreCase(Utils.deNull(command2.getCommandName()).trim())) {
+            if (Utils.deNullString(command1.getCommandName()).trim().equalsIgnoreCase(Utils.deNullString(command2.getCommandName()).trim())) {
                 throw new IllegalArgumentException(message);
             }
         }
