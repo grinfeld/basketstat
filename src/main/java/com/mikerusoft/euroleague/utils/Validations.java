@@ -1,7 +1,6 @@
 package com.mikerusoft.euroleague.utils;
 
 import com.mikerusoft.euroleague.model.*;
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 import static com.mikerusoft.euroleague.utils.Utils.assertNotNull;
 import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
@@ -9,7 +8,7 @@ import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
 public class Validations {
     private Validations() {}
 
-    public static void validateMatch(@ModelAttribute("currentMatch") Match match) {
+    public static void validateMatch(Match match) {
         assertNotNull(match);
         validateTournament(match.getTournament());
         validateCommand(match.getHomeCommand(), "Home Command couldn't be empty");

@@ -138,3 +138,11 @@ input.readonly-plaintext {
 .datesmall {
     font-size: 0.9rem;
 }
+
+.bs-mark {
+    background-color: #fff887;
+}
+
+.bs-title {
+    font-weight: bolder;
+}

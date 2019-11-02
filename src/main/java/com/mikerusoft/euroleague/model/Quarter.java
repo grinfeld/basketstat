@@ -24,8 +24,19 @@ public enum Quarter {
 
     private static final Map<String, Quarter> byDisplay = Stream.of(Quarter.values())
             .collect(Collectors.toMap(Quarter::getDisplay, Function.identity(), (k1, k2) -> k1));
+    private static final Map<String, Quarter> byName = Stream.of(Quarter.values())
+            .collect(Collectors.toMap(Quarter::name, Function.identity(), (k1, k2) -> k1));
 
     public static Quarter byDisplayName(String display) {
         return byDisplay.get(display);
+    }
+
+    public boolean is(String name) {
+        if (name == null || name.trim().isEmpty())
+            return false;
+        Quarter quarter = byName.get(name.trim().toUpperCase());
+        if (quarter == null)
+            return false;
+        return quarter == this;
     }
 }

@@ -23,6 +23,7 @@ public class Match {
     @Indexed private Date date;
     @Indexed private String season;
     @Indexed private Tournament tournament;
+    private boolean hasOvertime;
 
     private CommandMatchStat homeCommand;
     private CommandMatchStat awayCommand;

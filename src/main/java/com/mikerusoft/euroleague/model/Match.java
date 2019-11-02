@@ -8,6 +8,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
+
+import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
 
 @Data
 @AllArgsConstructor
@@ -19,9 +22,24 @@ public class Match {
     private Date date;
     private String season;
     private Tournament tournament;
+    private boolean hasOvertime;
 
     private CommandMatchStat awayCommand;
     private CommandMatchStat homeCommand;
+
+    public boolean isAwayCommand(String commandId) {
+        if (isEmptyTrimmed(commandId) || awayCommand == null)
+            return false;
+        return Optional.of(awayCommand).map(CommandMatchStat::getCommand).map(Command::getId)
+                .filter(s -> s.equals(commandId)).isPresent();
+    }
+
+    public boolean isHomeCommand(String commandId) {
+        if (isEmptyTrimmed(commandId) || homeCommand == null)
+            return false;
+        return Optional.of(homeCommand).map(CommandMatchStat::getCommand).map(Command::getId)
+                .filter(s -> s.equals(commandId)).isPresent();
+    }
 
     public static Match normalizeMatch(Match match) {
         if (match == null)

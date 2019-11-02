@@ -7,6 +7,10 @@ import com.mikerusoft.euroleague.model.*;
 import com.mikerusoft.euroleague.model.exceptions.AssertResultException;
 import com.mikerusoft.euroleague.services.DataService;
 import com.mikerusoft.euroleague.utils.Validations;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -17,10 +21,9 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.*;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
+import java.util.function.*;
 
+import static com.mikerusoft.euroleague.model.Quarter.OT;
 import static com.mikerusoft.euroleague.utils.Utils.*;
 
 @Controller
@@ -90,9 +93,22 @@ public class BasketStatController {
                     compareFilter.getSeason(), compareFilter.getCommand2Id(), Place.byName(compareFilter.getMatchPlace()), compareFilter.getRecords());
             model.addAttribute("command1Stats", command1Stat);
             model.addAttribute("command2Stats", command2Stat);
+
+            model.addAttribute("command1Aggr", makeAggregation(command1Stat, compareFilter.getCommand1Id()));
+            model.addAttribute("command2Aggr", makeAggregation(command2Stat, compareFilter.getCommand2Id()));
         }
 
         return "compare.html";
+    }
+
+    private Aggr makeAggregation(List<Match> commandStat, String commandId) {
+        Aggr collect = commandStat.stream().filter(m -> isCommandInMatch(commandId, m))
+                .collect(new StatCollector(commandId));
+        return collect;
+    }
+
+    private static boolean isCommandInMatch(String commandId, Match m) {
+        return m.getHomeCommand().getCommand().getId().equals(commandId) || m.getAwayCommand().getCommand().getId().equals(commandId);
     }
 
     private CompareFilter fillFilter(Optional<String> tournamentId, Optional<CompareFilter> filter, Model model) {
@@ -161,7 +177,10 @@ public class BasketStatController {
     public String saveMatch(@ModelAttribute("currentMatch") Match match, Model model) {
         try {
             Validations.validateMatch(match);
-            Match updatedMatch = Optional.ofNullable(dataServiceMongo.saveMatch(match)).map(Match::normalizeMatch).orElse(null);
+            match.setHasOvertime(hasOvertime(match));
+
+            Match updatedMatch = Optional.ofNullable(dataServiceMongo.saveMatch(match)).map(Match::normalizeMatch)
+                        .orElseThrow(() -> new IllegalArgumentException("for unknown reason, something went wrong"));
             assertNotNull(updatedMatch, "Something went wrong");
             model.addAttribute("currentMatch", updatedMatch);
             model.addAttribute("msg", "Match saved successfully");
@@ -171,6 +190,14 @@ public class BasketStatController {
             log.error("", e);
         }
         return "forward:/editmatch";
+    }
+
+    private boolean hasOvertime(@ModelAttribute("currentMatch") Match match) {
+        int scoreHome = match.getHomeCommand().getQuarterStats().stream().filter(t -> OT.is(t.getQuarter()))
+                .mapToInt(CommandQuarterStat::getScore).findAny().orElse(0);
+        int scoreAway = match.getAwayCommand().getQuarterStats().stream().filter(t -> OT.is(t.getQuarter()))
+                .mapToInt(CommandQuarterStat::getScore).findAny().orElse(0);
+        return scoreHome > 0 || scoreAway > 0;
     }
 
     @PostMapping("/view")
