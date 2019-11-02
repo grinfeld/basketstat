@@ -34,12 +34,15 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
     public BiConsumer<Aggr, Match> accumulator() {
         return (aggregator, match) -> {
             CommandMatchStat stat = null;
+            CommandMatchStat ops = null;
             if (isHomeCommandInMatch(commandId, match)) {
                 stat = match.getHomeCommand();
+                ops = match.getAwayCommand();
             } else if (isAwayCommandInMatch(commandId, match)) {
                 stat = match.getAwayCommand();
+                ops = match.getHomeCommand();
             }
-            if (stat == null) {
+            if (stat == null || ops == null) {
                 return;
             }
             boolean hasOvertime = match.isHasOvertime();
@@ -49,7 +52,8 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
             if (isEmptyTrimmed(aggregator.getCommandName())) {
                 aggregator.setCommandName(stat.getCommand().getCommandName());
             }
-            aggregate(aggregator, stat);
+
+            aggregate(aggregator, stat, ops);
             size++;
             aggregator.setGames(size);
         };
@@ -92,6 +96,16 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
                         .attempts3(avg(stat.getAttempts3(), size, 1))
                         .playerMaxPointsName(removeLastComma(stat.getPlayerMaxPointsName()))
                         .maxLeadQuarter(removeLastComma(stat.getMaxLeadQuarter()))
+                        .scoreIn(avg(stat.getScoreIn(), size, 1))
+                        .scoreOut(avg(stat.getScoreOut(), size, 1))
+                        .quarterScoreIn(
+                            Optional.ofNullable(stat.getQuarterScoreIn()).orElseGet(StatCollector::initQuarterScores)
+                            .stream().map(d -> avg(d, size, 1)).collect(Collectors.toList())
+                        )
+                        .quarterScoreOut(
+                            Optional.ofNullable(stat.getQuarterScoreOut()).orElseGet(StatCollector::initQuarterScores)
+                            .stream().map(d -> avg(d, size, 1)).collect(Collectors.toList())
+                        )
                     .build();
 
                 return aggregation;
@@ -123,7 +137,7 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
         return EnumSet.noneOf(Characteristics.class);
     }
 
-    private static Aggr aggregate(Aggr aggregator, CommandMatchStat stat) {
+    private static void aggregate(Aggr aggregator, CommandMatchStat stat, CommandMatchStat ops) {
         aggregator.setAssists(aggregator.getAssists() + stat.getAssists());
         aggregator.setReboundsDefense(aggregator.getReboundsDefense() + stat.getReboundsDefense());
         aggregator.setReboundsOffense(aggregator.getReboundsOffense() + stat.getReboundsOffense());
@@ -152,16 +166,41 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
             aggregator.setMaxLeadQuarter(maxLead);
         }
 
+        List<Double> scoreInQuarters = quarterScore(aggregator, stat, Aggr::getQuarterScoreIn);
+        aggregator.setQuarterScoreIn(scoreInQuarters);
+        aggregator.setScoreIn(scoreInQuarters.stream().filter(Objects::nonNull).mapToDouble(d -> d).sum());
+
+        List<Double> scoreOutQuarters = quarterScore(aggregator, ops, Aggr::getQuarterScoreOut);
+        aggregator.setQuarterScoreOut(scoreOutQuarters);
+        aggregator.setScoreOut(scoreOutQuarters.stream().filter(Objects::nonNull).mapToDouble(d -> d).sum());
+    }
+
+    private static List<Double> quarterScore(Aggr aggregator, CommandMatchStat stat, Function<Aggr, List<Double>> scoreFunc) {
         Map<String, CommandQuarterStat> statToCollect = stat.getQuarterStats().stream()
                 .collect(Collectors.toMap(CommandQuarterStat::getQuarter, Function.identity(), (k1, k2) -> k1));
 
-        /*for (CommandQuarterStat quarterStats : aggregator.getQuarterStats()) {
-            int sumScore = quarterStats.getScore() +
-                    Optional.ofNullable(statToCollect.get(quarterStats.getQuarter())).map(CommandQuarterStat::getScore).orElse(0);
-            quarterStats.setScore(sumScore);
-        }*/
+        List<Double> quarterStats = Optional.ofNullable(scoreFunc.apply(aggregator)).orElseGet(StatCollector::initQuarterScores);
 
-        return aggregator;
+
+        double scoreFirst = Optional.ofNullable(statToCollect.get(Quarter.FIRST.name())).map(CommandQuarterStat::getScore).orElse(0) + quarterStats.get(0);
+        quarterStats.set(0, scoreFirst);
+        double scoreSecond = Optional.ofNullable(statToCollect.get(Quarter.SECOND.name())).map(CommandQuarterStat::getScore).orElse(0) + quarterStats.get(1);
+        quarterStats.set(1, scoreSecond);
+        double scoreThird = Optional.ofNullable(statToCollect.get(Quarter.THIRD.name())).map(CommandQuarterStat::getScore).orElse(0) + quarterStats.get(2);
+        quarterStats.set(2, scoreThird);
+        double scoreFourth = Optional.ofNullable(statToCollect.get(Quarter.FOURTH.name())).map(CommandQuarterStat::getScore).orElse(0) + quarterStats.get(3);
+        quarterStats.set(3, scoreFourth);
+
+        return quarterStats;
+    }
+
+    private static List<Double> initQuarterScores() {
+        List<Double> scores = new ArrayList<>(4);
+        scores.add(0D);
+        scores.add(0D);
+        scores.add(0D);
+        scores.add(0D);
+        return scores;
     }
 
     private static boolean isAwayCommandInMatch(String commandId, Match m) {

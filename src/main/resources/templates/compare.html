@@ -66,7 +66,7 @@
                     <div class="container">
                         <div class="row">
                             <div class="col right-border">
-                                <div class="container" th:if="${command1Aggr != null}">
+                                <div class="container" th:if="${command1Aggr != null} AND ${command1Aggr.getGames() > 0}">
                                     <div class="row">
                                         <div class="col">
                                             <h5>Statistics for <span class="bs-mark" th:text="${command1Aggr.getCommandName()}"></span> after <span th:text="${command1Aggr.getGames()}"></span> game/s</h5>
@@ -74,7 +74,23 @@
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Score</div>
-                                        <div class="col" th:text="${command1Aggr.getScore()}"></div>
+                                        <div class="col" th:text="${command1Aggr.getScoreIn() + ' - ' + command1Aggr.getScoreOut()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Score 1st</div>
+                                        <div class="col" th:text="${command1Aggr.quarterScoreIn[__0__] + ' - ' + command1Aggr.quarterScoreOut[__0__]}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Score 2nd</div>
+                                        <div class="col" th:text="${command1Aggr.quarterScoreIn[__1__] + ' - ' + command1Aggr.quarterScoreOut[__1__]}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Score 3rd</div>
+                                        <div class="col" th:text="${command1Aggr.quarterScoreIn[__2__] + ' - ' + command1Aggr.quarterScoreOut[__2__]}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Score 4th</div>
+                                        <div class="col" th:text="${command1Aggr.quarterScoreIn[__3__] + ' - ' + command1Aggr.quarterScoreOut[__3__]}"></div>
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Overtimes in</div>
@@ -246,7 +262,7 @@
                                 </div>
                             </div>
                             <div class="col">
-                                <div class="container" th:if="${command2Aggr != null}">
+                                <div class="container" th:if="${command2Aggr != null} AND ${command2Aggr.getGames() > 0}">
                                     <div class="row">
                                         <div class="col">
                                             <h5>Statistics for <span class="bs-mark" th:text="${command2Aggr.getCommandName()}"></span> after <span th:text="${command2Aggr.getGames()}"></span> game/s</h5>
@@ -254,7 +270,23 @@
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Score</div>
-                                        <div class="col" th:text="${command2Aggr.getScore()}"></div>
+                                        <div class="col" th:text="${command2Aggr.getScoreIn() + ' - ' + command2Aggr.getScoreOut()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Score 1st</div>
+                                        <div class="col" th:text="${command2Aggr.quarterScoreIn[__0__] + ' - ' + command2Aggr.quarterScoreOut[__0__]}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Score 2nd</div>
+                                        <div class="col" th:text="${command2Aggr.quarterScoreIn[__1__] + ' - ' + command2Aggr.quarterScoreOut[__1__]}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Score 3rd</div>
+                                        <div class="col" th:text="${command2Aggr.quarterScoreIn[__2__] + ' - ' + command2Aggr.quarterScoreOut[__2__]}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Score 4th</div>
+                                        <div class="col" th:text="${command2Aggr.quarterScoreIn[__3__] + ' - ' + command2Aggr.quarterScoreOut[__3__]}"></div>
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Overtimes in</div>

@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -15,7 +18,8 @@ public class Aggr {
 
     private int overtimes;
 
-    private double score;
+    private double scoreIn;
+    private double scoreOut;
     private double reboundsDefense;
     private double reboundsOffense;
     private double assists;
@@ -35,6 +39,9 @@ public class Aggr {
     private double points1;
     private double points2;
     private double points3;
+
+    private List<Double> quarterScoreIn = initQuarterScores();
+    private List<Double> quarterScoreOut = initQuarterScores();
 
     public double rebounds() {
         return reboundsDefense + reboundsOffense;
@@ -65,6 +72,15 @@ public class Aggr {
             return 0;
 
         return Math.round((points3/(double)attempts3) * 10000)/100d;
+    }
+
+    private static List<Double> initQuarterScores() {
+        List<Double> scores = new ArrayList<>(4);
+        scores.add(0D);
+        scores.add(0D);
+        scores.add(0D);
+        scores.add(0D);
+        return scores;
     }
 
 }
