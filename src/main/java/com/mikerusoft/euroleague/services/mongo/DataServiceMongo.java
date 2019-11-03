@@ -120,6 +120,11 @@ public class DataServiceMongo implements DataService<String> {
     }
 
     @Override
+    public void deleteMatch(String matchId) {
+        matchRepository.deleteById(matchId);
+    }
+
+    @Override
     public void deleteTournament(String tournId) {
         tournamentRepository.deleteById(tournId);
         matchRepositoryReactive.findAllByTournamentId(tournId).subscribe(m -> matchRepositoryReactive.deleteById(m.getId().toHexString()));

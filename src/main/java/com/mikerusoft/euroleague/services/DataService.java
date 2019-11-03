@@ -15,6 +15,7 @@ public interface DataService<T> {
     List<Command> getCommands();
     List<Tournament> getTournaments();
     void deleteCommand(T cmdId);
+    void deleteMatch(T matchId);
     void deleteTournament(T tournId);
 
     Match saveMatch(com.mikerusoft.euroleague.model.Match match);

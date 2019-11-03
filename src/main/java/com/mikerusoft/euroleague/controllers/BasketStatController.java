@@ -114,6 +114,12 @@ public class BasketStatController {
         return editMatch(null, tournament.orElse(null), null, model);
     }
 
+    @GetMapping("/deletematch")
+    public String deletMatch(@RequestParam("matchId") String matchId, Model model) {
+        dataServiceMongo.deleteMatch(matchId);
+        return "index.html";
+    }
+
     @GetMapping("/editmatch")
     public String editMatchGet(@RequestParam("matchId") Optional<String> matchId, Model model) {
         return editMatch(null, null, matchId.orElse(null), model);

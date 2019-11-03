@@ -163,6 +163,11 @@
                                         </div>
                                         <div class="col text-right underline datesmall col-sm-3" th:text="${#dates.format(match.getDate(), 'dd-MMM-yyyy')}"></div>
                                     </div>
+                                    <div class="col">
+                                        <div class="col text-right underline datesmall col-sm-3">
+                                            <a th:href="${'/deletematch?matchId=' + match.getId()}">Delete</a>
+                                        </div>
+                                    </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Score</div>
                                         <div class="col" th:text="${match.getHomeCommand().getScore()}"></div>
@@ -358,6 +363,11 @@
                                             </h5>
                                         </div>
                                         <div class="col text-right underline datesmall col-sm-3" th:text="${#dates.format(match.getDate(), 'dd-MMM-yyyy')}"></div>
+                                    </div>
+                                    <div class="col">
+                                        <div class="col text-right underline datesmall col-sm-3">
+                                            <a th:href="${'/deletematch?matchId=' + match.getId()}">Delete</a>
+                                        </div>
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Score</div>
