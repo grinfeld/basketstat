@@ -1,0 +1,1 @@
+java -DMONGO.DB_NAME=bascoopball -jar basketstat-2.0.jar
