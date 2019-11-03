@@ -117,7 +117,7 @@ public class BasketStatController {
     @GetMapping("/deletematch")
     public String deletMatch(@RequestParam("matchId") String matchId, Model model) {
         dataServiceMongo.deleteMatch(matchId);
-        return "index.html";
+        return "redirect:/compare.html";
     }
 
     @GetMapping("/editmatch")
