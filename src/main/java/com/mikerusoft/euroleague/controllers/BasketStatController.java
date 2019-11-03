@@ -1,19 +1,12 @@
 package com.mikerusoft.euroleague.controllers;
 
-import com.mikerusoft.euroleague.controllers.model.Action;
-import com.mikerusoft.euroleague.controllers.model.ResultAvg;
+import com.mikerusoft.euroleague.controllers.model.Aggr;
 import com.mikerusoft.euroleague.menus.MenuProperties;
 import com.mikerusoft.euroleague.model.*;
-import com.mikerusoft.euroleague.model.exceptions.AssertResultException;
 import com.mikerusoft.euroleague.services.DataService;
 import com.mikerusoft.euroleague.utils.Validations;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -30,28 +23,17 @@ import static com.mikerusoft.euroleague.utils.Utils.*;
 @Slf4j
 public class BasketStatController {
 
-    private int matchesMaxNumber;
     private List<MenuProperties.Menu> menus;
-    private DataService<Integer> dataService;
     private DataService<String> dataServiceMongo;
 
     @Autowired
-    public BasketStatController(@Value("${matches-max-number}") int matchesMaxNumber,
-                                MenuProperties menu, DataService<Integer> dataService, DataService<String> dataServiceMongo) {
+    public BasketStatController(MenuProperties menu, DataService<String> dataServiceMongo) {
         this.menus = menu.getMenus();
-        this.dataService = dataService;
         this.dataServiceMongo = dataServiceMongo;
-        this.matchesMaxNumber = matchesMaxNumber;
     }
 
-    @GetMapping({"/", "/index.html", "/home.html"})
-    public String main(Model model) {
-        fillModelWithInitialData(model);
-        return "index";
-    }
-
-    @ExceptionHandler({AssertResultException.class})
-    public String handleDemoException(AssertResultException exception,
+    @ExceptionHandler
+    public String handleDemoException(Exception exception,
                                       HttpServletRequest req) {
         req.setAttribute("javax.servlet.error.status_code",
                 HttpStatus.BAD_REQUEST.value());
@@ -60,10 +42,10 @@ public class BasketStatController {
 
         fillCommand(commands -> req.setAttribute("commands", commands));
         fillTournament(tournaments -> req.setAttribute("tournaments", tournaments));
-        return "".equals(exception.getFromPage()) ? "error" : exception.getFromPage();
+        return "error";
     }
 
-    @GetMapping({"/compare.html"})
+    @GetMapping({"/", "/index.html", "/home.html", "/compare.html"})
     public String compareGet(@RequestParam("tournamentId") Optional<String> tournamentId,
                              @ModelAttribute("filter") Optional<CompareFilter> filter,
                              Model model) {
@@ -77,12 +59,14 @@ public class BasketStatController {
         return compare(tournamentId, filter, model);
     }
 
-    private String compare(Optional<String> tournamentId,
-                             Optional<CompareFilter> filter,
-                             Model model) {
-        fillModelWithInitialData(model);
+    private String compare(Optional<String> tournamentId, Optional<CompareFilter> filter, Model model) {
+        List<Tournament> tournaments = fillModelWithInitialData(model);
 
-        CompareFilter compareFilter = fillFilter(tournamentId, filter, model);
+        if (tournaments.size() == 1) {
+            tournamentId = Optional.of(tournaments.get(0).getId());
+        }
+
+        CompareFilter compareFilter = fillFilter(tournamentId, filter);
 
         model.addAttribute("filter", compareFilter);
 
@@ -111,17 +95,12 @@ public class BasketStatController {
         return m.getHomeCommand().getCommand().getId().equals(commandId) || m.getAwayCommand().getCommand().getId().equals(commandId);
     }
 
-    private CompareFilter fillFilter(Optional<String> tournamentId, Optional<CompareFilter> filter, Model model) {
-        Date now = new Date(System.currentTimeMillis());
-
-        CompareFilter compareFilter = filter.orElseGet(() -> CompareFilter.builder().matchPlace(Place.all.name()).season(extractSeason(now)).build());
-
-        fillFilterField(tournamentId, t -> !isEmptyTrimmed(t), this::getTournament, Objects::nonNull,
-            tournament -> {
-                compareFilter.setTournament(tournament);
-                model.addAttribute("tournament", tournament);
-            }
-        );
+    private CompareFilter fillFilter(Optional<String> tournamentId, Optional<CompareFilter> filter) {
+        CompareFilter compareFilter = filter.orElseGet(() -> CompareFilter.builder().build());
+        fillFilterField(tournamentId, tournament -> !isEmptyTrimmed(tournament), this::getTournament,
+                                                                    Objects::nonNull, compareFilter::setTournament);
+        fillFilterField(Optional.ofNullable(compareFilter.getSeason()), season -> !isEmptyTrimmed(season),
+                                        t -> extractSeason(new Date()), Objects::nonNull, compareFilter::setSeason);
         return compareFilter;
     }
 
@@ -200,39 +179,17 @@ public class BasketStatController {
         return scoreHome > 0 || scoreAway > 0;
     }
 
-    @PostMapping("/view")
-    public String main(@ModelAttribute("command") String command, @ModelAttribute("tournament") String tournament,
-                       @ModelAttribute("result") String result, @ModelAttribute("action") String action, Model model) {
-
-        fillModelWithInitialData(model);
-
-        Integer commandId = convertString(command);
-        Integer tournId = convertString(tournament);
-
-        if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
-
-        Action actionEnum = Action.byName(action);
-        Integer resultId = convertString(result);
-
-        if ( (resultId == null && actionEnum != Action.create) || needLastResultsAfterHandleAction(model, commandId, tournId, actionEnum, resultId)) {
-            fillLastResults(model, commandId, tournId);
-        }
-
-        return "index";
-    }
-
-    private void fillModelWithInitialData(Model model) {
+    private List<Tournament> fillModelWithInitialData(Model model) {
         model.addAttribute("menus", this.menus);
-        if (model.getAttribute("setResult") == null)
-            model.addAttribute("setResult", false);
         fillCommand(commands -> model.addAttribute("commands", commands));
-        fillTournament(tournaments -> model.addAttribute("tournaments", tournaments));
+        return fillTournament(tournaments -> model.addAttribute("tournaments", tournaments));
     }
 
-    private void fillTournament(Consumer<List<Tournament>> consumer) {
+    private List<Tournament> fillTournament(Consumer<List<Tournament>> consumer) {
         List<Tournament> tournaments = dataServiceMongo.getTournaments();
         tournaments.sort((o1, o2) -> o1.getTournName().compareToIgnoreCase(o2.getTournName()));
         consumer.accept(tournaments);
+        return tournaments;
     }
 
     private void fillCommand(Consumer<List<Command>> consumer) {
@@ -284,94 +241,4 @@ public class BasketStatController {
             throw new NullPointerException("No tournament");
         return dataServiceMongo.getTournament(tournament.get());
     }
-
-    private Command getCommand(Optional<String> command) {
-        if (!command.isPresent())
-            throw new NullPointerException("No command");
-        return dataServiceMongo.getCommand(command.get());
-    }
-
-    @PostMapping({"/edit"})
-    public String edit(@ModelAttribute("result") Result result, Model model) {
-        fillModelWithInitialData(model);
-
-        Integer commandId = result.getCommand() != null ? parseIntWithEmptyToNull(result.getCommand().getId()) : null;
-        Integer tournId = result.getTournament() != null ? parseIntWithEmptyToNull(result.getTournament().getId()) : null;
-
-        if (!fillModelWithCommandAndTournament(model, commandId, tournId)) return "index";
-        try {
-            Result.assertResult(result);
-        } catch (Exception e) {
-            throw new AssertResultException(e.getMessage(), "index");
-        }
-
-        result = Result.normalizeData(result);
-
-        Result updatedResult = dataService.saveResult(result);
-
-        model.addAttribute("currentResult", updatedResult);
-        model.addAttribute("setResult", true);
-
-        model.addAttribute("msg", "Successfully updated result");
-
-        return "index";
-    }
-
-    private boolean needLastResultsAfterHandleAction(Model model, Integer commandId, Integer tournId, Action actionEnum, Integer resultId) {
-        boolean needLastResults = true;
-        switch (actionEnum) {
-            case delete:
-                dataService.deleteResult(resultId);
-                break;
-            case edit:
-                Result foundResult = dataService.getResult(resultId);
-                model.addAttribute("currentResult", foundResult);
-                model.addAttribute("setResult", true);
-                needLastResults = false;
-                break;
-            case create:
-                model.addAttribute("setResult", true);
-                Date now = new Date(System.currentTimeMillis());
-                Calendar calendar = Calendar.getInstance();
-                calendar.setTime(now);
-                int month = calendar.get(Calendar.MONTH);
-                int year = calendar.get(Calendar.YEAR);
-                year = month > 1 && month <= 6 ? year - 1 : year;
-                calendar.set(Calendar.YEAR, year + 1);
-                model.addAttribute("currentResult", Result.builder()
-                        .date(now)
-                        .season(year + String.valueOf(calendar.get(Calendar.YEAR)))
-                        .command(dataService.getCommand(commandId))
-                        .tournament(deNull(tournId, id -> dataService.getTournament(id)))
-                        .build()
-                );
-                needLastResults = false;
-                break;
-        }
-
-        return needLastResults;
-    }
-
-    private static boolean fillModelWithCommandAndTournament(Model model, Integer commandId, Integer tournId) {
-        if (commandId == null) {
-            model.addAttribute("error", "You should choose at least command");
-            return false;
-        }
-
-        model.addAttribute("commandId", commandId);
-        model.addAttribute("tournamentId", tournId);
-        return true;
-    }
-
-    private void fillLastResults(Model model, Integer commandId, Integer tournId) {
-        List<Result> lastResults = tournId == null ?
-                dataService.getLastResults(commandId, matchesMaxNumber) :
-                dataService.getLastResults(tournId, commandId, matchesMaxNumber);
-
-        ResultAvg avg = ResultAvg.aggregateResults(lastResults);
-
-        model.addAttribute("results1st", lastResults);
-        model.addAttribute("avg1st", avg);
-    }
-
 }

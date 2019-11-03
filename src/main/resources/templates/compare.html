@@ -21,7 +21,7 @@
                         <div class="row">
                             <div class="col col-sm-3 my-1">
                                 <select class="form-control" th:field="*{tournament.id}" th:if="${tournaments.size() > 0}">
-                                    <option class="def_option" value="">Choose Tournament</option>
+                                    <option class="def_option" th:if="${tournaments.size() > 1}" value="">Choose Tournament</option>
                                     <option th:each="tourn : ${tournaments}" th:value="${tourn.getId()}"
                                             th:text="${tourn.getTournName()}" th:selected="${tourn.getId() == tournamentId} OR ${tournament != null} AND ${tourn.getId() == tournament.getId()}"></option>
                                 </select>
@@ -60,7 +60,7 @@
                     </div>
                 </form>
                 <div>
-                    <div th:if="${filter != null} AND ${filter.hasSeason()}">
+                    <div th:if="${filter != null} AND ${filter.filterReady()} AND ${filter.hasSeason()}">
                         <h3 th:text="${'Season ' + filter.getSeason()}"></h3>
                     </div>
                     <div class="container">

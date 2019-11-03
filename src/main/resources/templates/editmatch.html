@@ -25,7 +25,7 @@
                         <th>Tournament</th>
                         <td colspan="2">
                             <select class="custom-select" required="required" th:field="${currentMatch.tournament.id}">
-                                <option class="def_option" value="">Choose Tournament</option>
+                                <option th:if="${tournaments.size() > 1}" class="def_option" value="">Choose Tournament</option>
                                 <option th:each="tournament : ${tournaments}" th:value="${tournament.id}"
                                         th:text="${tournament.getTournName()}"></option>
                             </select>
@@ -155,11 +155,11 @@
                         <th>Player scored maximum points</th>
                         <td>
                             <input size="2" min="0" max="199" type="number" placeholder="points" th:field="*{homeCommand.playerMaxPointsScore}" /><br/>
-                            <input class="shortText" type="text" maxlength="10" placeholder="name" th:field="*{homeCommand.playerMaxPointsName}" />
+                            <input class="shortText" type="text" maxlength="20" placeholder="name" th:field="*{homeCommand.playerMaxPointsName}" />
                         </td>
                         <td>
                             <input size="2" min="0" max="199" type="number" placeholder="points" th:field="*{awayCommand.playerMaxPointsScore}" /><br/>
-                            <input class="shortText" type="text" maxlength="10" placeholder="name" th:field="*{awayCommand.playerMaxPointsName}" />
+                            <input class="shortText" type="text" maxlength="20" placeholder="name" th:field="*{awayCommand.playerMaxPointsName}" />
                         </td>
                     </tr>
                     <tr>

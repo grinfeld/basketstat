@@ -120,7 +120,7 @@ class DataServiceMongoTest {
             assertThat(createdMatch.getAwayCommand()).isNotNull()
                     .hasFieldOrPropertyWithValue("assists", 10)
                     .hasFieldOrPropertyWithValue("maxLead", 1)
-                    .hasFieldOrPropertyWithValue("maxLeadQuarter", Quarter.OT.name());
+                    .hasFieldOrPropertyWithValue("maxLeadQuarter", Quarter.OT);
             assertThat(createdMatch.getTournament()).isNotNull()
                 .hasFieldOrPropertyWithValue("name", "Tourn")
                 .hasNoNullFieldsOrProperties();

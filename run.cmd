@@ -1,1 +1,1 @@
-java -DUSER=root -DPASSWORD= -DDB_URL="localhost:3306/basketstat?useUnicode=true&useLegacyDatetimeCode=false&serverTimezone=GMT" -jar basketstat-1.0.jar
+java -DMONGO.DB_NAME=bascoopball -jar basketstat-2.0.jar

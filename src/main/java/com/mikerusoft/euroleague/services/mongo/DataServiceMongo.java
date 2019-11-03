@@ -9,11 +9,13 @@ import com.mikerusoft.euroleague.modelToEntityConvertor.ConverterI;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.CommandMongoRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.MatchRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.TournamentMongoRepository;
+import com.mikerusoft.euroleague.repositories.mongo.reactive.MatchReactiveRepository;
 import com.mikerusoft.euroleague.services.DataService;
 import com.mikerusoft.euroleague.utils.Utils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 
@@ -33,13 +35,15 @@ public class DataServiceMongo implements DataService<String> {
     private CommandMongoRepository commandRepository;
     private TournamentMongoRepository tournamentRepository;
     private MatchRepository matchRepository;
+    private MatchReactiveRepository matchRepositoryReactive;
     private ConverterI converter;
 
     public DataServiceMongo(CommandMongoRepository commandRepository, TournamentMongoRepository tournamentRepository,
-                            MatchRepository matchRepository, ConverterI converter) {
+                            MatchRepository matchRepository, ConverterI converter, MatchReactiveRepository matchRepositoryReactive) {
         this.commandRepository = commandRepository;
         this.tournamentRepository = tournamentRepository;
         this.matchRepository = matchRepository;
+        this.matchRepositoryReactive = matchRepositoryReactive;
         this.converter = converter;
     }
 
@@ -63,26 +67,36 @@ public class DataServiceMongo implements DataService<String> {
 
     @Override
     public com.mikerusoft.euroleague.model.Tournament insertTournament(String tournament) {
-        return converter.convert((createTournament(tournament)), TOURN_MODEL_CLASS);
+        return converter.convert(createTournament(tournament), TOURN_MODEL_CLASS);
     }
 
     @Override
     public com.mikerusoft.euroleague.model.Tournament getTournament(String id) {
-        return converter.convert((tournamentRepository.findById(id).orElse(null)), TOURN_MODEL_CLASS);
+        return converter.convert(tournamentRepository.findById(id).orElse(null), TOURN_MODEL_CLASS);
     }
 
     @Override
     public com.mikerusoft.euroleague.model.Command updateCommand(com.mikerusoft.euroleague.model.Command command) {
-        Optional<Command> cmd = commandRepository.findById(command.getId());
-        // todo - continue
-        return null;
+        Command cmd = commandRepository.findById(command.getId()).orElseThrow(() -> new IllegalArgumentException("Failed to find command with id " + command.getId()));
+        matchRepositoryReactive.findAllByAwayCommand(command.getId()).map(m -> updateWithCommand(m, cmd, Match::getAwayCommand))
+            .concatWith(matchRepositoryReactive.findAllByHomeCommand(command.getId()).map(m -> updateWithCommand(m, cmd, Match::getAwayCommand)))
+            .map(m -> matchRepositoryReactive.save(m)).subscribe();
+
+        return converter.convert(cmd, COMMAND_MODEL_CLASS);
+    }
+
+    private static Match updateWithCommand(Match toUpdate, Command newCommand, Function<Match, CommandMatchStat> func) {
+        Match match = toUpdate.toBuilder().build();
+        func.apply(match).setCommand(newCommand);
+        return match;
     }
 
     @Override
     public com.mikerusoft.euroleague.model.Tournament updateTournament(com.mikerusoft.euroleague.model.Tournament tournament) {
-        Optional<Tournament> tourn = tournamentRepository.findById(tournament.getId());
-        // todo - continue
-        return null;
+        Tournament tourn = tournamentRepository.findById(tournament.getId()).orElseThrow(() -> new IllegalArgumentException("Failed to find tournament with id " + tournament.getId()));
+        matchRepositoryReactive.findAllByTournamentId(tourn.getId().toHexString())
+            .map(m -> m.toBuilder().tournament(tourn).build()).map(m -> matchRepositoryReactive.save(m)).subscribe();
+        return converter.convert(tourn, TOURN_MODEL_CLASS);
     }
 
     @Override
@@ -99,12 +113,16 @@ public class DataServiceMongo implements DataService<String> {
 
     @Override
     public void deleteCommand(String cmdId) {
-
+        commandRepository.deleteById(cmdId);
+        matchRepositoryReactive.findAllByAwayCommand(cmdId)
+            .concatWith(matchRepositoryReactive.findAllByHomeCommand(cmdId))
+                .subscribe(m -> matchRepositoryReactive.deleteById(m.getId().toHexString()));
     }
 
     @Override
     public void deleteTournament(String tournId) {
-
+        tournamentRepository.deleteById(tournId);
+        matchRepositoryReactive.findAllByTournamentId(tournId).subscribe(m -> matchRepositoryReactive.deleteById(m.getId().toHexString()));
     }
 
     @Override
@@ -112,7 +130,7 @@ public class DataServiceMongo implements DataService<String> {
         return converter.convert(createMatch(converter.convert(match.toBuilder().build(), MATCH_MONGO_CLASS)), MATCH_MODEL_CLASS);
     }
 
-    public Match createMatch(Match match) {
+    Match createMatch(Match match) {
 
         match = match.toBuilder().build();
 
@@ -207,5 +225,4 @@ public class DataServiceMongo implements DataService<String> {
         if (records > MAX_NUM_OF_RECORDS)
             throw new IllegalArgumentException("Num of records per request should be maximum " + MAX_NUM_OF_RECORDS + " and not " + records);
     }
-
 }

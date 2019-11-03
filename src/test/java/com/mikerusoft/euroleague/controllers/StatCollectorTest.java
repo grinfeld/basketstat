@@ -1,5 +1,6 @@
 package com.mikerusoft.euroleague.controllers;
 
+import com.mikerusoft.euroleague.controllers.model.Aggr;
 import com.mikerusoft.euroleague.model.*;
 import org.junit.jupiter.api.Test;
 
@@ -76,15 +77,11 @@ class StatCollectorTest {
             .hasFieldOrPropertyWithValue("attempts2", 3D)
             .hasFieldOrPropertyWithValue("points3", 1.5D)
             .hasFieldOrPropertyWithValue("attempts3", 2.5D)
-            .hasFieldOrPropertyWithValue("maxLeadQuarter", "5(FIRST), 1(THIRD)")
+            .hasFieldOrPropertyWithValue("maxLeadQuarter", "5 (1st), 1 (3rd)")
         ;
-        /*List<CommandQuarterStat> quarterStats = collect.getQuarterStats();
-        assertThat(quarterStats).isNotNull().hasSize(5).containsExactly(
-                CommandQuarterStat.builder().quarter(Quarter.FIRST.name()).score(17).build(),
-                CommandQuarterStat.builder().quarter(Quarter.SECOND.name()).build(),
-                CommandQuarterStat.builder().quarter(Quarter.THIRD.name()).build(),
-                CommandQuarterStat.builder().quarter(Quarter.FOURTH.name()).build(),
-                CommandQuarterStat.builder().quarter(Quarter.OT.name()).build()
-        );*/
+
+        assertThat(collect.getQuarterScoreIn()).isNotNull().hasSize(4).containsExactly(8.5, 0.0, 0.0, 0.0);
+        assertThat(collect.getQuarterScoreOut()).isNotNull().hasSize(4).containsExactly(6.5, 0.0, 0.0, 0.0);
+
     }
 }

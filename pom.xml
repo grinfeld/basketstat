@@ -10,14 +10,13 @@
 	</parent>
 	<groupId>com.mikerusoft</groupId>
 	<artifactId>basketstat</artifactId>
-	<version>1.1</version>
+	<version>2.0</version>
 	<name>euroleague</name>
 	<description>BasketStat</description>
 
 	<properties>
 		<java.version>1.8</java.version>
 		<bootstrap.version>4.2.1</bootstrap.version>
-		<mysql.embedded>4.6.0</mysql.embedded>
 		<compiler.plugin>3.8.1</compiler.plugin>
 	</properties>
 
@@ -25,10 +24,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-actuator</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -58,11 +53,6 @@
 			<optional>true</optional>
 		</dependency>
 		<dependency>
-			<groupId>mysql</groupId>
-			<artifactId>mysql-connector-java</artifactId>
-			<scope>runtime</scope>
-		</dependency>
-		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 			<optional>true</optional>
@@ -72,21 +62,10 @@
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!--<dependency>
-			<groupId>org.thymeleaf.extras</groupId>
-			<artifactId>thymeleaf-extras-springsecurity5</artifactId>
-		</dependency>-->
-		<!-- Optional, for bootstrap -->
 		<dependency>
 			<groupId>org.webjars</groupId>
 			<artifactId>bootstrap</artifactId>
 			<version>${bootstrap.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>com.wix</groupId>
-			<artifactId>wix-embedded-mysql</artifactId>
-			<version>${mysql.embedded}</version>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 

@@ -8,20 +8,6 @@ spring:
   application:
     name: "basketstat"
 
-  jpa:
-    hibernate:
-      ddl-auto: validate
-    show-sql: true
-    properties:
-      hibernate:
-        dialect: org.hibernate.dialect.MySQL5Dialect
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://${DB_URL:root@localhost:3306/basketstat}?useSSL=false
-    username: ${USER:root}
-    password: ${PASSWORD:1946}
-
   thymeleaf:
     cache: false
 
@@ -32,7 +18,7 @@ spring:
       database: ${MONGO.DB_NAME:test}
 menu:
   menus:
-    - name: "Results"
+    - name: "Home"
       view: "index.html"
     - name: "Compare"
       view: "compare.html"
@@ -42,7 +28,3 @@ menu:
       view: "command.html"
     - name: "Tournaments"
       view: "tournament.html"
-    - name: "Export"
-      view: "/api/export"
-
-matches-max-number: ${max-matches:4}

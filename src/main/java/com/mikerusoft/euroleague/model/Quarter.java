@@ -31,6 +31,12 @@ public enum Quarter {
         return byDisplay.get(display);
     }
 
+    public static Quarter byName(String name) {
+        if (name == null || name.trim().isEmpty())
+            return null;
+        return byName.get(name.toUpperCase());
+    }
+
     public boolean is(String name) {
         if (name == null || name.trim().isEmpty())
             return false;

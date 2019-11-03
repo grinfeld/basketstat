@@ -5,6 +5,9 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.Date;
+
+import static com.mikerusoft.euroleague.utils.Utils.extractSeason;
 import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
 
 @Data
@@ -15,9 +18,12 @@ public class CompareFilter {
     private Tournament tournament;
     private Command command1;
     private Command command2;
-    private String season;
-    private int records;
-    private String matchPlace;
+    @lombok.Builder.Default
+    private String season = extractSeason(new Date());
+    @lombok.Builder.Default
+    private int records = 1;
+    @lombok.Builder.Default
+    private String matchPlace = Place.all.name();
 
     public boolean hasTournament() {
         return tournament != null && !isEmptyTrimmed(tournament.getId());

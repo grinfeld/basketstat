@@ -1,5 +1,6 @@
 package com.mikerusoft.euroleague.controllers;
 
+import com.mikerusoft.euroleague.controllers.model.Aggr;
 import com.mikerusoft.euroleague.model.*;
 
 import java.util.*;
@@ -157,12 +158,12 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
         aggregator.setAttempts3(aggregator.getAttempts3() + stat.getAttempts3());
 
         if (!isEmptyTrimmed(stat.getPlayerMaxPointsName())) {
-            String playerMaxPoints = deNullString(aggregator.getPlayerMaxPointsName()) + stat.getPlayerMaxPointsName() + "(" + stat.getPlayerMaxPointsScore() + "), ";
+            String playerMaxPoints = deNullString(aggregator.getPlayerMaxPointsName()) + stat.getPlayerMaxPointsName() + " (" + stat.getPlayerMaxPointsScore() + "), ";
             aggregator.setPlayerMaxPointsName(playerMaxPoints);
         }
 
         if (!isEmptyTrimmed(stat.getMaxLeadQuarter())) {
-            String maxLead = deNullString(aggregator.getMaxLeadQuarter()) + stat.getMaxLead() + "(" + deNullString(stat.getMaxLeadQuarter()) + "), ";
+            String maxLead = deNullString(aggregator.getMaxLeadQuarter()) + stat.getMaxLead() + " (" + translateQuarter(stat.getMaxLeadQuarter()) + "), ";
             aggregator.setMaxLeadQuarter(maxLead);
         }
 
@@ -173,6 +174,17 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
         List<Double> scoreOutQuarters = quarterScore(aggregator, ops, Aggr::getQuarterScoreOut);
         aggregator.setQuarterScoreOut(scoreOutQuarters);
         aggregator.setScoreOut(scoreOutQuarters.stream().filter(Objects::nonNull).mapToDouble(d -> d).sum());
+    }
+
+    private static String translateQuarter(String quarter) {
+        if (isEmptyTrimmed(quarter))
+            return "0";
+
+        Quarter q = Quarter.byName(quarter);
+        if (q == null)
+            return "0";
+
+        return q.getDisplay();
     }
 
     private static List<Double> quarterScore(Aggr aggregator, CommandMatchStat stat, Function<Aggr, List<Double>> scoreFunc) {

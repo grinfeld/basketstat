@@ -12,39 +12,27 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.OutputStream;
-
 @RestController
 @RequestMapping("/api")
 public class BasketStatRestController {
 
-    private DataService<Integer> dataService;
-    private DataService<String> dataServiceMongo;
+    private DataService<String> dataService;
 
     @Autowired
-    public BasketStatRestController(DataService<Integer> dataService, DataService<String> dataServiceMongo) {
+    public BasketStatRestController(DataService<String> dataService) {
         this.dataService = dataService;
-        this.dataServiceMongo = dataServiceMongo;
     }
 
     @GetMapping(value = "/command/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Response deleteCommand(@PathVariable("id") int id) {
+    public @ResponseBody Response deleteCommand(@PathVariable("id") String id) {
         dataService.deleteCommand(id);
         return Response.<Boolean>builder().data(true).build();
     }
 
     @GetMapping(value = "/tournament/delete/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public @ResponseBody Response deleteTournament(@PathVariable("id") int id) {
+    public @ResponseBody Response deleteTournament(@PathVariable("id") String id) {
         dataService.deleteTournament(id);
         return Response.<Boolean>builder().data(true).build();
-    }
-
-    @GetMapping(value = "/export", headers = "Accept=*/*", produces = "application/vnd.ms-excel")
-    public void export(HttpServletResponse response, OutputStream outputStream) throws IOException {
-        response.setHeader("Content-Disposition", "form-data; name=\"Content-Disposition\"; filename=\"" + System.currentTimeMillis() + "_export.csv" + "\"");
-        dataService.writeAllResults(outputStream);
     }
 
     @ExceptionHandler(Exception.class)
