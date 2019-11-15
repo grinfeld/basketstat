@@ -1,0 +1,18 @@
+language: java
+jdk:
+  - openjdk11
+  - openjdk-ea
+
+matrix:
+  allow_failures:
+    - jdk: openjdk-ea
+
+addons:
+  sonarcloud:
+    organization: "grinfeld-github"
+    token:
+      secure: "f87892ff17a796c50b3fd2401e037d50e5344aad" # encrypted value of your token
+
+script:
+  # the following command line builds the project, runs the tests with coverage and then execute the SonarCloud analysis
+  - mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent install sonar:sonar -Dsonar.projectKey=grinfeld_basketstat
