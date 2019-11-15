@@ -40,7 +40,7 @@
                             </div>
                             <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
                                 <label for="records" class="col-sm-2 col-form-label">Number of matches</label>
-                                <input class="form-control shortText" th:field="*{records}" type="number" min="1" max="10"  />
+                                <input class="form-control shortText" th:field="*{records}" type="number" min="1" max="100"  />
                             </div>
                             <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
                                 <label for="season" class="col-sm-2 col-form-label">Season</label>
