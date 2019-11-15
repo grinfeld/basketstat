@@ -1,5 +1,5 @@
 [![Build Status](https://travis-ci.org/grinfeld/basketstat.svg?branch=master)](https://travis-ci.org/grinfeld/basketstat)
-[![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-white.svg)](https://sonarcloud.io/dashboard?id=grinfeld_basketstat)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=grinfeld_basketstat&metric=alert_status)](https://sonarcloud.io/dashboard?id=grinfeld_basketstat)
 
 Playing with mongodb
 
