@@ -74,7 +74,7 @@ public class Utils {
         calendarForNextYear.setTime(now);
         int month = calendarForNextYear.get(Calendar.MONTH);
         int nextYearBuilder = calendarForNextYear.get(Calendar.YEAR);
-        nextYearBuilder = month > 1 && month <= 6 ? nextYearBuilder - 1 : nextYearBuilder;
+        nextYearBuilder = month >= Calendar.JANUARY && month <= Calendar.JUNE ? nextYearBuilder - 1 : nextYearBuilder;
         calendarForNextYear.set(Calendar.YEAR, nextYearBuilder + 1);
         return nextYearBuilder + String.valueOf(calendarForNextYear.get(Calendar.YEAR));
     }
