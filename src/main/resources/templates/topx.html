@@ -1,0 +1,70 @@
+<!DOCTYPE HTML>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+        <title>Basket Stat</title>
+        <link rel="stylesheet" th:href="@{webjars/bootstrap/4.2.1/css/bootstrap.min.css}"/>
+        <link rel="stylesheet" th:href="@{/css/main.css}"/>
+        <script type="text/javascript" th:src="@{/js/query-3.3.1.js}"></script>
+    </head>
+    <body>
+        <span th:replace="fragments/nav.html :: nav"></span>
+        <main role="main" class="container">
+            <div id="errorMsg" class="errorMsg" th:if="error != null" th:text="${error}"></div>
+            <div id="successMsg" class="successMsg" th:if="msg != null" th:text="${msg}"></div>
+        </main>
+        <div class="starter-template">
+            <form id="compareForm" action="#" th:action="@{/topx.html}" method="post" th:object="${filter}">
+                <div class="form-group">
+                    <div class="row">
+                        <div class="col col-sm-3 my-6">
+                            <label for="tournament.id" class="col-sm-2 col-form-label">Tournament</label>
+                            <select class="form-control" th:field="*{tournament.id}" th:if="${tournaments.size() > 0}">
+                                <option class="def_option" th:if="${tournaments.size() > 1}" value="">Choose Tournament</option>
+                                <option th:each="tourn : ${tournaments}" th:value="${tourn.getId()}"
+                                        th:text="${tourn.getTournName()}" th:selected="${tourn.getId() == tournamentId} OR ${tournament != null} AND ${tourn.getId() == tournament.getId()}"></option>
+                            </select>
+                        </div>
+                        <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
+                            <label for="games" class="col-sm-2 col-form-label">Matches</label>
+                            <input class="form-control shortText" th:field="*{games}" type="number" min="1" max="99"  />
+                        </div>
+                        <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
+                            <label for="top" class="col-sm-2 col-form-label">Top</label>
+                            <input class="form-control shortText" required="required" th:field="*{top}" />
+                        </div>
+                        <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
+                            <label for="field" class="col-sm-2 col-form-label">By</label>
+                            <select class="form-control" th:field="*{field}">
+                                <option th:each="aggField : ${T(com.mikerusoft.euroleague.model.AggFields).values()}"
+                                        th:value="${aggField.name()}"
+                                        th:text="${aggField.getDisplayName()}">
+                                </option>
+                            </select>
+                        </div>
+                        <div class="col col-sm-3 my-1" th:if="${filter.hasTournament()}">
+                            <label for="top_submit" class="col-sm-2 col-form-label"></label>
+                            <input class="btn btn-success" id="top_submit" type="submit" value="Submit" />
+                        </div>
+                    </div>
+                </div>
+            </form>
+            <div>
+                <div th:if="${filter != null} AND ${filter.filterReady()} AND ${filter.hasSeason()}">
+                    <h3 th:text="${'Season ' + filter.getSeason()}"></h3>
+                </div>
+                <div class="container">
+                    <span th:if="${topCommands != null}" th:each="cmd, iter : ${topCommands}">
+                        <div class="row">
+                            <div class="col" th:text="${(iter.index+1)}"></div>
+                            <div class="col" th:text="${cmd.command}"></div>
+                            <div class="col" th:text="${T(com.mikerusoft.euroleague.model.AggFields).valueOf(cmd.field)}"></div>
+                            <div class="col" th:text="${cmd.aggregatedValue}"></div>
+                        </div>
+                    </span>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

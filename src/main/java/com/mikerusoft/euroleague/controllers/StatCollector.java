@@ -17,18 +17,16 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
 
     private String commandId;
     private int size = 0;
+    private int afterDecimal;
 
-    public StatCollector(String commandId) {
+    public StatCollector(String commandId, int afterDecimal) {
         this.commandId = commandId;
+        this.afterDecimal = afterDecimal;
     }
 
     @Override
     public Supplier<Aggr> supplier() {
-        return () -> Aggr.builder()
-                //.quarterStats(initialCommandStats())
-            //.command(Command.builder().id(commandId).build())
-                .build();
-
+        return () -> Aggr.builder().build();
     }
 
     @Override
@@ -79,33 +77,33 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
                         .commandName(stat.getCommandName())
                         .games(stat.getGames())
                         .overtimes(stat.getOvertimes())
-                        .assists(avg(stat.getAssists(), size, 1))
-                        .reboundsDefense(avg(stat.getReboundsDefense(), size, 1))
-                        .reboundsOffense(avg(stat.getReboundsOffense(), size, 1))
-                        .foulsDefense(avg(stat.getFoulsDefense(), size, 1))
-                        .more10Points(avg(stat.getMore10Points(), size, 1))
-                        .scoreStart5Score(avg(stat.getScoreStart5Score(), size, 1))
-                        .scoreBenchScore(avg(stat.getScoreBenchScore(), size, 1))
-                        .steals(avg(stat.getSteals(), size, 1))
-                        .turnovers(avg(stat.getTurnovers(), size, 1))
-                        .secondChancePoints(avg(stat.getSecondChancePoints(), size, 1))
-                        .points1(avg(stat.getPoints1(), size, 1))
-                        .attempts1(avg(stat.getAttempts1(), size, 1))
-                        .points2(avg(stat.getPoints2(), size, 1))
-                        .attempts2(avg(stat.getAttempts2(), size, 1))
-                        .points3(avg(stat.getPoints3(), size, 1))
-                        .attempts3(avg(stat.getAttempts3(), size, 1))
+                        .assists(avg(stat.getAssists(), size, afterDecimal))
+                        .reboundsDefense(avg(stat.getReboundsDefense(), size, afterDecimal))
+                        .reboundsOffense(avg(stat.getReboundsOffense(), size, afterDecimal))
+                        .foulsDefense(avg(stat.getFoulsDefense(), size, afterDecimal))
+                        .more10Points(avg(stat.getMore10Points(), size, afterDecimal))
+                        .scoreStart5Score(avg(stat.getScoreStart5Score(), size, afterDecimal))
+                        .scoreBenchScore(avg(stat.getScoreBenchScore(), size, afterDecimal))
+                        .steals(avg(stat.getSteals(), size, afterDecimal))
+                        .turnovers(avg(stat.getTurnovers(), size, afterDecimal))
+                        .secondChancePoints(avg(stat.getSecondChancePoints(), size, afterDecimal))
+                        .points1(avg(stat.getPoints1(), size, afterDecimal))
+                        .attempts1(avg(stat.getAttempts1(), size, afterDecimal))
+                        .points2(avg(stat.getPoints2(), size, afterDecimal))
+                        .attempts2(avg(stat.getAttempts2(), size, afterDecimal))
+                        .points3(avg(stat.getPoints3(), size, afterDecimal))
+                        .attempts3(avg(stat.getAttempts3(), size, afterDecimal))
                         .playerMaxPointsName(removeLastComma(stat.getPlayerMaxPointsName()))
                         .maxLeadQuarter(removeLastComma(stat.getMaxLeadQuarter()))
-                        .scoreIn(avg(stat.getScoreIn(), size, 1))
-                        .scoreOut(avg(stat.getScoreOut(), size, 1))
+                        .scoreIn(avg(stat.getScoreIn(), size, afterDecimal))
+                        .scoreOut(avg(stat.getScoreOut(), size, afterDecimal))
                         .quarterScoreIn(
                             Optional.ofNullable(stat.getQuarterScoreIn()).orElseGet(StatCollector::initQuarterScores)
-                            .stream().map(d -> avg(d, size, 1)).collect(Collectors.toList())
+                            .stream().map(d -> avg(d, size, afterDecimal)).collect(Collectors.toList())
                         )
                         .quarterScoreOut(
                             Optional.ofNullable(stat.getQuarterScoreOut()).orElseGet(StatCollector::initQuarterScores)
-                            .stream().map(d -> avg(d, size, 1)).collect(Collectors.toList())
+                            .stream().map(d -> avg(d, size, afterDecimal)).collect(Collectors.toList())
                         )
                     .build();
 
@@ -126,8 +124,8 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
         return str;
     }
 
-    private static double avg(double sum, int size, int afterDec) {
-        double factor = Math.pow(10, afterDec);
+    private static double avg(double sum, int size, int afterDecimal) {
+        double factor = Math.pow(10, afterDecimal);
         if (size == 0 || sum == 0)
             return 0.0D;
         return Math.round((sum/(double)size) * factor) / factor;
@@ -139,6 +137,7 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
     }
 
     private static void aggregate(Aggr aggregator, CommandMatchStat stat, CommandMatchStat ops) {
+
         aggregator.setAssists(aggregator.getAssists() + stat.getAssists());
         aggregator.setReboundsDefense(aggregator.getReboundsDefense() + stat.getReboundsDefense());
         aggregator.setReboundsOffense(aggregator.getReboundsOffense() + stat.getReboundsOffense());
@@ -150,12 +149,7 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
         aggregator.setTurnovers(aggregator.getTurnovers() + stat.getTurnovers());
         aggregator.setSecondChancePoints(aggregator.getSecondChancePoints() + stat.getSecondChancePoints());
 
-        aggregator.setPoints1(aggregator.getPoints1() + stat.getPoints1());
-        aggregator.setAttempts1(aggregator.getAttempts1() + stat.getAttempts1());
-        aggregator.setPoints2(aggregator.getPoints2() + stat.getPoints2());
-        aggregator.setAttempts2(aggregator.getAttempts2() + stat.getAttempts2());
-        aggregator.setPoints3(aggregator.getPoints3() + stat.getPoints3());
-        aggregator.setAttempts3(aggregator.getAttempts3() + stat.getAttempts3());
+        aggregatePointsAndAttempts(aggregator, stat);
 
         if (!isEmptyTrimmed(stat.getPlayerMaxPointsName())) {
             String playerMaxPoints = deNullString(aggregator.getPlayerMaxPointsName()) + stat.getPlayerMaxPointsName() + " (" + stat.getPlayerMaxPointsScore() + "), ";
@@ -163,7 +157,7 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
         }
 
         if (!isEmptyTrimmed(stat.getMaxLeadQuarter())) {
-            String maxLead = deNullString(aggregator.getMaxLeadQuarter()) + stat.getMaxLead() + " (" + translateQuarter(stat.getMaxLeadQuarter()) + "), ";
+            String maxLead = deNullString(aggregator.getMaxLeadQuarter()) + stat.getMaxLead() + " (" + quarterDisplayName(stat.getMaxLeadQuarter()) + "), ";
             aggregator.setMaxLeadQuarter(maxLead);
         }
 
@@ -176,7 +170,16 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
         aggregator.setScoreOut(scoreOutQuarters.stream().filter(Objects::nonNull).mapToDouble(d -> d).sum());
     }
 
-    private static String translateQuarter(String quarter) {
+    private static void aggregatePointsAndAttempts(Aggr aggregator, CommandMatchStat stat) {
+        aggregator.setPoints1(aggregator.getPoints1() + stat.getPoints1());
+        aggregator.setAttempts1(aggregator.getAttempts1() + stat.getAttempts1());
+        aggregator.setPoints2(aggregator.getPoints2() + stat.getPoints2());
+        aggregator.setAttempts2(aggregator.getAttempts2() + stat.getAttempts2());
+        aggregator.setPoints3(aggregator.getPoints3() + stat.getPoints3());
+        aggregator.setAttempts3(aggregator.getAttempts3() + stat.getAttempts3());
+    }
+
+    private static String quarterDisplayName(String quarter) {
         if (isEmptyTrimmed(quarter))
             return "0";
 
@@ -193,7 +196,6 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
 
         List<Double> quarterStats = Optional.ofNullable(scoreFunc.apply(aggregator)).orElseGet(StatCollector::initQuarterScores);
 
-
         double scoreFirst = Optional.ofNullable(statToCollect.get(Quarter.FIRST.name())).map(CommandQuarterStat::getScore).orElse(0) + quarterStats.get(0);
         quarterStats.set(0, scoreFirst);
         double scoreSecond = Optional.ofNullable(statToCollect.get(Quarter.SECOND.name())).map(CommandQuarterStat::getScore).orElse(0) + quarterStats.get(1);
@@ -207,12 +209,7 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
     }
 
     private static List<Double> initQuarterScores() {
-        List<Double> scores = new ArrayList<>(4);
-        scores.add(0D);
-        scores.add(0D);
-        scores.add(0D);
-        scores.add(0D);
-        return scores;
+        return new ArrayList<>(Arrays.asList(0D, 0D, 0D, 0D));
     }
 
     private static boolean isAwayCommandInMatch(String commandId, Match m) {
@@ -221,15 +218,5 @@ public class StatCollector implements Collector<Match, Aggr, Aggr> {
 
     private static boolean isHomeCommandInMatch(String commandId, Match m) {
         return m.getHomeCommand().getCommand().getId().equals(commandId);
-    }
-
-    private static List<CommandQuarterStat> initialCommandStats() {
-        return Arrays.asList(
-                CommandQuarterStat.builder().quarter(Quarter.FIRST.name()).build(),
-                CommandQuarterStat.builder().quarter(Quarter.SECOND.name()).build(),
-                CommandQuarterStat.builder().quarter(Quarter.THIRD.name()).build(),
-                CommandQuarterStat.builder().quarter(Quarter.FOURTH.name()).build(),
-                CommandQuarterStat.builder().quarter(Quarter.OT.name()).build()
-        );
     }
 }

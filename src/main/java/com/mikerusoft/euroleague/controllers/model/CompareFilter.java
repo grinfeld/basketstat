@@ -1,5 +1,8 @@
-package com.mikerusoft.euroleague.model;
+package com.mikerusoft.euroleague.controllers.model;
 
+import com.mikerusoft.euroleague.model.Command;
+import com.mikerusoft.euroleague.model.Place;
+import com.mikerusoft.euroleague.model.Tournament;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

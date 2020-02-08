@@ -55,7 +55,7 @@ public class Aggr {
         if (points1 == 0)
             return 0;
 
-        return Math.round((points1/(double)attempts1) * 10000)/100d;
+        return Math.round((points1/(double)attempts1) * 100);
     }
 
     public double point2ratio() {
@@ -64,7 +64,7 @@ public class Aggr {
         if (points2 == 0)
             return 0;
 
-        return Math.round((points2/(double)attempts2) * 10000)/100d;
+        return Math.round((points2/(double)attempts2) * 100);
     }
 
     public double point3ratio() {
@@ -73,7 +73,7 @@ public class Aggr {
         if (points3 == 0)
             return 0;
 
-        return Math.round((points3/(double)attempts3) * 10000)/100d;
+        return Math.round((points3/(double)attempts3) * 100);
     }
 
     private static List<Double> initQuarterScores() {

@@ -6,7 +6,6 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Collections;
 import java.util.Date;
-import java.util.List;
 import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -66,7 +65,7 @@ class StatCollectorTest {
                     .build())
             .build();
 
-        Aggr collect = Stream.of(match1, match2).collect(new StatCollector("11111"));
+        Aggr collect = Stream.of(match1, match2).collect(new StatCollector("11111", 1));
 
         assertThat(collect).isNotNull()
             .hasFieldOrPropertyWithValue("commandName", "team1")

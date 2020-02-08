@@ -4,8 +4,11 @@ import com.mikerusoft.euroleague.entities.mongo.Command;
 import com.mikerusoft.euroleague.entities.mongo.CommandMatchStat;
 import com.mikerusoft.euroleague.entities.mongo.Match;
 import com.mikerusoft.euroleague.entities.mongo.Tournament;
+import com.mikerusoft.euroleague.model.AggFields;
+import com.mikerusoft.euroleague.model.CommandAggregation;
 import com.mikerusoft.euroleague.model.Place;
 import com.mikerusoft.euroleague.modelToEntityConvertor.ConverterI;
+import com.mikerusoft.euroleague.repositories.mongo.imperative.AggregationRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.CommandMongoRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.MatchRepository;
 import com.mikerusoft.euroleague.repositories.mongo.imperative.TournamentMongoRepository;
@@ -37,14 +40,22 @@ public class DataServiceMongo implements DataService<String> {
     private MatchRepository matchRepository;
     private MatchReactiveRepository matchRepositoryReactive;
     private ConverterI converter;
+    private AggregationRepository<String> aggregationRepository;
 
     public DataServiceMongo(CommandMongoRepository commandRepository, TournamentMongoRepository tournamentRepository,
-                            MatchRepository matchRepository, ConverterI converter, MatchReactiveRepository matchRepositoryReactive) {
+                MatchRepository matchRepository, ConverterI converter, MatchReactiveRepository matchRepositoryReactive,
+                AggregationRepository<String> aggregationRepository) {
         this.commandRepository = commandRepository;
         this.tournamentRepository = tournamentRepository;
         this.matchRepository = matchRepository;
         this.matchRepositoryReactive = matchRepositoryReactive;
         this.converter = converter;
+        this.aggregationRepository = aggregationRepository;
+    }
+
+    @Override
+    public List<CommandAggregation> getTopCommands(String season, String tournId, int games, AggFields field, int top) {
+        return this.aggregationRepository.getTopCommands(season, tournId, games, field.name(), top);
     }
 
     private Command createCommand(String command) {
