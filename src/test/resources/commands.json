@@ -1,0 +1,19 @@
+{"_id":{"$oid":"5db2c951fa7b6d37ff27a589"},"name":"Bayern Munich","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db2c954fa7b6d37ff27a58a"},"name":"Panathinaikos","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db2c957fa7b6d37ff27a58b"},"name":"Maccabi T-A","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db2c95afa7b6d37ff27a58c"},"name":"Hapoal Jerusalem","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fb517a4d156ba50f1405"},"name":"Asvel Villerban","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fbee9d67456bd7195b73"},"name":"Alba Berlin","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc019d67456bd7195b74"},"name":"Anadolu Efes","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc0d9d67456bd7195b75"},"name":"Armani Milano","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc169d67456bd7195b76"},"name":"Baskonia","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc1c9d67456bd7195b77"},"name":"Barcelona","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc299d67456bd7195b78"},"name":"CSKA","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc369d67456bd7195b79"},"name":"Crvena Zvezda","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc3e9d67456bd7195b7a"},"name":"Valencia","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc499d67456bd7195b7b"},"name":"Fenerbahce","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc559d67456bd7195b7c"},"name":"Real Madrid","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc5f9d67456bd7195b7d"},"name":"Olympiacos","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc6d9d67456bd7195b7e"},"name":"Khimki Moscow","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc819d67456bd7195b7f"},"name":"Zenit","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5db5fc879d67456bd7195b80"},"name":"Zalgiris","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
