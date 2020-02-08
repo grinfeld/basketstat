@@ -9,8 +9,10 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder(toBuilder = true, builderClassName = "Builder")
-public class Aggregation {
+public class CommandAggregation {
+
     private String command;
     private String field;
     private double aggregatedValue;
+
 }

@@ -1,7 +1,7 @@
 package com.mikerusoft.euroleague.repositories.mongo.imperative;
 
 import com.mikerusoft.euroleague.entities.mongo.CommandMatchStat;
-import com.mikerusoft.euroleague.model.Aggregation;
+import com.mikerusoft.euroleague.model.CommandAggregation;
 import com.mikerusoft.euroleague.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -52,7 +52,7 @@ public class AggregationMongoRepository implements AggregationRepository<String>
     }
 
     @Override
-    public List<Aggregation> aggregate(String season, String tournId, int games, String field, int top) {
+    public List<CommandAggregation> getTopCommands(String season, String tournId, int games, String field, int top) {
         if (top <= 0)
             return new ArrayList<>(0);
         if (games <=0 )
@@ -79,15 +79,16 @@ public class AggregationMongoRepository implements AggregationRepository<String>
                         "}",
                 Result.class);
 
-        return StreamSupport.stream(results.spliterator(), false)
-            .map(Result::getValue).map(map -> map.get("results")).filter(Objects::nonNull)
-            .map(list -> aggregateDataByField(list, games, field)).filter(Objects::nonNull)
-            .sorted(doubleToComparatorReverse(Aggregation::getAggregatedValue))
-            .limit(top)
-        .collect(Collectors.toList());
+        List<CommandAggregation> aggrs = StreamSupport.stream(results.spliterator(), false)
+                .map(Result::getValue).map(map -> map.get("results")).filter(Objects::nonNull)
+                .map(list -> aggregateDataByField(list, games, field)).filter(Objects::nonNull)
+                .sorted(doubleToComparatorReverse(CommandAggregation::getAggregatedValue))
+                .limit(top)
+                .collect(Collectors.toList());
+        return aggrs;
     }
 
-    private Aggregation aggregateDataByField(List<SingleResult> list, int games, String field) {
+    private CommandAggregation aggregateDataByField(List<SingleResult> list, int games, String field) {
         if (list == null || list.isEmpty())
             return null;
         return list.stream().sorted(longToComparatorReverse(SingleResult::getTimestamp))
@@ -96,7 +97,13 @@ public class AggregationMongoRepository implements AggregationRepository<String>
     }
 
     private static <C> Comparator<C> longToComparatorReverse(Function<C, Long> convert) {
-        return (o1, o2) -> new Long(convert.apply(o2) - convert.apply(o1)).intValue();
+        return (o1, o2) -> {
+            long t2 = convert.apply(o2);
+            long t1 = convert.apply(o1);
+            if (t2 == t1)
+                return 0;
+            return t2 > t1 ? 1 : -1;
+        };
     }
 
     private static <C> Comparator<C> doubleToComparatorReverse(Function<C, Double> convert) {
@@ -124,7 +131,7 @@ public class AggregationMongoRepository implements AggregationRepository<String>
         private Map<String, List<SingleResult>> value;
     }
 
-    private static class AggregationCollector implements Collector<SingleResult, Aggregation, Aggregation> {
+    private static class AggregationCollector implements Collector<SingleResult, CommandAggregation, CommandAggregation> {
 
         public static AggregationCollector collector() { return INSTANCE; }
 
@@ -133,16 +140,16 @@ public class AggregationMongoRepository implements AggregationRepository<String>
         private AggregationCollector() {}
 
         @Override
-        public Supplier<Aggregation> supplier() {
-            return Aggregation.builder()::build;
+        public Supplier<CommandAggregation> supplier() {
+            return CommandAggregation.builder()::build;
         }
 
         @Override
-        public BiConsumer<Aggregation, SingleResult> accumulator() {
+        public BiConsumer<CommandAggregation, SingleResult> accumulator() {
             return AggregationCollector::fillAggregation;
         }
 
-        private static void fillAggregation(Aggregation aggr, SingleResult singleResult) {
+        private static void fillAggregation(CommandAggregation aggr, SingleResult singleResult) {
             // this "if" is useless, since map reduce made by command and field, but it makes more clear code when we aggregate
             if (belongsToAggregation(aggr, singleResult)) {
                 if (Utils.isEmptyTrimmed(aggr.getField()))
@@ -153,19 +160,19 @@ public class AggregationMongoRepository implements AggregationRepository<String>
             }
         }
 
-        private static boolean belongsToAggregation(Aggregation aggr, SingleResult singleResult) {
+        private static boolean belongsToAggregation(CommandAggregation aggr, SingleResult singleResult) {
             // the first aggregation, so values are empty in aggregation object
             if (Utils.isEmptyTrimmed(aggr.getCommand()) && Utils.isEmptyTrimmed(aggr.getField())) return true;
             return singleResult.getCommand().equals(aggr.getCommand()) && singleResult.getField().equals(aggr.getField());
         }
 
         @Override
-        public BinaryOperator<Aggregation> combiner() {
+        public BinaryOperator<CommandAggregation> combiner() {
             return (aggr, aggr1) -> aggr.toBuilder().command(aggr.getCommand()).aggregatedValue(aggr.getAggregatedValue() + aggr1.getAggregatedValue()).build();
         }
 
         @Override
-        public Function<Aggregation, Aggregation> finisher() {
+        public Function<CommandAggregation, CommandAggregation> finisher() {
             return Function.identity();
         }
 

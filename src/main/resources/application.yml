@@ -22,6 +22,8 @@ menu:
       view: "index.html"
     - name: "Compare"
       view: "compare.html"
+    - name: "Top"
+      view: "topx.html"
     - name: "Create Match"
       view: "creatematch.html"
     - name: "Commands"

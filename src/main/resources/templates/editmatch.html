@@ -318,7 +318,7 @@
             function calcPercent(name, i, id) {
                 let attempts = parseFloat($('#' + name + '\\.attempts' + i).val());
                 let points = parseFloat($('#' + name + '\\.points' + i).val());
-                let perc = attempts > 0 ? Math.round((points/attempts) * 10000)/100 : 0;
+                let perc = attempts > 0 ? Math.round((points/attempts)*100) : 0;
                 let pecStr = perc + "";
                 for(let i=0; i<5-pecStr.length; i++) {
                     pecStr += " "
@@ -329,7 +329,10 @@
             function sumAllQuarters(name) {
                 var sum = 0;
                 for (let i=0; i<5; i++) {
-                    sum += parseInt($('#' + name + '\\.quarterStats' + i + '\\.score').val());
+                    let score = $('#' + name + '\\.quarterStats' + i + '\\.score').val();
+                    if (score === "")
+                        score = "0";
+                    sum += parseInt(score);
                 }
                 return sum;
             }

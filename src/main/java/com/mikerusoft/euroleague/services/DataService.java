@@ -22,5 +22,5 @@ public interface DataService<T> {
     Match getMatch(String matchId);
     List<Match> findByCommandsInTournamentAndSeason(String tournId, String season, String homeCommandId, String awayCommandId, int records);
     List<Match> findByCommandInTournamentAndSeason(String tournId, String season, String commandId, Place place, int records);
-
+    List<CommandAggregation> getTopCommands(String season, String tournId, int games, AggFields field, int top);
 }

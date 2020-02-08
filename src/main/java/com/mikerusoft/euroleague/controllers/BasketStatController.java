@@ -1,6 +1,8 @@
 package com.mikerusoft.euroleague.controllers;
 
 import com.mikerusoft.euroleague.controllers.model.Aggr;
+import com.mikerusoft.euroleague.controllers.model.CompareFilter;
+import com.mikerusoft.euroleague.controllers.model.TopXFilter;
 import com.mikerusoft.euroleague.menus.MenuProperties;
 import com.mikerusoft.euroleague.model.*;
 import com.mikerusoft.euroleague.services.DataService;
@@ -24,12 +26,12 @@ import static com.mikerusoft.euroleague.utils.Utils.*;
 public class BasketStatController {
 
     private List<MenuProperties.Menu> menus;
-    private DataService<String> dataServiceMongo;
+    private DataService<String> dataService;
 
     @Autowired
-    public BasketStatController(MenuProperties menu, DataService<String> dataServiceMongo) {
+    public BasketStatController(MenuProperties menu, DataService<String> dataService) {
         this.menus = menu.getMenus();
-        this.dataServiceMongo = dataServiceMongo;
+        this.dataService = dataService;
     }
 
     @ExceptionHandler
@@ -43,6 +45,42 @@ public class BasketStatController {
         fillCommand(commands -> req.setAttribute("commands", commands));
         fillTournament(tournaments -> req.setAttribute("tournaments", tournaments));
         return "error";
+    }
+
+    @GetMapping(value = {"/topx", "/topx.html"})
+    public String topxGet(@RequestParam("tournamentId") Optional<String> tournamentId, @ModelAttribute("filter") Optional<TopXFilter> filter, Model model) {
+        return topx(tournamentId, filter, model);
+    }
+
+    @PostMapping(value = {"/topx", "/topx.html"})
+    public String topxPost(@RequestParam("tournamentId") Optional<String> tournamentId, @ModelAttribute("filter") Optional<TopXFilter> filter, Model model) {
+        return topx(tournamentId, filter, model);
+    }
+
+    String topx(Optional<String> tournamentId, Optional<TopXFilter> filter, Model model) {
+        List<Tournament> tournaments = fillModelWithInitialData(model);
+
+        if (tournaments.size() == 1) {
+            tournamentId = Optional.of(tournaments.get(0).getId());
+        }
+        TopXFilter topxFilter = fillTopXFilter(tournamentId, filter);
+        model.addAttribute("filter", topxFilter);
+
+        if (topxFilter.filterReady()) {
+            List<CommandAggregation> topCommands = dataService.getTopCommands(topxFilter.getSeason(), topxFilter.getTournamentId(), topxFilter.getGames(), topxFilter.getField(), topxFilter.getTop());
+            model.addAttribute("topCommands", topCommands);
+        }
+
+        return "topx.html";
+    }
+
+    private TopXFilter fillTopXFilter(Optional<String> tournamentId, Optional<TopXFilter> filter) {
+        TopXFilter topXFilter = filter.orElseGet(() -> TopXFilter.builder().build());
+        fillFilterField(tournamentId, tournament -> !isEmptyTrimmed(tournament), this::getTournament,
+                Objects::nonNull, topXFilter::setTournament);
+        fillFilterField(Optional.ofNullable(topXFilter.getSeason()), season -> !isEmptyTrimmed(season),
+                t -> extractSeason(new Date()), Objects::nonNull, topXFilter::setSeason);
+        return topXFilter;
     }
 
     @GetMapping({"/", "/index.html", "/home.html", "/compare.html"})
@@ -71,9 +109,9 @@ public class BasketStatController {
         model.addAttribute("filter", compareFilter);
 
         if (compareFilter.filterReady()) {
-            List<Match> command1Stat = dataServiceMongo.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(),
+            List<Match> command1Stat = dataService.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(),
                     compareFilter.getSeason(), compareFilter.getCommand1Id(), Place.byName(compareFilter.getMatchPlace()), compareFilter.getRecords());
-            List<Match> command2Stat = dataServiceMongo.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(),
+            List<Match> command2Stat = dataService.findByCommandInTournamentAndSeason(compareFilter.getTournamentId(),
                     compareFilter.getSeason(), compareFilter.getCommand2Id(), Place.byName(compareFilter.getMatchPlace()), compareFilter.getRecords());
             model.addAttribute("command1Stats", command1Stat);
             model.addAttribute("command2Stats", command2Stat);
@@ -87,7 +125,7 @@ public class BasketStatController {
 
     private Aggr makeAggregation(List<Match> commandStat, String commandId) {
         Aggr collect = commandStat.stream().filter(m -> isCommandInMatch(commandId, m))
-                .collect(new StatCollector(commandId, 1));
+                .collect(new StatCollector(commandId, 0));
         return collect;
     }
 
@@ -116,7 +154,7 @@ public class BasketStatController {
 
     @GetMapping("/deletematch")
     public String deletMatch(@RequestParam("matchId") String matchId, Model model) {
-        dataServiceMongo.deleteMatch(matchId);
+        dataService.deleteMatch(matchId);
         return "redirect:/compare.html";
     }
 
@@ -135,7 +173,7 @@ public class BasketStatController {
             fillModelWithInitialData(model);
 
             if (match == null && !isEmptyTrimmed(matchId)) {
-                match = dataServiceMongo.getMatch(matchId);
+                match = dataService.getMatch(matchId);
             }
 
             if (match == null) {
@@ -164,7 +202,7 @@ public class BasketStatController {
             Validations.validateMatch(match);
             match.setHasOvertime(hasOvertime(match));
 
-            Match updatedMatch = Optional.ofNullable(dataServiceMongo.saveMatch(match)).map(Match::normalizeMatch)
+            Match updatedMatch = Optional.ofNullable(dataService.saveMatch(match)).map(Match::normalizeMatch)
                         .orElseThrow(() -> new IllegalArgumentException("for unknown reason, something went wrong"));
             assertNotNull(updatedMatch, "Something went wrong");
             model.addAttribute("currentMatch", updatedMatch);
@@ -192,14 +230,14 @@ public class BasketStatController {
     }
 
     private List<Tournament> fillTournament(Consumer<List<Tournament>> consumer) {
-        List<Tournament> tournaments = dataServiceMongo.getTournaments();
+        List<Tournament> tournaments = dataService.getTournaments();
         tournaments.sort((o1, o2) -> o1.getTournName().compareToIgnoreCase(o2.getTournName()));
         consumer.accept(tournaments);
         return tournaments;
     }
 
     private void fillCommand(Consumer<List<Command>> consumer) {
-        List<Command> commands = Optional.ofNullable(dataServiceMongo.getCommands()).orElseGet(ArrayList::new);
+        List<Command> commands = Optional.ofNullable(dataService.getCommands()).orElseGet(ArrayList::new);
         commands.sort((o1, o2) -> o1.getCommandName().compareToIgnoreCase(o2.getCommandName()));
         consumer.accept(commands);
     }
@@ -216,8 +254,8 @@ public class BasketStatController {
     public String editCommand(@ModelAttribute("command") Command command, Model model) {
         model.addAttribute("menus", this.menus);
 
-        command = isEmptyTrimmed(command.getId()) ? dataServiceMongo.insertCommand(command.getCommandName()) :
-                dataServiceMongo.updateCommand(command);
+        command = isEmptyTrimmed(command.getId()) ? dataService.insertCommand(command.getCommandName()) :
+                dataService.updateCommand(command);
         model.addAttribute("command", command);
         fillCommand(commands -> model.addAttribute("commands", commands));
         return "command";
@@ -227,8 +265,8 @@ public class BasketStatController {
     public String editTournament(@ModelAttribute("tourn") Tournament tournament, Model model) {
         model.addAttribute("menus", this.menus);
 
-        tournament = isEmptyTrimmed(tournament.getId()) ? dataServiceMongo.insertTournament(tournament.getTournName()) :
-                dataServiceMongo.updateTournament(tournament);
+        tournament = isEmptyTrimmed(tournament.getId()) ? dataService.insertTournament(tournament.getTournName()) :
+                dataService.updateTournament(tournament);
         model.addAttribute("tourn", tournament);
         fillTournament(tournaments -> model.addAttribute("tournaments", tournaments));
         return "tournament";
@@ -245,6 +283,6 @@ public class BasketStatController {
     private Tournament getTournament(Optional<String> tournament) {
         if (!tournament.isPresent())
             throw new NullPointerException("No tournament");
-        return dataServiceMongo.getTournament(tournament.get());
+        return dataService.getTournament(tournament.get());
     }
 }
