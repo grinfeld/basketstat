@@ -90,10 +90,9 @@ public class AggregationMongoRepository implements AggregationRepository<String>
     private Aggregation aggregateDataByField(List<SingleResult> list, int games, String field) {
         if (list == null || list.isEmpty())
             return null;
-        Aggregation aggregated = list.stream().sorted(longToComparatorReverse(SingleResult::getTimestamp))
+        return list.stream().sorted(longToComparatorReverse(SingleResult::getTimestamp))
                 .limit(games).filter(r -> r.field.equals(field))
                 .collect(AggregationCollector.collector());
-        return aggregated;
     }
 
     private static <C> Comparator<C> longToComparatorReverse(Function<C, Long> convert) {
