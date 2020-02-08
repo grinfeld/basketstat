@@ -1,6 +1,7 @@
 package com.mikerusoft.euroleague.repositories.mongo.imperative;
 
 import com.mikerusoft.euroleague.model.Aggregation;
+import com.mikerusoft.euroleague.utils.Utils;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -62,9 +63,10 @@ public class AggregationMongoRepository implements AggregationRepository<String>
     private Aggregation aggregateDataByField(List<SingleResult> list, int games, String field) {
         if (list == null || list.isEmpty())
             return null;
-        return list.stream().sorted(longToComparatorReverse(SingleResult::getTimestamp))
+        Aggregation aggregated = list.stream().sorted(longToComparatorReverse(SingleResult::getTimestamp))
                 .limit(games).filter(r -> r.field.equals(field))
-            .collect(AggregationCollector.collector());
+                .collect(AggregationCollector.collector());
+        return aggregated;
     }
 
     private static <C> Comparator<C> longToComparatorReverse(Function<C, Long> convert) {
@@ -111,9 +113,20 @@ public class AggregationMongoRepository implements AggregationRepository<String>
         }
 
         private static void fillAggregation(Aggregation aggr, SingleResult singleResult) {
-            aggr.setField(singleResult.getField());
-            aggr.setCommand(singleResult.getCommand());
-            aggr.setAggregatedValue(singleResult.value);
+            // this "if" is useless, since map reduce made by command and field, but it makes more clear code when we aggregate
+            if (belongsToAggregation(aggr, singleResult)) {
+                if (Utils.isEmptyTrimmed(aggr.getField()))
+                    aggr.setField(singleResult.getField());
+                if (Utils.isEmptyTrimmed(aggr.getCommand()))
+                    aggr.setCommand(singleResult.getCommand());
+                aggr.setAggregatedValue(aggr.getAggregatedValue() + singleResult.value);
+            }
+        }
+
+        private static boolean belongsToAggregation(Aggregation aggr, SingleResult singleResult) {
+            // the first aggregation, so values are empty in aggregation object
+            if (Utils.isEmptyTrimmed(aggr.getCommand()) && Utils.isEmptyTrimmed(aggr.getField())) return true;
+            return singleResult.getCommand().equals(aggr.getCommand()) && singleResult.getField().equals(aggr.getField());
         }
 
         @Override
