@@ -1,7 +1,6 @@
 {"_id":{"$oid":"5db2c951fa7b6d37ff27a589"},"name":"Bayern Munich","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
 {"_id":{"$oid":"5db2c954fa7b6d37ff27a58a"},"name":"Panathinaikos","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
 {"_id":{"$oid":"5db2c957fa7b6d37ff27a58b"},"name":"Maccabi T-A","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
-{"_id":{"$oid":"5db2c95afa7b6d37ff27a58c"},"name":"Hapoal Jerusalem","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
 {"_id":{"$oid":"5db5fb517a4d156ba50f1405"},"name":"Asvel Villerban","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
 {"_id":{"$oid":"5db5fbee9d67456bd7195b73"},"name":"Alba Berlin","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
 {"_id":{"$oid":"5db5fc019d67456bd7195b74"},"name":"Anadolu Efes","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
@@ -17,3 +16,21 @@
 {"_id":{"$oid":"5db5fc6d9d67456bd7195b7e"},"name":"Khimki Moscow","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
 {"_id":{"$oid":"5db5fc819d67456bd7195b7f"},"name":"Zenit","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
 {"_id":{"$oid":"5db5fc879d67456bd7195b80"},"name":"Zalgiris","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3d9f2ff9e67999a70523"},"name":"ACB-Real Madrid","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3de92ff9e67999a70524"},"name":"ACB-Barcelona","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3e1e2ff9e67999a70525"},"name":"ACB-Baskonia","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3eca2ff9e67999a70526"},"name":"ACB-Casademont Zaragoza","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3edd2ff9e67999a70527"},"name":"ACB-MoraBanc Andorra","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3f3f2ff9e67999a70528"},"name":"ACB-Club Joventut Badalona","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3f5f2ff9e67999a70529"},"name":"ACB-San Pablo Burgos","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3f7d2ff9e67999a7052a"},"name":"ACB-Iberostar Tenerife","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3f8d2ff9e67999a7052b"},"name":"ACB-Valencia Basket Club","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3fae2ff9e67999a7052c"},"name":"ACB-Herbalife Gran Canaria","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3fbb2ff9e67999a7052d"},"name":"ACB-Unicaja","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3fc62ff9e67999a7052e"},"name":"ACB-RETAbet Bilbao Basket","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3fdb2ff9e67999a7052f"},"name":"ACB-Monbus Obradoiro","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3fe72ff9e67999a70530"},"name":"ACB-UCAM Murcia CB","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def3ff82ff9e67999a70531"},"name":"ACB-Montakit Fuenlabrada","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def40272ff9e67999a70532"},"name":"ACB-Coosur Real Betis","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def40352ff9e67999a70533"},"name":"ACB-BAXI Manresa","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}
+{"_id":{"$oid":"5def40482ff9e67999a70534"},"name":"ACB-Movistar Estudiantes","_class":"com.mikerusoft.euroleague.entities.mongo.Command"}

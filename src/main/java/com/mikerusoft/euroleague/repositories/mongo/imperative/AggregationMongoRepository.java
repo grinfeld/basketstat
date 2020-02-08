@@ -79,20 +79,26 @@ public class AggregationMongoRepository implements AggregationRepository<String>
                         "}",
                 Result.class);
 
-        List<CommandAggregation> aggrs = StreamSupport.stream(results.spliterator(), false)
-                .map(Result::getValue).map(map -> map.get("results")).filter(Objects::nonNull)
-                .map(list -> aggregateDataByField(list, games, field)).filter(Objects::nonNull)
-                .sorted(doubleToComparatorReverse(CommandAggregation::getAggregatedValue))
-                .limit(top)
-                .collect(Collectors.toList());
-        return aggrs;
+        try {
+            List<CommandAggregation> aggrs =
+                    StreamSupport.stream(results.spliterator(), false)
+                            .map(Result::getValue).map(map -> map.get("results")).filter(Objects::nonNull)
+                            .map(list -> aggregateDataByField(list, games, field)).filter(Objects::nonNull)
+                            .sorted(doubleToComparatorReverse(CommandAggregation::getAggregatedValue))
+                            .limit(top)
+                            .collect(Collectors.toList());
+            return aggrs;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        }
     }
 
     private CommandAggregation aggregateDataByField(List<SingleResult> list, int games, String field) {
         if (list == null || list.isEmpty())
             return null;
         return list.stream().sorted(longToComparatorReverse(SingleResult::getTimestamp))
-                .limit(games).filter(r -> r.field.equals(field))
+                .limit(games).filter(r -> Objects.nonNull(r.field)).filter(r -> r.field.equals(field))
                 .collect(AggregationCollector.collector());
     }
 
