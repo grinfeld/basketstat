@@ -1,5 +1,6 @@
 package com.mikerusoft.euroleague.repositories.mongo.imperative;
 
+import com.mikerusoft.euroleague.entities.mongo.CommandMatchStat;
 import com.mikerusoft.euroleague.model.Aggregation;
 import com.mikerusoft.euroleague.utils.Utils;
 import lombok.AllArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BinaryOperator;
@@ -19,19 +21,44 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
 @Repository
 public class AggregationMongoRepository implements AggregationRepository<String> {
 
+    private static Set<? extends Class<?>> supportedFieldTypes = Stream.of(Integer.class, Integer.TYPE, Long.class,
+                Long.TYPE, Short.class, Short.TYPE, Byte.class, Byte.TYPE, Float.class, Float.TYPE, Double.class, Double.TYPE)
+            .collect(Collectors.toMap(Function.identity(), Function.identity(), (k1, k2) -> k1)).keySet();
+
     private MongoTemplate mongoTemplate;
+    private Set<String> supportedFields;
 
     public AggregationMongoRepository(MongoTemplate mongoTemplate) {
         this.mongoTemplate = mongoTemplate;
+        fillSupportedFields();
+    }
+
+    private void fillSupportedFields() {
+        supportedFields = new HashSet<>();
+        List<String> fields = Stream.of(CommandMatchStat.class.getFields())
+                .filter(f -> supportedFieldTypes.contains(f.getType()))
+                .map(Field::getName).collect(Collectors.toList());
+        List<String> declaredFields = Stream.of(CommandMatchStat.class.getDeclaredFields())
+                .filter(f -> supportedFieldTypes.contains(f.getType()))
+                .map(Field::getName).collect(Collectors.toList());
+        supportedFields.addAll(fields);
+        supportedFields.addAll(declaredFields);
     }
 
     @Override
     public List<Aggregation> aggregate(String season, String tournId, int games, String field, int top) {
+        if (top <= 0)
+            return new ArrayList<>(0);
+        if (games <=0 )
+            return new ArrayList<>(0);
+        if (!supportedFields.contains(field))
+            return new ArrayList<>(0);
 
         MapReduceResults<Result> results = mongoTemplate.mapReduce
                 (Query.query(new Criteria("season").is(season).and("tournament._id").is(new ObjectId(tournId))),
@@ -55,7 +82,7 @@ public class AggregationMongoRepository implements AggregationRepository<String>
         return StreamSupport.stream(results.spliterator(), false)
             .map(Result::getValue).map(map -> map.get("results")).filter(Objects::nonNull)
             .map(list -> aggregateDataByField(list, games, field)).filter(Objects::nonNull)
-            .sorted(longToComparatorReverse(Aggregation::getAggregatedValue))
+            .sorted(doubleToComparatorReverse(Aggregation::getAggregatedValue))
             .limit(top)
         .collect(Collectors.toList());
     }
@@ -71,6 +98,10 @@ public class AggregationMongoRepository implements AggregationRepository<String>
 
     private static <C> Comparator<C> longToComparatorReverse(Function<C, Long> convert) {
         return (o1, o2) -> new Long(convert.apply(o2) - convert.apply(o1)).intValue();
+    }
+
+    private static <C> Comparator<C> doubleToComparatorReverse(Function<C, Double> convert) {
+        return (o1, o2) -> new Double(convert.apply(o2) - convert.apply(o1)).intValue();
     }
 
     @Data

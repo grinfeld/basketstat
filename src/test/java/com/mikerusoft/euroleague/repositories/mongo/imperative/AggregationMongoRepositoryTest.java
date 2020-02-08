@@ -1,9 +1,6 @@
 package com.mikerusoft.euroleague.repositories.mongo.imperative;
 
 import com.mikerusoft.euroleague.model.Aggregation;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
 import org.bson.BsonDocument;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -18,7 +15,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.TestInstance.Lifecycle.PER_CLASS;
@@ -45,14 +41,6 @@ class AggregationMongoRepositoryTest {
         Files.lines(matches).map(BsonDocument::parse).forEach(d -> mongoTemplate.insert(d, "matches"));
     }
 
-    @Data
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class Result {
-        private String _id;
-        private Map<String, List<Object>> value;
-    }
-
     @Test
     void whenInputTournamentDoesNotExist_expectedEmptyList() {
         List<Aggregation> score = aggregationRepository.aggregate("20192020", "5db2c90bfa7b6d37ff27a512", 5, "score", 2);
@@ -66,21 +54,51 @@ class AggregationMongoRepositoryTest {
     }
 
     @Test
+    void whenFieldDoesNotExist_expectedEmptyList() {
+        List<Aggregation> score = aggregationRepository.aggregate("20192020", "5db2c90bfa7b6d37ff27a587", 5, "dsgfsdgsd", 2);
+        assertThat(score).isNotNull().isEmpty();
+    }
+
+    @Test
+    void whenTopIsNegative_expectedEmptyList() {
+        List<Aggregation> score = aggregationRepository.aggregate("20192020", "5db2c90bfa7b6d37ff27a587", 3, "score", -4);
+        assertThat(score).isNotNull().isEmpty();
+    }
+
+    @Test
+    void whenTopIsZero_expectedEmptyList() {
+        List<Aggregation> score = aggregationRepository.aggregate("20192020", "5db2c90bfa7b6d37ff27a587", 3, "score", 0);
+        assertThat(score).isNotNull().isEmpty();
+    }
+
+    @Test
+    void whenGamesIsZero_expectedEmptyList() {
+        List<Aggregation> score = aggregationRepository.aggregate("20192020", "5db2c90bfa7b6d37ff27a587", 0, "score", 4);
+        assertThat(score).isNotNull().isEmpty();
+    }
+
+    @Test
+    void whenGamesIsNegative_expectedEmptyList() {
+        List<Aggregation> score = aggregationRepository.aggregate("20192020", "5db2c90bfa7b6d37ff27a587", -10, "score", 4);
+        assertThat(score).isNotNull().isEmpty();
+    }
+
+    @Test
     void whenFieldIsScoreAndGames5Top2_expectedTop2ByScore() {
         List<Aggregation> score = aggregationRepository.aggregate("20192020", "5db2c90bfa7b6d37ff27a587", 3, "score", 2);
         assertThat(score).isNotNull().hasSize(2).containsExactlyInAnyOrderElementsOf(Arrays.asList(
-           Aggregation.builder().command("Maccabi T-A").field("score").aggregatedValue(227).build(),
-           Aggregation.builder().command("Real Madrid").field("score").aggregatedValue(219).build()
+           Aggregation.builder().command("Maccabi T-A").field("score").aggregatedValue(227d).build(),
+           Aggregation.builder().command("Real Madrid").field("score").aggregatedValue(219d).build()
         ));
     }
 
     @Test
-    void _expectedTop2By() {
+    void whenFieldStealsANdGames4AndTop3_expectedTop3BySteals() {
         List<Aggregation> steals = aggregationRepository.aggregate("20192020", "5db2c90bfa7b6d37ff27a587", 4, "steals", 3);
         assertThat(steals).isNotNull().hasSize(3).containsExactlyInAnyOrderElementsOf(Arrays.asList(
-                Aggregation.builder().command("Real Madrid").field("steals").aggregatedValue(52).build(),
-                Aggregation.builder().command("Maccabi T-A").field("steals").aggregatedValue(49).build(),
-                Aggregation.builder().command("Fenerbahce").field("steals").aggregatedValue(34).build()
+                Aggregation.builder().command("Real Madrid").field("steals").aggregatedValue(52d).build(),
+                Aggregation.builder().command("Maccabi T-A").field("steals").aggregatedValue(49d).build(),
+                Aggregation.builder().command("Fenerbahce").field("steals").aggregatedValue(34d).build()
         ));
     }
 

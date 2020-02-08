@@ -12,5 +12,5 @@ import lombok.NoArgsConstructor;
 public class Aggregation {
     private String command;
     private String field;
-    private long aggregatedValue;
+    private double aggregatedValue;
 }
