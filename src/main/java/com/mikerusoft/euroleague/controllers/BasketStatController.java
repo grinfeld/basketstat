@@ -87,7 +87,7 @@ public class BasketStatController {
 
     private Aggr makeAggregation(List<Match> commandStat, String commandId) {
         Aggr collect = commandStat.stream().filter(m -> isCommandInMatch(commandId, m))
-                .collect(new StatCollector(commandId));
+                .collect(new StatCollector(commandId, 1));
         return collect;
     }
 
