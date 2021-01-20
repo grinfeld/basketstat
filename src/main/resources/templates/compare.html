@@ -94,7 +94,7 @@
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Total</div>
-                                        <div class="col" th:text="${(command1Aggr.getScoreIn() + command1Aggr.getScoreOut())/2}"></div>
+                                        <div class="col" th:text="${command1Aggr.getScoreIn() + command1Aggr.getScoreOut()}"></div>
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Difference</div>
@@ -303,7 +303,7 @@
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Total</div>
-                                        <div class="col" th:text="${(command2Aggr.getScoreIn() + command2Aggr.getScoreOut())/2}"></div>
+                                        <div class="col" th:text="${command2Aggr.getScoreIn() + command2Aggr.getScoreOut()}"></div>
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Difference</div>
