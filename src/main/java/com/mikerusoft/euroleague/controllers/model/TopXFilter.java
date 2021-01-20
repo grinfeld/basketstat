@@ -18,7 +18,8 @@ import static com.mikerusoft.euroleague.utils.Utils.isEmptyTrimmed;
 @Builder(builderClassName = "Builder")
 public class TopXFilter {
     private Tournament tournament;
-    private String season;
+    @lombok.Builder.Default
+    private String season = extractSeason(new Date());
     @lombok.Builder.Default
     private int games = 2;
     @lombok.Builder.Default
