@@ -42,7 +42,7 @@
                             </div>
                             <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
                                 <label for="season" class="col-sm-2 col-form-label">Season</label>
-                                <input class="form-control shortText" required="required" th:field="*{season}" />
+                                <input class="form-control shortText" required="required" th:default="*{season}" />
                             </div>
                             <div class="col col-sm-3 my-6" th:if="${filter.hasTournament()}">
                                 <select class="form-control" th:field="*{matchPlace}">
