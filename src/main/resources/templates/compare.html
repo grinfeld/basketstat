@@ -62,6 +62,24 @@
                         <h3 th:text="${'Season ' + filter.getSeason()}"></h3>
                     </div>
                     <div class="container">
+                        <div class="row" th:if="${command1Aggr != null} AND ${command1Aggr.getGames() > 0} AND ${command2Aggr != null} AND ${command2Aggr.getGames() > 0}">
+                            <div class="col right-border">
+                                <div class="container">
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Potential Score:</div>
+                                        <div class="col" th:text="${ (command1Aggr.getScoreIn() + command2Aggr.getScoreOut())/2 }"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col">
+                                <div class="container">
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Potential Score:</div>
+                                        <div class="col" th:text="${ (command2Aggr.getScoreIn() + command1Aggr.getScoreOut())/2 }"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         <div class="row">
                             <div class="col right-border">
                                 <div class="container" th:if="${command1Aggr != null} AND ${command1Aggr.getGames() > 0}">
@@ -73,6 +91,14 @@
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Score</div>
                                         <div class="col" th:text="${command1Aggr.getScoreIn() + ' - ' + command1Aggr.getScoreOut()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Total</div>
+                                        <div class="col" th:text="${(command1Aggr.getScoreIn() + command1Aggr.getScoreOut())/2}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Difference</div>
+                                        <div class="col" th:text="${command1Aggr.getScoreIn() - command1Aggr.getScoreOut()}"></div>
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Score 1st</div>
@@ -274,6 +300,14 @@
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Score</div>
                                         <div class="col" th:text="${command2Aggr.getScoreIn() + ' - ' + command2Aggr.getScoreOut()}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Total</div>
+                                        <div class="col" th:text="${(command2Aggr.getScoreIn() + command2Aggr.getScoreOut())/2}"></div>
+                                    </div>
+                                    <div class="sm-1 row">
+                                        <div class="col bs-title">Difference</div>
+                                        <div class="col" th:text="${(command2Aggr.getScoreIn() - command2Aggr.getScoreOut())}"></div>
                                     </div>
                                     <div class="sm-1 row">
                                         <div class="col bs-title">Score 1st</div>
