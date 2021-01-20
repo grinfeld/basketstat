@@ -24,14 +24,16 @@ public class Validations {
         }
 
         int homeScore = homeCommand.getQuarterStats().stream().mapToInt(CommandQuarterStat::getScore).sum();
-        if (homeScore != homeCommand.getScore()) {
+/*        if (homeScore != homeCommand.getScore()) {
             throw new IllegalArgumentException("Home team: Sum of all quarters score should be equal to game score");
-        }
+        }*/
 
         int awayScore = awayCommand.getQuarterStats().stream().mapToInt(CommandQuarterStat::getScore).sum();
+/*
         if (awayScore != awayCommand.getScore()) {
             throw new IllegalArgumentException("Away team: Sum of all quarters score should be equal to game score");
         }
+*/
 
         boolean hasNegativeHome = !homeCommand.getQuarterStats().stream()
             .mapToInt(CommandQuarterStat::getScore).filter(i -> i >= 0).findAny().isPresent();
@@ -45,21 +47,21 @@ public class Validations {
             throw new IllegalArgumentException("Away team: any score field shouldn't be negative");
         }
 
-        if (homeCommand.getScore() != homeCommand.getPoints1() + homeCommand.getPoints2() * 2 + homeCommand.getPoints3() * 3) {
+/*        if (homeCommand.getScore() != homeCommand.getPoints1() + homeCommand.getPoints2() * 2 + homeCommand.getPoints3() * 3) {
             throw new IllegalArgumentException("Home team: sum of points should be equal to game score");
-        }
+        }*/
 
-        if (awayCommand.getScore() != awayCommand.getPoints1() + awayCommand.getPoints2() * 2 + awayCommand.getPoints3() * 3) {
+/*        if (awayCommand.getScore() != awayCommand.getPoints1() + awayCommand.getPoints2() * 2 + awayCommand.getPoints3() * 3) {
             throw new IllegalArgumentException("Away team: sum of points should be equal to game score");
-        }
+        }*/
 
-        if (homeCommand.getScoreStart5Score() + homeCommand.getScoreBenchScore() != homeScore) {
+/*        if (homeCommand.getScoreStart5Score() + homeCommand.getScoreBenchScore() != homeScore) {
             throw new IllegalArgumentException("Home team: sum of start 5 and bench players should be equal to game score");
-        }
+        }*/
 
-        if (awayCommand.getScoreStart5Score() + awayCommand.getScoreBenchScore() != awayScore) {
+/*        if (awayCommand.getScoreStart5Score() + awayCommand.getScoreBenchScore() != awayScore) {
             throw new IllegalArgumentException("Away team: sum of start 5 and bench players should be equal to game score");
-        }
+        }*/
     }
 
     private static void validateTournament(Tournament tournament) {
