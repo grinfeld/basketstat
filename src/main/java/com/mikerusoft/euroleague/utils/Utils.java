@@ -3,6 +3,7 @@ package com.mikerusoft.euroleague.utils;
 import org.springframework.util.StringUtils;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.Optional;
 import java.util.function.Function;
 
@@ -67,6 +68,17 @@ public class Utils {
 
     public static boolean isEmptyTrimmed(Optional<String> str) {
         return str.map(String::trim).orElse("").isEmpty();
+    }
+
+    public static String extractSeasonFromNow() {
+        java.util.Date now = new Date();
+        Calendar calendarForNextYear = Calendar.getInstance();
+        calendarForNextYear.setTime(now);
+        int month = calendarForNextYear.get(Calendar.MONTH);
+        int nextYearBuilder = calendarForNextYear.get(Calendar.YEAR);
+        nextYearBuilder = month >= Calendar.JANUARY && month <= Calendar.JUNE ? nextYearBuilder - 1 : nextYearBuilder;
+        calendarForNextYear.set(Calendar.YEAR, nextYearBuilder + 1);
+        return nextYearBuilder + String.valueOf(calendarForNextYear.get(Calendar.YEAR));
     }
 
     public static String extractSeason(java.util.Date now) {

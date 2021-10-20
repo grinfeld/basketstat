@@ -3,7 +3,6 @@
 
 Playing with mongodb
 
-
 How To
 ========================
 
