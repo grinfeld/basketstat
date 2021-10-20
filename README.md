@@ -7,7 +7,6 @@ Playing with mongodb
 How To
 ========================
 
-
 1. Install mongodb
 1. Download [basketstat-2.1.jar](basketstat-2.1.jar)
 1. Download [run.cmd](run.cmd) for windows and [run.sh](run.sh) for linux.
